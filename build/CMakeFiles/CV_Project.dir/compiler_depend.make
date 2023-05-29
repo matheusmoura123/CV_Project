@@ -3,6 +3,7 @@
 
 CMakeFiles/CV_Project.dir/main.cpp.o: ../main.cpp \
   /usr/include/stdc-predef.h \
+  ../segment_plates.h \
   /usr/local/include/opencv4/opencv2/core.hpp \
   /usr/local/include/opencv4/opencv2/core/cvdef.h \
   /usr/local/include/opencv4/opencv2/core/version.hpp \
@@ -314,11 +315,15 @@ CMakeFiles/CV_Project.dir/main.cpp.o: ../main.cpp \
   /usr/local/include/opencv4/opencv2/imgproc/imgproc.hpp \
   /usr/local/include/opencv4/opencv2/imgproc.hpp \
   /usr/local/include/opencv4/opencv2/imgproc/segmentation.hpp \
-  /usr/include/c++/11/iostream \
-  ../segment_plates.h
+  /usr/local/include/opencv4/opencv2/features2d.hpp \
+  /usr/local/include/opencv4/opencv2/flann/miniflann.hpp \
+  /usr/local/include/opencv4/opencv2/flann/defines.h \
+  /usr/local/include/opencv4/opencv2/flann/config.h \
+  /usr/include/c++/11/iostream
 
 CMakeFiles/CV_Project.dir/segment_plates.cpp.o: ../segment_plates.cpp \
   /usr/include/stdc-predef.h \
+  ../segment_plates.h \
   /usr/local/include/opencv4/opencv2/core.hpp \
   /usr/local/include/opencv4/opencv2/core/cvdef.h \
   /usr/local/include/opencv4/opencv2/core/version.hpp \
@@ -630,11 +635,18 @@ CMakeFiles/CV_Project.dir/segment_plates.cpp.o: ../segment_plates.cpp \
   /usr/local/include/opencv4/opencv2/imgproc/imgproc.hpp \
   /usr/local/include/opencv4/opencv2/imgproc.hpp \
   /usr/local/include/opencv4/opencv2/imgproc/segmentation.hpp \
-  /usr/include/c++/11/iostream \
-  ../segment_plates.h
+  /usr/local/include/opencv4/opencv2/features2d.hpp \
+  /usr/local/include/opencv4/opencv2/flann/miniflann.hpp \
+  /usr/local/include/opencv4/opencv2/flann/defines.h \
+  /usr/local/include/opencv4/opencv2/flann/config.h \
+  /usr/include/c++/11/iostream
 
 
-../segment_plates.h:
+/usr/local/include/opencv4/opencv2/flann/config.h:
+
+/usr/local/include/opencv4/opencv2/flann/defines.h:
+
+/usr/local/include/opencv4/opencv2/flann/miniflann.hpp:
 
 /usr/local/include/opencv4/opencv2/imgproc/segmentation.hpp:
 
@@ -678,6 +690,8 @@ CMakeFiles/CV_Project.dir/segment_plates.cpp.o: ../segment_plates.cpp \
 
 /usr/include/c++/11/bits/locale_classes.tcc:
 
+/usr/local/include/opencv4/opencv2/features2d.hpp:
+
 /usr/include/c++/11/bits/locale_classes.h:
 
 /usr/include/c++/11/bits/ios_base.h:
@@ -692,9 +706,7 @@ CMakeFiles/CV_Project.dir/segment_plates.cpp.o: ../segment_plates.cpp \
 
 /usr/local/include/opencv4/opencv2/core/types.hpp:
 
-/usr/include/c++/11/unordered_map:
-
-/usr/include/c++/11/cctype:
+/usr/local/include/opencv4/opencv2/core/check.hpp:
 
 /usr/include/c++/11/bits/string_view.tcc:
 
@@ -854,6 +866,8 @@ CMakeFiles/CV_Project.dir/segment_plates.cpp.o: ../segment_plates.cpp \
 
 /usr/include/x86_64-linux-gnu/sys/cdefs.h:
 
+/usr/include/x86_64-linux-gnu/asm/errno.h:
+
 ../main.cpp:
 
 /usr/include/c++/11/bits/exception_defines.h:
@@ -906,17 +920,19 @@ CMakeFiles/CV_Project.dir/segment_plates.cpp.o: ../segment_plates.cpp \
 
 /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:
 
-/usr/include/c++/11/stdlib.h:
+/usr/include/x86_64-linux-gnu/bits/types/struct_timeval.h:
 
 /usr/local/include/opencv4/opencv2/core/cvdef.h:
 
-/usr/include/x86_64-linux-gnu/bits/types/struct_timeval.h:
+/usr/include/x86_64-linux-gnu/bits/time64.h:
 
-/usr/include/x86_64-linux-gnu/asm/errno.h:
+/usr/include/c++/11/bits/functexcept.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/clock_t.h:
 
 /usr/local/include/opencv4/opencv2/core/version.hpp:
+
+/usr/include/c++/11/stdlib.h:
 
 /usr/include/c++/11/complex:
 
@@ -925,6 +941,12 @@ CMakeFiles/CV_Project.dir/segment_plates.cpp.o: ../segment_plates.cpp \
 /usr/include/x86_64-linux-gnu/bits/timesize.h:
 
 /usr/include/c++/11/limits:
+
+../segment_plates.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/sigset_t.h:
+
+/usr/include/c++/11/bits/concept_check.h:
 
 /usr/include/c++/11/functional:
 
@@ -937,12 +959,6 @@ CMakeFiles/CV_Project.dir/segment_plates.cpp.o: ../segment_plates.cpp \
 /usr/include/features-time64.h:
 
 /usr/lib/gcc/x86_64-linux-gnu/11/include/xmmintrin.h:
-
-/usr/include/c++/11/bits/functexcept.h:
-
-/usr/include/c++/11/bits/concept_check.h:
-
-/usr/include/x86_64-linux-gnu/bits/types/sigset_t.h:
 
 /usr/include/c++/11/cstdint:
 
@@ -971,8 +987,6 @@ CMakeFiles/CV_Project.dir/segment_plates.cpp.o: ../segment_plates.cpp \
 /usr/include/stdlib.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/locale_t.h:
-
-/usr/include/x86_64-linux-gnu/bits/time64.h:
 
 /usr/lib/gcc/x86_64-linux-gnu/11/include/emmintrin.h:
 
@@ -1016,8 +1030,6 @@ CMakeFiles/CV_Project.dir/segment_plates.cpp.o: ../segment_plates.cpp \
 
 /usr/include/x86_64-linux-gnu/bits/types/__locale_t.h:
 
-/usr/local/include/opencv4/opencv2/core/check.hpp:
-
 /usr/include/c++/11/ext/aligned_buffer.h:
 
 /usr/include/x86_64-linux-gnu/sys/types.h:
@@ -1025,6 +1037,10 @@ CMakeFiles/CV_Project.dir/segment_plates.cpp.o: ../segment_plates.cpp \
 /usr/include/x86_64-linux-gnu/bits/pthreadtypes-arch.h:
 
 /usr/include/locale.h:
+
+/usr/include/c++/11/unordered_map:
+
+/usr/include/c++/11/cctype:
 
 /usr/include/x86_64-linux-gnu/c++/11/bits/c++allocator.h:
 

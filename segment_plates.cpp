@@ -1,28 +1,15 @@
-#include <opencv2/core.hpp>
-#include <opencv2/highgui.hpp>
-#include <opencv2/imgcodecs.hpp>
-#include <opencv2/imgproc/imgproc.hpp>
-#include <opencv2/imgproc.hpp>
-#include <iostream>
-
 #include "segment_plates.h"
 
-using namespace std;
-using namespace cv;
 
 Mat segment_plates(const Mat& img) {
 
     Mat gray, Gaus, theCircles, binaryImg;
-
-
 
     cvtColor(img, gray, COLOR_BGR2GRAY);
     GaussianBlur(gray, Gaus,Size(3,3), 1.5, 1.5);
 
     //Mat img(200, 200, CV_8UC3);
 
-
-    //threshold(Gaus, binaryImg, 0, 255, THRESH_OTSU);
 
     // DETECTING CIRCLES (PLATES)
 
@@ -74,9 +61,33 @@ Mat segment_plates(const Mat& img) {
     }
 
 
+/*
+    cvtColor(mask, mask, COLOR_BGR2GRAY);
+
+    GaussianBlur(mask, mask,Size(3,3), 5, 5);
+
+    normalize(mask, mask, 0, 255, NORM_MINMAX,-1, noArray());
+
+
+    threshold(mask, binaryImg, 30, 255, THRESH_BINARY);
+    */
+    Ptr<MSER> mserEXTR = MSER::create();
+    vector<Rect> food;
+    vector<vector<cv::Point>> mserContours;
+    mserEXTR ->detectRegions(mask,mserContours,food);
+
+    for (vector<cv::Point> v : mserContours){
+        for (cv::Point p : v){
+            mask.at<Vec3b>(p.y, p.x)[0] = 255;
+            mask.at<Vec3b>(p.y, p.x)[1] = 255;
+            mask.at<Vec3b>(p.y, p.x)[2] = 255;
+        }
+    }
+
 
     imshow("Detected circles", mask);
     waitKey();
+
 
     return theCircles;
 
