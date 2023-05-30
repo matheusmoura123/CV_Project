@@ -267,4 +267,5 @@ CMakeFiles/CV_Project.dir/segment_plates.cpp.o: \
  /usr/local/include/opencv4/opencv2/flann/miniflann.hpp \
  /usr/local/include/opencv4/opencv2/flann/defines.h \
  /usr/local/include/opencv4/opencv2/flann/config.h \
- /usr/include/c++/11/iostream
+ /usr/include/c++/11/iostream \
+ /home/ksenija/CLionProjects/CV_Project/sift_matching.h

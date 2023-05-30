@@ -177,6 +177,30 @@ segment_plates.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/CV_Project.dir/build.make CMakeFiles/CV_Project.dir/segment_plates.cpp.s
 .PHONY : segment_plates.cpp.s
 
+sift_matching.o: sift_matching.cpp.o
+.PHONY : sift_matching.o
+
+# target to build an object file
+sift_matching.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/CV_Project.dir/build.make CMakeFiles/CV_Project.dir/sift_matching.cpp.o
+.PHONY : sift_matching.cpp.o
+
+sift_matching.i: sift_matching.cpp.i
+.PHONY : sift_matching.i
+
+# target to preprocess a source file
+sift_matching.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/CV_Project.dir/build.make CMakeFiles/CV_Project.dir/sift_matching.cpp.i
+.PHONY : sift_matching.cpp.i
+
+sift_matching.s: sift_matching.cpp.s
+.PHONY : sift_matching.s
+
+# target to generate assembly for a file
+sift_matching.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/CV_Project.dir/build.make CMakeFiles/CV_Project.dir/sift_matching.cpp.s
+.PHONY : sift_matching.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -192,6 +216,9 @@ help:
 	@echo "... segment_plates.o"
 	@echo "... segment_plates.i"
 	@echo "... segment_plates.s"
+	@echo "... sift_matching.o"
+	@echo "... sift_matching.i"
+	@echo "... sift_matching.s"
 .PHONY : help
 
 

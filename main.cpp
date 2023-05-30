@@ -1,11 +1,16 @@
 #include "segment_plates.h"
+#include "sift_matching.h"
 
 
 int main(int argc, char** argv) {
-    Mat img, seg;
-    img = imread(argv[1]);
+    Mat img1,img2, seg;
+    img1 = imread(argv[1]);
+    img2 = imread(argv[2]);
 
-    seg = segment_plates(img);
+    //sift_matching(img1,img2);
+
+    seg = segment_plates(img1);
+
 
    // imshow("Original", img);
 //    waitKey(0);

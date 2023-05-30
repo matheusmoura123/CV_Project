@@ -1,4 +1,5 @@
 #include "segment_plates.h"
+#include "sift_matching.h"
 
 
 Mat segment_plates(const Mat& img) {
@@ -33,17 +34,7 @@ Mat segment_plates(const Mat& img) {
         Vec3i c = circles[i];
         Point center = Point(c[0], c[1]);
         int radius = c[2];
-        //circle(theCircles, center, 1, Scalar(57,255,20), radius, LINE_AA);
-        //circle(theCircles, center, radius, Scalar(0,0,255), radius, LINE_AA);
 
-        /*
-        Rect boundingRect(center.x-radius, center.y-radius, radius*2+1, radius*2+1);
-
-        theCircles(boundingRect);
-        circle(theCircles, center, radius, Scalar(0,0,255), -1);
-
-
-*/
 
         for (int j = 0; j < mask.rows-1; ++j)
         {
@@ -61,28 +52,66 @@ Mat segment_plates(const Mat& img) {
     }
 
 
-/*
-    cvtColor(mask, mask, COLOR_BGR2GRAY);
+    
+    //cvtColor(mask, mask, COLOR_BGR2GRAY);
 
-    GaussianBlur(mask, mask,Size(3,3), 5, 5);
+
+    //GaussianBlur(mask, mask,Size(5,5), 5, 5);
+
+    /*
 
     normalize(mask, mask, 0, 255, NORM_MINMAX,-1, noArray());
 
 
-    threshold(mask, binaryImg, 30, 255, THRESH_BINARY);
-    */
-    Ptr<MSER> mserEXTR = MSER::create();
+    threshold(mask, binaryImg, 0, 255, THRESH_OTSU);
+     */
+
+
+
+
+
+/*
+    Mat imgcopy = img.clone();
+    Ptr<MSER> mserEXTR = MSER::create(5,10,14400,1.5, 0.5, 200, 1.01, 0.003, 3);
+
     vector<Rect> food;
     vector<vector<cv::Point>> mserContours;
     mserEXTR ->detectRegions(mask,mserContours,food);
 
     for (vector<cv::Point> v : mserContours){
         for (cv::Point p : v){
-            mask.at<Vec3b>(p.y, p.x)[0] = 255;
-            mask.at<Vec3b>(p.y, p.x)[1] = 255;
-            mask.at<Vec3b>(p.y, p.x)[2] = 255;
+            mask.at<uchar>(p.y, p.x) = 255;
+           // mask.at<Vec3b>(p.y, p.x)[1] = 255;
+           // mask.at<Vec3b>(p.y, p.x)[2] = 255;
         }
     }
+
+   // Mat kernel = getStructuringElement(MORPH_RECT, Size(5,5));
+ //   dilate(mask, mask, kernel);
+*/
+
+/*
+    Mat imgcopy = img.clone();
+    Ptr<MSER> mserEXTR = MSER::create(5,10,14400,1.5, 0.5, 200, 1.01, 0.003, 3);
+
+    vector<Rect> food;
+    vector<vector<cv::Point>> mserContours;
+    mserEXTR ->detectRegions(mask,mserContours,food);
+
+    for (vector<cv::Point> v : mserContours){
+        for (cv::Point p : v){
+            mask.at<uchar>(p.y, p.x) = 255;
+           // mask.at<Vec3b>(p.y, p.x)[1] = 255;
+           // mask.at<Vec3b>(p.y, p.x)[2] = 255;
+        }
+    }
+    */
+
+   // Mat kernel = getStructuringElement(MORPH_RECT, Size(5,5));
+ //   dilate(mask, mask, kernel);
+
+
+    //Canny(mask, mask, 100, 150);
 
 
     imshow("Detected circles", mask);
@@ -103,14 +132,16 @@ Mat get_contours(const Mat& img) {
     vector<Vec4i> hierarchy;
 
     findContours(gray, contours, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
-    //drawContours(img, contours, 0, Scalar(0, 0, 255), 1);
+    drawContours(img, contours, 0, Scalar(0, 0, 255), 1);
 
+    /*
     vector<vector<Point>> conPoly(contours.size());
 
     float peri = arcLength(contours[0], false);
     approxPolyDP(contours[0], conPoly[0], 0.02*peri, false);
     drawContours(img_out, conPoly, 0, Scalar(0, 0, 255), 1);
     //line(img, conPoly[0][1], conPoly[0][3],Scalar(0,0,255), 1, LINE_AA);
+     */
 
 
     return img_out;
