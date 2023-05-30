@@ -16,4 +16,6 @@ Mat segment_plates(const Mat& img);
 
 Mat get_contours(const Mat& img);
 
+Mat segment_hsv(const Mat& img);
+
 #endif //CV_PROJECT_SEGMENT_PLATES_H
