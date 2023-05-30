@@ -1,6 +1,8 @@
-CMakeFiles/CV_project.dir/segment_plates.cpp.o: \
+CMakeFiles/CV_Project.dir/segment_plates.cpp.o: \
  /home/ksenija/CLionProjects/CV_Project/segment_plates.cpp \
- /usr/include/stdc-predef.h /usr/local/include/opencv4/opencv2/core.hpp \
+ /usr/include/stdc-predef.h \
+ /home/ksenija/CLionProjects/CV_Project/segment_plates.h \
+ /usr/local/include/opencv4/opencv2/core.hpp \
  /usr/local/include/opencv4/opencv2/core/cvdef.h \
  /usr/local/include/opencv4/opencv2/core/version.hpp \
  /usr/include/c++/11/limits \
@@ -261,5 +263,9 @@ CMakeFiles/CV_project.dir/segment_plates.cpp.o: \
  /usr/local/include/opencv4/opencv2/imgproc/imgproc.hpp \
  /usr/local/include/opencv4/opencv2/imgproc.hpp \
  /usr/local/include/opencv4/opencv2/imgproc/segmentation.hpp \
+ /usr/local/include/opencv4/opencv2/features2d.hpp \
+ /usr/local/include/opencv4/opencv2/flann/miniflann.hpp \
+ /usr/local/include/opencv4/opencv2/flann/defines.h \
+ /usr/local/include/opencv4/opencv2/flann/config.h \
  /usr/include/c++/11/iostream \
- /home/ksenija/CLionProjects/CV_Project/segment_plates.h
+ /home/ksenija/CLionProjects/CV_Project/sift_matching.h
