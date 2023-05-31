@@ -235,9 +235,9 @@ threshold(mask, binaryImg, 0, 255, THRESH_OTSU);
 /*
     Ptr<MSER> mserEXTR = MSER::create(2,50,10000,1.5);
 
-    vector<Rect> food;
+    vector<Rect> FoodCategories;
     vector<vector<cv::Point>> mserContours;
-    mserEXTR ->detectRegions(mask,mserContours,food);
+    mserEXTR ->detectRegions(mask,mserContours,FoodCategories);
 
     for (vector<cv::Point> v : mserContours){
         for (cv::Point p : v){

@@ -5,9 +5,9 @@
 int main(int argc, char** argv) {
     Mat img1,img2, seg;
     img1 = imread(argv[1]);
-   // img2 = imread(argv[2]);
+   //img2 = imread(argv[2]);
 
-    sift_matching(img1,img2);
+    //sift_matching(img1,img2);
 
     seg = segment_plates(img1);
 

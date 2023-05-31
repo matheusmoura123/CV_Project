@@ -16,8 +16,9 @@ using namespace cv::ml;
 
 const string DATASET_PATH = "../FoodCategories/";
 const string IMAGE_EXT = ".png";
-const int DICT_SIZE = 1040;	//80 word per class
-//const int TESTING_PERCENT_PER = 7;
+const int DICT_SIZE = 160;	//80 word per class
+const int TESTING_PERCENT_PER = 7;
+const vector<string> CLASS_NAMES = {"beans", "lettuce"};
 
 /*
 inline bool fileExists(const std::string& name) {
@@ -36,8 +37,8 @@ void readDetectComputeimage(const string& className, int imageNumbers, int class
         //If this image is test not use this in learning
         if (i % TESTING_PERCENT_PER == 0) {
             continue;
-        }
-         */
+        }*/
+
         //ostringstream ss;
         Mat grayimg;
         Ptr<SIFT> siftptr = SIFT::create();
@@ -94,8 +95,8 @@ void getHistogram(const string& className, int imageNumbers, int classLable) {
         //If this image is test not use this in learning
         if (i % TESTING_PERCENT_PER == 0) {
             continue;
-        }
-         */
+        }*/
+
         //ostringstream ss;
         Mat grayimg;
         Ptr<SIFT> siftptr = SIFT::create();
@@ -136,31 +137,51 @@ double testData(const string& className, int imageNumbers, int classLable) {
     int allTests = 0;
     int correctTests = 0;
     for (int i = TESTING_PERCENT_PER; i <= imageNumbers; i += TESTING_PERCENT_PER) {
-        ostringstream ss;
-        Mat grayimg;
-        Ptr<xfeatures2d::SIFT> siftptr;
         float r = 0;
-        siftptr = xfeatures2d::SIFT::create();
+        //ostringstream ss;
+        Mat grayimg;
+        Ptr<SIFT> siftptr = SIFT::create();
+        /*
         //Load image, Detect and Describe features
         ss.str("");
         ss << std::setw(4) << std::setfill('0') << i;
-        if (fileExists(DATASET_PATH + className + "\\image_" + ss.str() + IMAGE_EXT)) {
-            cvtColor(imread(DATASET_PATH + className + "\\image_" + ss.str() + IMAGE_EXT), grayimg, CV_BGR2GRAY);
-            vector<KeyPoint> keypoints;
-            Mat descriptors;
-            siftptr->detectAndCompute(grayimg, noArray(), keypoints, descriptors);
-            Mat dvector = getDataVector(descriptors);
+        if (fileExists(DATASET_PATH + className + "/" + className + to_string(i) + IMAGE_EXT)) {
+        */
+        cvtColor(imread(DATASET_PATH + className + "/" + className + to_string(i) + IMAGE_EXT), grayimg, COLOR_BGR2GRAY);
+        vector<KeyPoint> keypoints;
+        Mat descriptors;
 
-            allTests++;
-            if (svm->predict(dvector) == classLable) {
-                correctTests++;
-            }
+        siftptr->detect(grayimg, keypoints);
+        siftptr->compute(grayimg, keypoints, descriptors);
 
-        }else{
-            break;
+        Mat dvector = getDataVector(descriptors);
+
+        allTests++;
+        if (svm->predict(dvector) == classLable) {
+            correctTests++;
         }
     }
     return (double)correctTests / allTests;
+}
+
+void predictImg(const string& path, const string& className, int classLable) {
+    Mat grayimg;
+    Ptr<SIFT> siftptr = SIFT::create();
+    Mat img = imread(path);
+    cvtColor(img, grayimg, COLOR_BGR2GRAY);
+    vector<KeyPoint> keypoints;
+    Mat descriptors;
+    siftptr->detect(grayimg, keypoints);
+    siftptr->compute(grayimg, keypoints, descriptors);
+    Mat dvector = getDataVector(descriptors);
+    if (svm->predict(dvector) == classLable) {
+        cout << "-> The image has " << className << endl;
+    }else {
+        cout << "-> The image doesn't has " << className << endl;
+    }
+    namedWindow("Tested Img");
+    imshow("Tested Img",grayimg);
+    waitKey(0);
 }
 
 int main(int argc, char **argv)
@@ -168,8 +189,9 @@ int main(int argc, char **argv)
     cout << "Object detector started." << endl;
     clock_t sTime = clock();
     cout << "Reading inputs..." << endl;
-    readDetectComputeimage("starfish", 86, 1);
-    readDetectComputeimage("sunflower", 85, 2);
+
+    readDetectComputeimage("beans", 13, 1);
+    readDetectComputeimage("lettuce", 15, 2);
     //readDetectComputeimage("crab", 75, 3);
     //readDetectComputeimage("trilobite", 86, 4);
     cout << "-> Reading, Detect and Describe input in " << (clock() - sTime) / double(CLOCKS_PER_SEC) << " Second(s)." << endl;
@@ -177,20 +199,22 @@ int main(int argc, char **argv)
     int clusterCount = DICT_SIZE, attempts = 5, iterationNumber = 1e4;
     sTime = clock();
     cout << "Running kmeans..." << endl;
-    kmeans(allDescriptors, clusterCount, kLabels, TermCriteria(CV_TERMCRIT_ITER | CV_TERMCRIT_EPS, iterationNumber, 1e-4), attempts, KMEANS_PP_CENTERS, kCenters);
+    kmeans(allDescriptors, clusterCount, kLabels, TermCriteria(TermCriteria::MAX_ITER|TermCriteria::EPS, iterationNumber, 1e-4), attempts, KMEANS_PP_CENTERS, kCenters);
     cout << "-> kmeans run in " << (clock() - sTime) / double(CLOCKS_PER_SEC) << " Second(s)." << endl;
 
     /*FileStorage storage("kmeans-starfish,sunflower,crab,trilobite.yml", FileStorage::WRITE);
     storage << "kLabels" << kLabels << "kCenters" << kCenters;
     storage.release();*/
 
+    /*
     sTime = clock();
-    /*cout << "Loading kmeans data..." << endl;
+    cout << "Loading kmeans data..." << endl;
     FileStorage storage("kmeans-starfish,sunflower,crab,trilobite.yml", FileStorage::READ);
     storage["kLabels"] >> kLabels;
     storage["kCenters"] >> kCenters;
     storage.release();
-    cout << "-> kmeans data loaded in " << (clock() - sTime) / double(CLOCKS_PER_SEC) << " Second(s)." << endl;*/
+    cout << "-> kmeans data loaded in " << (clock() - sTime) / double(CLOCKS_PER_SEC) << " Second(s)." << endl;
+     */
 
     sTime = clock();
     cout << "Finding histograms..." << endl;
@@ -213,16 +237,20 @@ int main(int argc, char **argv)
     svm->train(td);
     cout << "-> SVM trained in " << (clock() - sTime) / double(CLOCKS_PER_SEC) << " Second(s)." << endl;
 
+    /*
     sTime = clock();
     cout << "Testing images..." << endl;
-    cout << "-> " << (float)(testData("starfish", 86, 1) * 100) << "% accuracy in 'starfish' class." << endl;
-    cout << "-> " << (float)(testData("sunflower", 85, 2) * 100) << "% accuracy in 'sunflower' class." << endl;
+    cout << "-> " << (float)(testData("beans", 13, 1) * 100) << "% accuracy in 'beans' class." << endl;
+    cout << "-> " << (float)(testData("lettuce", 15, 2) * 100) << "% accuracy in 'lettuce' class." << endl;
     //cout << "-> " << (float)(testData("crab", 75, 3) * 100) << "% accuracy in 'crab' class." << endl;
     //cout << "-> " << (float)(testData("trilobite", 86, 4) * 100) << "% accuracy in 'trilobite' class." << endl;
     cout << "-> Test completed in " << (clock() - sTime) / double(CLOCKS_PER_SEC) << " Second(s)." << endl;
+     */
+
+
+    predictImg(argv[1] , "beans", 1);
 
     //imwrite("sift_result.jpg", output);
-    cout << "\nObject detector demo ended. press any key for exit.\nFor more information contact hkhojasteh [at] iasbs [dot] ac [dot] ir";
-    cin.get();
+
     return(0);
 }
