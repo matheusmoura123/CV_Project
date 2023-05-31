@@ -1,3 +1,0 @@
-/home/ksenija/CLionProjects/CV_Project/build/CMakeFiles/CV_Project.dir
-/home/ksenija/CLionProjects/CV_Project/build/CMakeFiles/edit_cache.dir
-/home/ksenija/CLionProjects/CV_Project/build/CMakeFiles/rebuild_cache.dir
