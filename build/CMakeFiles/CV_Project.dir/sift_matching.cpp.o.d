@@ -1,5 +1,5 @@
 CMakeFiles/CV_Project.dir/sift_matching.cpp.o: \
- /home/ksenija/CLionProjects/CV_Project/sift_matching.cpp \
+ /home/matheus/CLionProjects/CV_Project/sift_matching.cpp \
  /usr/include/stdc-predef.h /usr/local/include/opencv4/opencv2/core.hpp \
  /usr/local/include/opencv4/opencv2/core/cvdef.h \
  /usr/local/include/opencv4/opencv2/core/version.hpp \
@@ -264,4 +264,4 @@ CMakeFiles/CV_Project.dir/sift_matching.cpp.o: \
  /usr/local/include/opencv4/opencv2/flann/miniflann.hpp \
  /usr/local/include/opencv4/opencv2/flann/defines.h \
  /usr/local/include/opencv4/opencv2/flann/config.h \
- /home/ksenija/CLionProjects/CV_Project/sift_matching.h
+ /home/matheus/CLionProjects/CV_Project/sift_matching.h

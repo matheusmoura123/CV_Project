@@ -7,13 +7,13 @@ int main(int argc, char** argv) {
     img1 = imread(argv[1]);
     img2 = imread(argv[2]);
 
-    //sift_matching(img1,img2);
+    sift_matching(img1,img2);
 
     seg = segment_plates(img1);
 
 
    // imshow("Original", img);
-//    waitKey(0);
+   //waitKey(0);
 
 
     return 0;
