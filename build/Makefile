@@ -129,6 +129,30 @@ CV_Project/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/CV_Project.dir/build.make CMakeFiles/CV_Project.dir/build
 .PHONY : CV_Project/fast
 
+find_histogram.o: find_histogram.cpp.o
+.PHONY : find_histogram.o
+
+# target to build an object file
+find_histogram.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/CV_Project.dir/build.make CMakeFiles/CV_Project.dir/find_histogram.cpp.o
+.PHONY : find_histogram.cpp.o
+
+find_histogram.i: find_histogram.cpp.i
+.PHONY : find_histogram.i
+
+# target to preprocess a source file
+find_histogram.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/CV_Project.dir/build.make CMakeFiles/CV_Project.dir/find_histogram.cpp.i
+.PHONY : find_histogram.cpp.i
+
+find_histogram.s: find_histogram.cpp.s
+.PHONY : find_histogram.s
+
+# target to generate assembly for a file
+find_histogram.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/CV_Project.dir/build.make CMakeFiles/CV_Project.dir/find_histogram.cpp.s
+.PHONY : find_histogram.cpp.s
+
 main.o: main.cpp.o
 .PHONY : main.o
 
@@ -210,6 +234,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... CV_Project"
+	@echo "... find_histogram.o"
+	@echo "... find_histogram.i"
+	@echo "... find_histogram.s"
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"

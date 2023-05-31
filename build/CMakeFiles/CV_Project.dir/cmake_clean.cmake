@@ -1,4 +1,6 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/CV_Project.dir/find_histogram.cpp.o"
+  "CMakeFiles/CV_Project.dir/find_histogram.cpp.o.d"
   "CMakeFiles/CV_Project.dir/main.cpp.o"
   "CMakeFiles/CV_Project.dir/main.cpp.o.d"
   "CMakeFiles/CV_Project.dir/segment_plates.cpp.o"

@@ -81,12 +81,12 @@ clean: CMakeFiles/CV_Project.dir/clean
 CMakeFiles/CV_Project.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/CV_Project.dir/build.make CMakeFiles/CV_Project.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/CV_Project.dir/build.make CMakeFiles/CV_Project.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/ksenija/CLionProjects/CV_Project/build/CMakeFiles --progress-num=1,2,3,4 "Built target CV_Project"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/ksenija/CLionProjects/CV_Project/build/CMakeFiles --progress-num=1,2,3,4,5 "Built target CV_Project"
 .PHONY : CMakeFiles/CV_Project.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/CV_Project.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/ksenija/CLionProjects/CV_Project/build/CMakeFiles 4
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/ksenija/CLionProjects/CV_Project/build/CMakeFiles 5
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/CV_Project.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/ksenija/CLionProjects/CV_Project/build/CMakeFiles 0
 .PHONY : CMakeFiles/CV_Project.dir/rule
