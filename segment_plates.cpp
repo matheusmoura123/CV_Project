@@ -1,5 +1,6 @@
 #include "segment_plates.h"
 #include "sift_matching.h"
+#include "find_histogram.h"
 
 
 Mat segment_plates(const Mat& img) {
@@ -26,11 +27,12 @@ Mat segment_plates(const Mat& img) {
                  Gaus.cols/3, 200, 50, 160, 500);
 
 
-
-    Mat mask(img.rows, img.cols,CV_8UC3, Scalar(0,0,0));
+    vector<Mat> plates;
+    vector<Mat> histograms;
 
     for(size_t i = 0; i < circles.size(); i++)
     {
+        Mat mask(img.rows, img.cols,CV_8UC3, Scalar(0,0,0));
         Vec3i c = circles[i];
         //Point center = Point(c[0], c[1]);
         int radius = c[2];
@@ -48,94 +50,23 @@ Mat segment_plates(const Mat& img) {
                 }
             }
         }
+        find_histogram(mask);
 
-        cvtColor(mask, mask, COLOR_BGR2GRAY);
+        Mat segmented = mask.clone();
 
-        Ptr<MSER> mserEXTR = MSER::create(2,10,10000,5);
+        segment_hsv(mask, segmented,10, 200, 100);
 
-        vector<Rect> food;
-        vector<vector<cv::Point>> mserContours;
-        mserEXTR ->detectRegions(mask,mserContours,food);
-
-        for (vector<cv::Point> v : mserContours){
-            for (cv::Point p : v){
-                mask.at<uchar>(p.y, p.x) = 255;
-                // mask.at<Vec3b>(p.y, p.x)[1] = 255;
-                // mask.at<Vec3b>(p.y, p.x)[2] = 255;
-            }
-        }
+        plates.push_back(mask);
+        //histograms.push_back(histogram);
 
         imshow("Detected circles", mask);
         waitKey();
-
     }
 
+   // Mat histogram = find_histogram(plates[0]);
 
-    //GaussianBlur(mask, mask,Size(5,5), 5, 5);
-
-    /*
-    Mat mask2 = mask.clone();
-
-    bilateralFilter(mask, mask2, 7, 500, 1);
-
-    */
-
-    //cvtColor(mask, mask, COLOR_BGR2GRAY);
-
-
-    //GaussianBlur(mask, mask,Size(5,5), 5, 5);
-
-    /*
-
-    normalize(mask, mask, 0, 255, NORM_MINMAX,-1, noArray());
-
-
-    threshold(mask, binaryImg, 0, 255, THRESH_OTSU);
-     */
-
-
-    /*
-    cvtColor(mask, mask, COLOR_BGR2GRAY);
-
-    normalize(mask, mask, 0, 255, NORM_MINMAX,-1, noArray());
-
-    Ptr<MSER> mserEXTR = MSER::create(5,50,10000,1.5);
-
-    vector<Rect> food;
-    vector<vector<cv::Point>> mserContours;
-    mserEXTR ->detectRegions(mask,mserContours,food);
-
-    for (vector<cv::Point> v : mserContours){
-        for (cv::Point p : v){
-            mask.at<uchar>(p.y, p.x) = 255;
-           // mask.at<Vec3b>(p.y, p.x)[1] = 255;
-           // mask.at<Vec3b>(p.y, p.x)[2] = 255;
-        }
-    }
-
-     */
-   // Mat kernel = getStructuringElement(MORPH_RECT, Size(5,5));
- //   dilate(mask, mask, kernel);
-
-
-
-
-   // Mat kernel = getStructuringElement(MORPH_RECT, Size(5,5));
- //   dilate(mask, mask, kernel);
-
-
-    //Canny(mask, mask, 100, 150);
-
-
-    /*
-    GaussianBlur(mask, mask,Size(5,5), 5, 5);
-    normalize(mask, mask, 0, 512, NORM_MINMAX,-1, noArray());
-    Mat mask2 = segment_hsv(mask);
-
-     */
-
-    //imshow("Detected circles", mask2);
-//    waitKey();
+    //imshow("Detected circles", plates[0]);
+    //waitKey();
 
 
     return theCircles;
@@ -169,7 +100,50 @@ Mat get_contours(const Mat& img) {
 }
 
 
-Mat segment_hsv(const Mat& input) {
+int segment_hsv(const Mat& src, Mat &dst, int T_hue, int T_sat, int T_value) {
+    Mat img_hsv;
+
+    cvtColor(src, img_hsv, COLOR_BGR2HSV);
+
+
+    for (int i = 0; i < dst.rows; ++i)
+    {
+        for (int j = 0; j < dst.cols; ++j)
+        {
+
+            int hue = int(img_hsv.at<Vec3b>(i,j)[0]);
+            int saturation = int(img_hsv.at<Vec3b>(i,j)[1]);
+            int value = int(img_hsv.at<Vec3b>(i,j)[2]);
+
+
+            if(abs(hue - T_hue) < 30 && abs(saturation - T_sat) < 60   && abs(value - T_value) < 150) {
+                dst.at<Vec3b>(i,j)[0] = 255;
+                dst.at<Vec3b>(i,j)[1] = 255;
+                dst.at<Vec3b>(i,j)[2] = 255;
+            }
+            else {
+                dst.at<Vec3b>(i,j)[0] = 0;
+                dst.at<Vec3b>(i,j)[1] = 0;
+                dst.at<Vec3b>(i,j)[2] = 0;
+            }
+        }
+    }
+
+    Mat kernel = getStructuringElement(MORPH_ELLIPSE, Size(3,3));
+    erode(dst, dst, kernel);
+    dilate(dst, dst, kernel);
+
+    imshow("hsv img", dst);
+    waitKey(0);
+
+
+    return 0;
+
+}
+
+
+
+Mat contour_hsv(const Mat& input) {
 
     Mat hsv;
     cvtColor(input,hsv,COLOR_BGR2HSV);
@@ -223,4 +197,88 @@ Mat segment_hsv(const Mat& input) {
 
     return outputH;
 }
+
+
+
+
+//---------------GRAVE OF DEAD IDEAS--------------------
+
+//find_histogram(mask);
+
+//GaussianBlur(mask, mask,Size(5,5), 5, 5);
+
+/*
+Mat mask2 = mask.clone();
+
+bilateralFilter(mask, mask2, 7, 500, 1);
+
+*/
+
+//cvtColor(mask, mask, COLOR_BGR2GRAY);
+
+
+//GaussianBlur(mask, mask,Size(5,5), 5, 5);
+
+/*
+
+normalize(mask, mask, 0, 255, NORM_MINMAX,-1, noArray());
+
+
+threshold(mask, binaryImg, 0, 255, THRESH_OTSU);
+ */
+
+/*
+
+    cvtColor(mask, mask, COLOR_BGR2GRAY);
+    */
+
+/*
+    Ptr<MSER> mserEXTR = MSER::create(2,50,10000,1.5);
+
+    vector<Rect> food;
+    vector<vector<cv::Point>> mserContours;
+    mserEXTR ->detectRegions(mask,mserContours,food);
+
+    for (vector<cv::Point> v : mserContours){
+        for (cv::Point p : v){
+            mask.at<Vec3b>(p.y, p.x)[0] = 0;
+            mask.at<Vec3b>(p.y, p.x)[1] = 0;
+            mask.at<Vec3b>(p.y, p.x)[2] = 0;
+        }
+    }
+
+    GaussianBlur(mask, mask,Size(5,5), 2, 2);
+    normalize(mask, mask, 0, 1023, NORM_MINMAX,-1, noArray());
+
+    */
+
+/*
+    Mat mask2 = segment_hsv(mask);
+
+    erode(mask2, mask2, Mat());
+
+    dilate(mask2, mask2, Mat());
+    dilate(mask2, mask2, Mat());
+    dilate(mask2, mask2, Mat());
+    */
+
+// Mat kernel = getStructuringElement(MORPH_RECT, Size(5,5));
+//   dilate(mask, mask, kernel);
+
+
+
+
+// Mat kernel = getStructuringElement(MORPH_RECT, Size(5,5));
+//   dilate(mask, mask, kernel);
+
+
+//Canny(mask, mask, 100, 150);
+
+
+/*
+GaussianBlur(mask, mask,Size(5,5), 5, 5);
+normalize(mask, mask, 0, 512, NORM_MINMAX,-1, noArray());
+Mat mask2 = segment_hsv(mask);
+
+ */
 
