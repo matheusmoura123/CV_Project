@@ -10,6 +10,8 @@
 #include <math.h>
 #include <stdio.h>
 
+#include "segment_plates.h"
+
 using namespace std;
 using namespace cv;
 using namespace cv::ml;
@@ -164,10 +166,10 @@ double testData(const string& className, int imageNumbers, int classLable) {
     return (double)correctTests / allTests;
 }
 
-void predictImg(const string& path, const string& className, int classLable) {
+void predictImg(const Mat& img, const string& className, int classLable) {
     Mat grayimg;
     Ptr<SIFT> siftptr = SIFT::create();
-    Mat img = imread(path);
+    //Mat img = imread(path);
     cvtColor(img, grayimg, COLOR_BGR2GRAY);
     vector<KeyPoint> keypoints;
     Mat descriptors;
@@ -177,7 +179,7 @@ void predictImg(const string& path, const string& className, int classLable) {
     if (svm->predict(dvector) == classLable) {
         cout << "-> The image has " << className << endl;
     }else {
-        cout << "-> The image doesn't has " << className << endl;
+        cout << "-> The image doesn't have " << className << endl;
     }
     namedWindow("Tested Img");
     imshow("Tested Img",grayimg);
@@ -247,8 +249,10 @@ int main(int argc, char **argv)
     cout << "-> Test completed in " << (clock() - sTime) / double(CLOCKS_PER_SEC) << " Second(s)." << endl;
      */
 
-
-    predictImg(argv[1] , "beans", 1);
+    Mat img1, seg, dst;
+    img1 = imread(argv[1]);
+    seg = segment_plates(img1, dst);
+    predictImg(dst , "beans", 1);
 
     //imwrite("sift_result.jpg", output);
 

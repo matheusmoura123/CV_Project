@@ -12,7 +12,7 @@ using namespace std;
 #ifndef CV_PROJECT_SEGMENT_PLATES_H
 #define CV_PROJECT_SEGMENT_PLATES_H
 
-Mat segment_plates(const Mat& img);
+Mat segment_plates(const Mat& img, Mat& dst);
 
 Mat get_contours(const Mat& img);
 

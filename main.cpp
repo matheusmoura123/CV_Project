@@ -8,8 +8,9 @@ int main(int argc, char** argv) {
    //img2 = imread(argv[2]);
 
     //sift_matching(img1,img2);
+    Mat dst;
 
-    seg = segment_plates(img1);
+    seg = segment_plates(img1, dst);
 
 
    // imshow("Original", img);

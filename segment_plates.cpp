@@ -3,7 +3,7 @@
 #include "find_histogram.h"
 
 
-Mat segment_plates(const Mat& img) {
+Mat segment_plates(const Mat& img, Mat& dst) {
 
     Mat gray, Gaus, theCircles, binaryImg;
 
@@ -58,7 +58,9 @@ Mat segment_plates(const Mat& img) {
 
         plates.push_back(mask);
         //histograms.push_back(histogram);
-
+        if (i == 0){
+            dst = mask.clone();
+        }
         imshow("Detected circles", mask);
         waitKey();
     }
