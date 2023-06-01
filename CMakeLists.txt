@@ -12,3 +12,6 @@ target_link_libraries( ${PROJECT_NAME} ${OpenCV_LIBS} )
 
 add_executable(bow ../bow.cpp ../segment_plates.cpp ../segment_plates.h ../sift_matching.cpp ../sift_matching.h ../find_histogram.h ../find_histogram.cpp)
 target_link_libraries(bow ${OpenCV_LIBS} )
+
+add_executable(bow_auto ../bow_auto.cpp ../segment_plates.cpp ../segment_plates.h ../sift_matching.cpp ../sift_matching.h ../find_histogram.h ../find_histogram.cpp)
+target_link_libraries(bow_auto ${OpenCV_LIBS} )

@@ -3,14 +3,14 @@
 
 
 int main(int argc, char** argv) {
-    Mat img1,img2, seg;
+    Mat img1,img2;
+    vector<Mat> seg;
     img1 = imread(argv[1]);
    //img2 = imread(argv[2]);
 
     //sift_matching(img1,img2);
-    Mat dst;
 
-    seg = segment_plates(img1, dst);
+    seg = segment_plates(img1);
 
 
    // imshow("Original", img);

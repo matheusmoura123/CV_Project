@@ -3,10 +3,10 @@
 #include "find_histogram.h"
 
 
-Mat segment_plates(const Mat& img, Mat& dst) {
+vector<Mat> segment_plates(const Mat& img) {
 
-    Mat gray, Gaus, theCircles, binaryImg;
-
+    Mat gray, Gaus, binaryImg;
+    vector<Mat> theCircles;
     cvtColor(img, gray, COLOR_BGR2GRAY);
     GaussianBlur(gray, Gaus,Size(3,3), 1.5, 1.5);
 
@@ -58,11 +58,21 @@ Mat segment_plates(const Mat& img, Mat& dst) {
 
         plates.push_back(mask);
         //histograms.push_back(histogram);
-        if (i == 1){
-            dst = mask(Range(int(c[1])-int(radius),int(c[1])+int(radius)), Range(int(c[0])-int(radius),int(c[0])+int(radius)));
-        }
-        imshow("Detected circles", mask);
-        waitKey();
+
+        //CROPPING PLATES
+        int row0_y, rowf_y, col0_x, colf_x;
+        if (int(c[1])-int(radius) <= 0) row0_y = 0;
+        else row0_y = int(c[1])-int(radius);
+        if (int(c[1])+int(radius) >= mask.rows) rowf_y = mask.rows;
+        else rowf_y = int(c[1])+int(radius);
+        if (int(c[0])-int(radius) <= 0) col0_x = 0;
+        else col0_x = int(c[0])-int(radius);
+        if (int(c[0])+int(radius) >= mask.cols) colf_x = mask.cols;
+        else colf_x = int(c[0])+int(radius);
+
+        theCircles.push_back(mask(Range(row0_y, rowf_y), Range(col0_x, colf_x)));
+        //imshow("Detected circles", mask);
+        //waitKey();
     }
 
    // Mat histogram = find_histogram(plates[0]);
@@ -135,8 +145,8 @@ int segment_hsv(const Mat& src, Mat &dst, int T_hue, int T_sat, int T_value) {
     erode(dst, dst, kernel);
     dilate(dst, dst, kernel);
 
-    imshow("hsv img", dst);
-    waitKey(0);
+    //imshow("hsv img", dst);
+    //waitKey(0);
 
 
     return 0;

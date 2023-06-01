@@ -32,11 +32,11 @@ int sift_matching(const Mat& img1, const Mat& img2){
     const float ratio_thresh = 0.7f;
     std::vector<DMatch> good_matches;
 
-    for (size_t i = 0; i < matches.size(); i++)
+    for (auto & matche : matches)
     {
-        if (matches[i][0].distance < ratio_thresh * matches[i][1].distance)
+        if (matche[0].distance < ratio_thresh * matche[1].distance)
         {
-            good_matches.push_back(matches[i][0]);
+            good_matches.push_back(matche[0]);
         }
     }
 
