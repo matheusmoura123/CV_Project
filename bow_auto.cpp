@@ -17,7 +17,8 @@ using namespace cv;
 using namespace cv::ml;
 
 const string DATASET_PATH = "../FoodCategories/";
-const string IMAGE_EXT = ".png";
+const string TRAY_PATH = "../Food_leftover_dataset/tray";
+const string IMAGE_EXT = ".jpg";
 const int NUMBER_CLASSES = 17;
 const int DICT_SIZE = 80*NUMBER_CLASSES;	//80 word per class
 const int TESTING_PERCENT_PER = 7;
@@ -169,6 +170,14 @@ void predictImg(const Mat& img) {
     waitKey(0);
 }
 
+void converter(const string& className, int imageNumbers){
+    for (int i = 1; i <= imageNumbers; i++) {
+        const char* path = DATASET_PATH + className + "/" + className + to_string(i) + ".png";
+        remove(path);
+    }
+
+}
+
 int main(int argc, char **argv)
 {
 
@@ -190,13 +199,19 @@ int main(int argc, char **argv)
     Ptr<TrainData> td = TrainData::create(inputData, ROW_SAMPLE, inputDataLables);
     svm->train(td);
 
-    string tray_num, image_num, plate_num;
+    int tray_num, image_num, plate_num;
     cout << "Tray: ";
     cin >> tray_num;
-    if (tray > 0){
-        if (atoi(argv[2]) > dishes.size()) index = dishes.size();
-        else index = atoi(argv[2]);
-    }
+    if (tray_num <= 0 or tray_num > 8) tray_num = 1;
+    cout << "Image Number: ";
+    cin >> image_num;
+    if (image_num <= 0 or image_num > 4) image_num = 1;
+
+
+    for (int i = 0; i < NUMBER_CLASSES; ++i) {
+        converter(foodCategories[i].className, foodCategories[i].imageNumbers);
+    };
+
 
     Mat img1, dst;
     vector<Mat> dishes;

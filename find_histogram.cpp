@@ -71,7 +71,7 @@ vector<float> find_histogram(const Mat& src) {
     }
 
     sort(max_values.begin(), max_values.end(), greater<>());
-    cout << max_values[0] << endl;
+    //cout << max_values[0] << endl;
 
     //namedWindow("calcHist Demo");
     //imshow("calcHist Demo", histImage);
