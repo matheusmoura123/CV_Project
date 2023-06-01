@@ -1,0 +1,11 @@
+
+    HOW TO RUN OUR PROJECT:
+        #1 - If there is any "build" directory -> delete "build" directory
+        #2 - Then, at the terminal, run the following commands:
+            mkdir build
+            cd build
+            cmake ..
+            make
+        #3 - To run the "BagOfWords" code (for these codes there is no need to pass arguments):
+            #3.1 - at the terminal run ./bow_prep ONLY ONCE (it will take a while to run, don't worry);
+            #3.2 - at the terminal run ./bow_auto how many times you want.

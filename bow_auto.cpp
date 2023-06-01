@@ -159,11 +159,9 @@ void predictImg(const Mat& img, Mat& dst, string& className) {
     Mat dvector = getDataVector(descriptors);
     string predicted_dish;
     float prediction = svm->predict(dvector);
-    //cout << "Predicted category: " << prediction << endl;
     for (const auto & foodCategorie : foodCategories) {
         if (prediction == float(foodCategorie.classLable)){
             predicted_dish = foodCategorie.className;
-            //cout << "The plate has " << foodCategorie.className << "." << endl;
         }
     };
 
@@ -196,11 +194,15 @@ int main(int argc, char **argv)
     int option = 2;
     cout << "[1] Run all trays" << endl;
     cout << "[2] Run specific trays" << endl;
+    cout << "Option: ";
     cin >> option;
+    cout << "---------------------------------------------------" << endl;
 
     if (option == 1){
+        cout << "Press [ANY] key to keep going or [ESC] to exit." << endl;
         for (int i = 0; i < NUMBER_TRAYS; ++i) {
             for (int j = 0; j < 4; ++j) {
+                int key;
                 string file_name;
                 switch(j) {
                     case 0:
@@ -227,7 +229,8 @@ int main(int argc, char **argv)
                 namedWindow(window_name_img, WINDOW_NORMAL);
                 resizeWindow(window_name_img, 600, 400);
                 imshow(window_name_img, img);
-                waitKey(0);
+                key = waitKeyEx(0);
+                if (key == 1048603) return(0);
 
                 Mat img_to_predict, dst;
                 vector<Mat> predictions, dishes;
@@ -246,7 +249,8 @@ int main(int argc, char **argv)
                     namedWindow(window_name, WINDOW_NORMAL);
                     resizeWindow(window_name, 400, 400);
                     imshow(window_name, dst);
-                    waitKey(0);
+                    key = waitKeyEx(0);
+                    if (key == 1048603) return(0);
                 }
                 destroyAllWindows();
             }
@@ -256,12 +260,15 @@ int main(int argc, char **argv)
     }
     else if(option == 2){
         while (!EXIT) {
+            int key;
             int tray_num, image_num;
             cout << "Tray: ";
             cin >> tray_num;
             if (tray_num <= 0 or tray_num > 8) tray_num = 1;
             cout << "Image Number {0, 1, 2, 3}: ";
             cin >> image_num;
+            cout << "Press [ANY] key to keep going or [ESC] to exit." << endl;
+            cout << "---------------------------------------------------" << endl;
             string file_name;
             switch(image_num) {
                 case 0:
@@ -288,7 +295,10 @@ int main(int argc, char **argv)
             namedWindow(window_name_img, WINDOW_NORMAL);
             resizeWindow(window_name_img, 600, 400);
             imshow(window_name_img, img);
-            waitKey(0);
+            moveWindow(window_name_img, 500, 500);
+            key = waitKeyEx(0);
+            if (key == 1048603) return(0); //if press ESC end program
+
 
             Mat img_to_predict, dst;
             vector<Mat> predictions, dishes;
@@ -307,16 +317,11 @@ int main(int argc, char **argv)
                 namedWindow(window_name, WINDOW_NORMAL);
                 resizeWindow(window_name, 400, 400);
                 imshow(window_name, dst);
-                waitKey(0);
+                moveWindow(window_name, 500, 500);
+                key = waitKeyEx(0);
+                if (key == 1048603) return(0);
             }
-
-            cout << "Press any key to go again or [ESC] to exit." << endl;
-            cout << " " << endl;
-            cout << "----------------------------------------------------------" << endl;
-
-            int key = waitKeyEx(0);
             destroyAllWindows();
-            if (key == 1048603) EXIT = true;
         }
     }
     else return(0);

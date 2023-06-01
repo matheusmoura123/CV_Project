@@ -17,8 +17,8 @@ using namespace cv;
 using namespace cv::ml;
 
 const string DATASET_PATH = "../FoodCategories/";
-const string IMAGE_EXT = ".png";
-const int NUMBER_CLASSES = 17;
+const string IMAGE_EXT = ".jpg";
+const int NUMBER_CLASSES = 18;
 const int DICT_SIZE = 80*NUMBER_CLASSES;	//80 word per class
 const int TESTING_PERCENT_PER = 7;
 
@@ -203,31 +203,6 @@ double testData(const string& className, int imageNumbers, int classLable) {
     return (double)correctTests / allTests;
 }
 
-void predictImg(const Mat& img) {
-    Mat grayimg;
-    Ptr<SIFT> siftptr = SIFT::create();
-    //Mat img = imread(path);
-    cvtColor(img, grayimg, COLOR_BGR2GRAY);
-    //grayimg = img.clone();
-    vector<KeyPoint> keypoints;
-    Mat descriptors;
-    siftptr->detect(grayimg, keypoints);
-    siftptr->compute(grayimg, keypoints, descriptors);
-    Mat dvector = getDataVector(descriptors);
-    float prediction = svm->predict(dvector);
-    cout << "Predicted category: " << prediction << endl;
-    for (const auto & foodCategorie : foodCategories) {
-        if (prediction == float(foodCategorie.classLable)){
-            cout << "The plate has " << foodCategorie.className << "." << endl;
-        }
-    };
-    Mat out;
-    drawKeypoints(img, keypoints, out);
-    namedWindow("Predicted Img");
-    imshow("Predicted Img",out);
-    waitKey(0);
-}
-
 int main(int argc, char **argv)
 {
     cout << "Object detector started." << endl;
@@ -237,19 +212,11 @@ int main(int argc, char **argv)
     for (int i = 0; i < NUMBER_CLASSES; ++i) {
         readDetectComputeimage(foodCategories[i].className, foodCategories[i].imageNumbers, foodCategories[i].classLable);
     };
-    /*
-    for (const auto & foodCategorie : foodCategories) {
-        readDetectComputeimage(foodCategorie.className, foodCategorie.imageNumbers, foodCategorie.classLable);
-    };
-    */
 
-    //readDetectComputeimage("lettuce", 15, 2);
-    //readDetectComputeimage("crab", 75, 3);
-    //readDetectComputeimage("trilobite", 86, 4);
     cout << "-> Reading, Detect and Describe input in " << (clock() - sTime) / double(CLOCKS_PER_SEC) << " Second(s)." << endl;
 
     int clusterCount = DICT_SIZE, attempts = 5, iterationNumber = 1e4;
-    /*
+
     sTime = clock();
     cout << "Running kmeans..." << endl;
     kmeans(allDescriptors, clusterCount, kLabels, TermCriteria(TermCriteria::MAX_ITER|TermCriteria::EPS, iterationNumber, 1e-4), attempts, KMEANS_PP_CENTERS, kCenters);
@@ -258,8 +225,8 @@ int main(int argc, char **argv)
     FileStorage storage("kmeans_FoodCategories.yml", FileStorage::WRITE);
     storage << "kLabels" << kLabels << "kCenters" << kCenters;
     storage.release();
-    */
 
+    /*
     sTime = clock();
     cout << "Loading kmeans data..." << endl;
     FileStorage storage("kmeans_FoodCategories.yml", FileStorage::READ);
@@ -267,17 +234,21 @@ int main(int argc, char **argv)
     storage["kCenters"] >> kCenters;
     storage.release();
     cout << "-> kmeans data loaded in " << (clock() - sTime) / double(CLOCKS_PER_SEC) << " Second(s)." << endl;
+    */
 
-
+    /*
     sTime = clock();
     cout << "Finding histograms..." << endl;
     getHistogramFast();
+     */
     /*getHistogram("starfish", 86, 1);
     getHistogram("sunflower", 85, 2);
     getHistogram("crab", 75, 3);
     getHistogram("trilobite", 86, 4);*/
-    cout << "-> Histograms find in " << (clock() - sTime) / double(CLOCKS_PER_SEC) << " Second(s)." << endl;
+    //cout << "-> Histograms find in " << (clock() - sTime) / double(CLOCKS_PER_SEC) << " Second(s)." << endl;
 
+
+    /*
     sTime = clock();
     cout << "SVM training..." << endl;
     // Set up SVM's parameters
@@ -289,6 +260,7 @@ int main(int argc, char **argv)
     Ptr<TrainData> td = TrainData::create(inputData, ROW_SAMPLE, inputDataLables);
     svm->train(td);
     cout << "-> SVM trained in " << (clock() - sTime) / double(CLOCKS_PER_SEC) << " Second(s)." << endl;
+    */
 
     /*
     sTime = clock();
@@ -299,20 +271,6 @@ int main(int argc, char **argv)
     //cout << "-> " << (float)(testData("trilobite", 86, 4) * 100) << "% accuracy in 'trilobite' class." << endl;
     cout << "-> Test completed in " << (clock() - sTime) / double(CLOCKS_PER_SEC) << " Second(s)." << endl;
      */
-
-    Mat img1, dst;
-    vector<Mat> dishes;
-    img1 = imread(argv[1]);
-    dishes = segment_plates(img1);
-    int index = 1;
-    if (argc > 2){
-        if (atoi(argv[2]) > dishes.size()) index = dishes.size();
-        else index = atoi(argv[2]);
-    }
-    dst = dishes[index-1].clone();
-    predictImg(dst);
-
-    //imwrite("sift_result.jpg", output);
 
     return(0);
 }
