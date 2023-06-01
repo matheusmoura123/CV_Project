@@ -19,7 +19,7 @@ using namespace cv::ml;
 const string DATASET_PATH = "../FoodCategories/";
 const string TRAY_PATH = "../Food_leftover_dataset/tray";
 const string IMAGE_EXT = ".jpg";
-const int NUMBER_CLASSES = 17;
+const int NUMBER_CLASSES = 18;
 const int DICT_SIZE = 80*NUMBER_CLASSES;	//80 word per class
 const int TESTING_PERCENT_PER = 7;
 
@@ -172,15 +172,12 @@ void predictImg(const Mat& img) {
 
 void converter(const string& className, int imageNumbers){
     for (int i = 1; i <= imageNumbers; i++) {
-        const char* path = DATASET_PATH + className + "/" + className + to_string(i) + ".png";
-        remove(path);
+        imwrite(DATASET_PATH + className + "/" + className + to_string(i) + ".jpg", imread(DATASET_PATH + className + "/" + className + to_string(i) + ".png"));
     }
-
 }
 
 int main(int argc, char **argv)
 {
-
     for (int i = 0; i < NUMBER_CLASSES; ++i) {
         readDetectComputeimage(foodCategories[i].className, foodCategories[i].imageNumbers, foodCategories[i].classLable);
     };
@@ -206,12 +203,6 @@ int main(int argc, char **argv)
     cout << "Image Number: ";
     cin >> image_num;
     if (image_num <= 0 or image_num > 4) image_num = 1;
-
-
-    for (int i = 0; i < NUMBER_CLASSES; ++i) {
-        converter(foodCategories[i].className, foodCategories[i].imageNumbers);
-    };
-
 
     Mat img1, dst;
     vector<Mat> dishes;
