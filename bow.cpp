@@ -7,8 +7,8 @@
 #include <sstream>
 #include <iostream>
 #include <iomanip>
-#include <math.h>
-#include <stdio.h>
+#include <cmath>
+#include <cstdio>
 
 #include "segment_plates.h"
 
@@ -20,7 +20,6 @@ const string DATASET_PATH = "../FoodCategories/";
 const string IMAGE_EXT = ".png";
 const int DICT_SIZE = 160;	//80 word per class
 const int TESTING_PERCENT_PER = 7;
-const vector<string> CLASS_NAMES = {"beans", "lettuce"};
 
 /*
 inline bool fileExists(const std::string& name) {
@@ -28,6 +27,38 @@ inline bool fileExists(const std::string& name) {
    return (stat(name.c_str(), &buffer) == 0);
 }
 */
+
+class food {
+    public:
+        string className;
+        int imageNumbers;
+        int classLable;
+        food(string x, int y, int z) { // Constructor with parameters
+            className = x;
+            imageNumbers = y;
+            classLable = z;
+        }
+};
+
+const vector<food> foodCategories{
+                         {"beans", 13, 1},
+                         {"bread", 12, 2},
+                         {"carrot", 6, 3},
+                         {"fish", 10, 4},
+                         {"lettuce", 15, 5},
+                         {"pasta", 12, 6},
+                         {"pasta_clams", 8, 7},
+                         {"pepper", 2, 8},
+                         {"pesto", 4, 9},
+                         {"pomodoro", 5, 10},
+                         {"pork", 9, 11},
+                         {"potato", 13, 12},
+                         {"rabbit", 12, 13},
+                         {"ragu", 2, 14},
+                         {"rice", 7, 15},
+                         {"seafood", 5, 16},
+                         {"tomato", 10, 17}
+                    };
 
 Mat allDescriptors;
 vector<Mat> allDescPerImg;
@@ -51,6 +82,7 @@ void readDetectComputeimage(const string& className, int imageNumbers, int class
         if (fileExists(DATASET_PATH + className + "/" + className + to_string(i) + IMAGE_EXT)) {
         */
         cvtColor(imread(DATASET_PATH + className + "/" + className + to_string(i) + IMAGE_EXT), grayimg, COLOR_BGR2GRAY);
+        //grayimg = imread(DATASET_PATH + className + "/" + className + to_string(i) + IMAGE_EXT);
         vector<KeyPoint> keypoints;
         Mat descriptors;
 
@@ -109,6 +141,7 @@ void getHistogram(const string& className, int imageNumbers, int classLable) {
         if (fileExists(DATASET_PATH + className + "/" + className + to_string(i) + IMAGE_EXT)) {
         */
         cvtColor(imread(DATASET_PATH + className + "/" + className + to_string(i) + IMAGE_EXT), grayimg, COLOR_BGR2GRAY);
+        //grayimg = imread(DATASET_PATH + className + "/" + className + to_string(i) + IMAGE_EXT);
         vector<KeyPoint> keypoints;
         Mat descriptors;
 
@@ -150,6 +183,7 @@ double testData(const string& className, int imageNumbers, int classLable) {
         if (fileExists(DATASET_PATH + className + "/" + className + to_string(i) + IMAGE_EXT)) {
         */
         cvtColor(imread(DATASET_PATH + className + "/" + className + to_string(i) + IMAGE_EXT), grayimg, COLOR_BGR2GRAY);
+        //grayimg = imread(DATASET_PATH + className + "/" + className + to_string(i) + IMAGE_EXT);
         vector<KeyPoint> keypoints;
         Mat descriptors;
 
@@ -166,24 +200,39 @@ double testData(const string& className, int imageNumbers, int classLable) {
     return (double)correctTests / allTests;
 }
 
-void predictImg(const Mat& img, const string& className, int classLable) {
+void predictImg(const Mat& img) {
     Mat grayimg;
     Ptr<SIFT> siftptr = SIFT::create();
     //Mat img = imread(path);
     cvtColor(img, grayimg, COLOR_BGR2GRAY);
+    //grayimg = img.clone();
     vector<KeyPoint> keypoints;
     Mat descriptors;
     siftptr->detect(grayimg, keypoints);
     siftptr->compute(grayimg, keypoints, descriptors);
     Mat dvector = getDataVector(descriptors);
-    if (svm->predict(dvector) == classLable) {
+    float prediction = svm->predict(dvector);
+    cout << "Predicted category: " << prediction << endl;
+    for (const auto & foodCategorie : foodCategories) {
+        if (prediction == float(foodCategorie.classLable)){
+            cout << "The plate has " << foodCategorie.className << "." << endl;
+        }
+    };
+    Mat out;
+    drawKeypoints(grayimg, keypoints, out);
+    namedWindow("Tested Img");
+    imshow("Tested Img",out);
+    waitKey(0);
+
+
+
+    /*
+    if (prediction == classLable) {
         cout << "-> The image has " << className << endl;
     }else {
         cout << "-> The image doesn't have " << className << endl;
     }
-    namedWindow("Tested Img");
-    imshow("Tested Img",grayimg);
-    waitKey(0);
+    */
 }
 
 int main(int argc, char **argv)
@@ -192,8 +241,16 @@ int main(int argc, char **argv)
     clock_t sTime = clock();
     cout << "Reading inputs..." << endl;
 
-    readDetectComputeimage("beans", 13, 1);
-    readDetectComputeimage("lettuce", 15, 2);
+    for (int i = 0; i < 10; ++i) {
+        readDetectComputeimage(foodCategories[i].className, foodCategories[i].imageNumbers, foodCategories[i].classLable);
+    };
+    /*
+    for (const auto & foodCategorie : foodCategories) {
+        readDetectComputeimage(foodCategorie.className, foodCategorie.imageNumbers, foodCategorie.classLable);
+    };
+    */
+
+    //readDetectComputeimage("lettuce", 15, 2);
     //readDetectComputeimage("crab", 75, 3);
     //readDetectComputeimage("trilobite", 86, 4);
     cout << "-> Reading, Detect and Describe input in " << (clock() - sTime) / double(CLOCKS_PER_SEC) << " Second(s)." << endl;
@@ -252,7 +309,7 @@ int main(int argc, char **argv)
     Mat img1, seg, dst;
     img1 = imread(argv[1]);
     seg = segment_plates(img1, dst);
-    predictImg(dst , "beans", 1);
+    predictImg(dst);
 
     //imwrite("sift_result.jpg", output);
 

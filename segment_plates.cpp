@@ -58,8 +58,8 @@ Mat segment_plates(const Mat& img, Mat& dst) {
 
         plates.push_back(mask);
         //histograms.push_back(histogram);
-        if (i == 0){
-            dst = mask.clone();
+        if (i == 1){
+            dst = mask(Range(int(c[1])-int(radius),int(c[1])+int(radius)), Range(int(c[0])-int(radius),int(c[0])+int(radius)));
         }
         imshow("Detected circles", mask);
         waitKey();
