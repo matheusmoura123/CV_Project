@@ -199,76 +199,127 @@ int main(int argc, char **argv)
     cin >> option;
 
     if (option == 1){
-        for (int i = 0; i < NUMBER_OF_TRAYS; ++i) {
+        for (int i = 0; i < NUMBER_TRAYS; ++i) {
+            for (int j = 0; j < 4; ++j) {
+                string file_name;
+                switch(j) {
+                    case 0:
+                        file_name = "food_image";
+                        break;
+                    case 1:
+                        file_name = "leftover1";
+                        break;
+                    case 2:
+                        file_name = "leftover2";
+                        break;
+                    case 3:
+                        file_name = "leftover3";
+                        break;
+                    default:
+                        file_name = "food_image";
+                }
+
+                Mat img;
+                //img1 = imread(argv[1]);
+                img = imread(TRAY_PATH + to_string(i+1) + "/" + file_name + IMAGE_EXT);
+
+                string window_name_img = "Tray " + to_string(i+1) + " " + file_name;
+                namedWindow(window_name_img, WINDOW_NORMAL);
+                resizeWindow(window_name_img, 600, 400);
+                imshow(window_name_img, img);
+                waitKey(0);
+
+                Mat img_to_predict, dst;
+                vector<Mat> predictions, dishes;
+                string predicted;
+                vector<string> predicted_classes;
+                dishes = segment_plates(img);
+                int k=0;
+                for (const auto & dishe : dishes) {
+                    k++;
+                    img_to_predict = dishe.clone();
+                    predictImg(img_to_predict, dst, predicted);
+                    predictions.push_back(dst);
+                    predicted_classes.push_back(predicted);
+
+                    string window_name = to_string(k) + ": This image have " + predicted;
+                    namedWindow(window_name, WINDOW_NORMAL);
+                    resizeWindow(window_name, 400, 400);
+                    imshow(window_name, dst);
+                    waitKey(0);
+                }
+                destroyAllWindows();
+            }
 
         }
 
     }
+    else if(option == 2){
+        while (!EXIT) {
+            int tray_num, image_num;
+            cout << "Tray: ";
+            cin >> tray_num;
+            if (tray_num <= 0 or tray_num > 8) tray_num = 1;
+            cout << "Image Number {0, 1, 2, 3}: ";
+            cin >> image_num;
+            string file_name;
+            switch(image_num) {
+                case 0:
+                    file_name = "food_image";
+                    break;
+                case 1:
+                    file_name = "leftover1";
+                    break;
+                case 2:
+                    file_name = "leftover2";
+                    break;
+                case 3:
+                    file_name = "leftover3";
+                    break;
+                default:
+                    file_name = "food_image";
+            }
 
+            Mat img;
+            //img1 = imread(argv[1]);
+            img = imread(TRAY_PATH + to_string(tray_num) + "/" + file_name + IMAGE_EXT);
 
-    while (!EXIT) {
-        int tray_num, image_num;
-        cout << "Tray: ";
-        cin >> tray_num;
-        if (tray_num <= 0 or tray_num > 8) tray_num = 1;
-        cout << "Image Number {0, 1, 2, 3}: ";
-        cin >> image_num;
-        string file_name;
-        switch(image_num) {
-            case 0:
-                file_name = "food_image";
-                break;
-            case 1:
-                file_name = "leftover1";
-                break;
-            case 2:
-                file_name = "leftover2";
-                break;
-            case 3:
-                file_name = "leftover3";
-                break;
-            default:
-                file_name = "food_image";
-        }
-
-        Mat img;
-        //img1 = imread(argv[1]);
-        img = imread(TRAY_PATH + to_string(tray_num) + "/" + file_name + IMAGE_EXT);
-
-        string window_name_img = "Tray " + to_string(tray_num) + " " + file_name;
-        namedWindow(window_name_img, WINDOW_NORMAL);
-        resizeWindow(window_name_img, 600, 400);
-        imshow(window_name_img, img);
-        waitKey(0);
-
-        Mat img_to_predict, dst;
-        vector<Mat> predictions, dishes;
-        string predicted;
-        vector<string> predicted_classes;
-        dishes = segment_plates(img);
-        int i=0;
-        for (const auto & dishe : dishes) {
-            i++;
-            img_to_predict = dishe.clone();
-            predictImg(img_to_predict, dst, predicted);
-            predictions.push_back(dst);
-            predicted_classes.push_back(predicted);
-
-            string window_name = to_string(i) + ": This image have " + predicted;
-            namedWindow(window_name, WINDOW_NORMAL);
-            resizeWindow(window_name, 400, 400);
-            imshow(window_name, dst);
+            string window_name_img = "Tray " + to_string(tray_num) + " " + file_name;
+            namedWindow(window_name_img, WINDOW_NORMAL);
+            resizeWindow(window_name_img, 600, 400);
+            imshow(window_name_img, img);
             waitKey(0);
+
+            Mat img_to_predict, dst;
+            vector<Mat> predictions, dishes;
+            string predicted;
+            vector<string> predicted_classes;
+            dishes = segment_plates(img);
+            int i=0;
+            for (const auto & dishe : dishes) {
+                i++;
+                img_to_predict = dishe.clone();
+                predictImg(img_to_predict, dst, predicted);
+                predictions.push_back(dst);
+                predicted_classes.push_back(predicted);
+
+                string window_name = to_string(i) + ": This image have " + predicted;
+                namedWindow(window_name, WINDOW_NORMAL);
+                resizeWindow(window_name, 400, 400);
+                imshow(window_name, dst);
+                waitKey(0);
+            }
+
+            cout << "Press any key to go again or [ESC] to exit." << endl;
+            cout << " " << endl;
+            cout << "----------------------------------------------------------" << endl;
+
+            int key = waitKeyEx(0);
+            destroyAllWindows();
+            if (key == 1048603) EXIT = true;
         }
-
-        cout << "Press any key to go again or [ESC] to exit." << endl;
-        cout << " " << endl;
-        cout << "----------------------------------------------------------" << endl;
-
-        int key = waitKeyEx(0);
-        destroyAllWindows();
-        if (key == 1048603) EXIT = true;
     }
+    else return(0);
 
     return(0);
 }
