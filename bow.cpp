@@ -41,23 +41,24 @@ class food {
 };
 
 const vector<food> foodCategories{
-                         {"beans", 13, 1},
-                         {"bread", 12, 2},
-                         {"carrot", 6, 3},
-                         {"fish", 10, 4},
-                         {"lettuce", 15, 5},
-                         {"pasta", 12, 6},
-                         {"pasta_clams", 8, 7},
-                         {"pepper", 2, 8},
-                         {"pesto", 4, 9},
-                         {"pomodoro", 5, 10},
-                         {"pork", 9, 11},
-                         {"potato", 13, 12},
-                         {"rabbit", 12, 13},
-                         {"ragu", 2, 14},
-                         {"rice", 7, 15},
-                         {"seafood", 5, 16},
-                         {"tomato", 10, 17}
+                         {"plate", 4, 0},
+				 {"pasta", 12, 17},
+                         {"pesto", 4, 1},
+				 {"beans", 13, 10},
+                         {"pomodoro", 5, 2},
+                         {"ragu", 2, 3},
+                         {"pasta_clams", 8, 4},
+                         {"rice", 7, 5},
+                         {"pork", 9, 6},
+                         {"fish", 10, 7},
+                         {"rabbit", 12, 8},
+                         {"seafood", 5, 9},
+                         {"potato", 13, 11},
+                         {"bread", 12, 13},
+                         {"carrot", 6, 14},
+                         {"lettuce", 15, 12},
+                         {"pepper", 2, 15},
+                         {"tomato", 10, 16}
                     };
 
 Mat allDescriptors;
