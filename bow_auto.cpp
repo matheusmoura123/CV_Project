@@ -22,6 +22,8 @@ const string IMAGE_EXT = ".jpg";
 const int NUMBER_CLASSES = 18;
 const int DICT_SIZE = 80*NUMBER_CLASSES;	//80 word per class
 const int TESTING_PERCENT_PER = 7;
+bool EXIT = false;
+const int NUMBER_TRAYS = 8;
 
 class food {
     public:
@@ -144,7 +146,7 @@ double testData(const string& className, int imageNumbers, int classLable) {
     return (double)correctTests / allTests;
 }
 
-void predictImg(const Mat& img) {
+void predictImg(const Mat& img, Mat& dst, string& className) {
     Mat grayimg;
     Ptr<SIFT> siftptr = SIFT::create();
     cvtColor(img, grayimg, COLOR_BGR2GRAY);
@@ -155,25 +157,20 @@ void predictImg(const Mat& img) {
     siftptr->compute(grayimg, keypoints, descriptors);
 
     Mat dvector = getDataVector(descriptors);
+    string predicted_dish;
     float prediction = svm->predict(dvector);
-    cout << "Predicted category: " << prediction << endl;
+    //cout << "Predicted category: " << prediction << endl;
     for (const auto & foodCategorie : foodCategories) {
         if (prediction == float(foodCategorie.classLable)){
-            cout << "The plate has " << foodCategorie.className << "." << endl;
+            predicted_dish = foodCategorie.className;
+            //cout << "The plate has " << foodCategorie.className << "." << endl;
         }
     };
 
     Mat out;
     drawKeypoints(img, keypoints, out);
-    namedWindow("Predicted Img");
-    imshow("Predicted Img",out);
-    waitKey(0);
-}
-
-void converter(const string& className, int imageNumbers){
-    for (int i = 1; i <= imageNumbers; i++) {
-        imwrite(DATASET_PATH + className + "/" + className + to_string(i) + ".jpg", imread(DATASET_PATH + className + "/" + className + to_string(i) + ".png"));
-    }
+    dst = out.clone();
+    className = predicted_dish;
 }
 
 int main(int argc, char **argv)
@@ -196,25 +193,82 @@ int main(int argc, char **argv)
     Ptr<TrainData> td = TrainData::create(inputData, ROW_SAMPLE, inputDataLables);
     svm->train(td);
 
-    int tray_num, image_num, plate_num;
-    cout << "Tray: ";
-    cin >> tray_num;
-    if (tray_num <= 0 or tray_num > 8) tray_num = 1;
-    cout << "Image Number: ";
-    cin >> image_num;
-    if (image_num <= 0 or image_num > 4) image_num = 1;
+    int option = 2;
+    cout << "[1] Run all trays" << endl;
+    cout << "[2] Run specific trays" << endl;
+    cin >> option;
 
-    Mat img1, dst;
-    vector<Mat> dishes;
-    img1 = imread(argv[1]);
-    dishes = segment_plates(img1);
-    int index = 1;
-    if (argc > 2){
-        if (atoi(argv[2]) > dishes.size()) index = dishes.size();
-        else index = atoi(argv[2]);
+    if (option == 1){
+        for (int i = 0; i < NUMBER_OF_TRAYS; ++i) {
+
+        }
+
     }
-    dst = dishes[index-1].clone();
-    predictImg(dst);
+
+
+    while (!EXIT) {
+        int tray_num, image_num;
+        cout << "Tray: ";
+        cin >> tray_num;
+        if (tray_num <= 0 or tray_num > 8) tray_num = 1;
+        cout << "Image Number {0, 1, 2, 3}: ";
+        cin >> image_num;
+        string file_name;
+        switch(image_num) {
+            case 0:
+                file_name = "food_image";
+                break;
+            case 1:
+                file_name = "leftover1";
+                break;
+            case 2:
+                file_name = "leftover2";
+                break;
+            case 3:
+                file_name = "leftover3";
+                break;
+            default:
+                file_name = "food_image";
+        }
+
+        Mat img;
+        //img1 = imread(argv[1]);
+        img = imread(TRAY_PATH + to_string(tray_num) + "/" + file_name + IMAGE_EXT);
+
+        string window_name_img = "Tray " + to_string(tray_num) + " " + file_name;
+        namedWindow(window_name_img, WINDOW_NORMAL);
+        resizeWindow(window_name_img, 600, 400);
+        imshow(window_name_img, img);
+        waitKey(0);
+
+        Mat img_to_predict, dst;
+        vector<Mat> predictions, dishes;
+        string predicted;
+        vector<string> predicted_classes;
+        dishes = segment_plates(img);
+        int i=0;
+        for (const auto & dishe : dishes) {
+            i++;
+            img_to_predict = dishe.clone();
+            predictImg(img_to_predict, dst, predicted);
+            predictions.push_back(dst);
+            predicted_classes.push_back(predicted);
+
+            string window_name = to_string(i) + ": This image have " + predicted;
+            namedWindow(window_name, WINDOW_NORMAL);
+            resizeWindow(window_name, 400, 400);
+            imshow(window_name, dst);
+            waitKey(0);
+        }
+
+        cout << "Press any key to go again or [ESC] to exit." << endl;
+        cout << " " << endl;
+        cout << "----------------------------------------------------------" << endl;
+
+        int key = waitKeyEx(0);
+        destroyAllWindows();
+        if (key == 1048603) EXIT = true;
+    }
 
     return(0);
 }

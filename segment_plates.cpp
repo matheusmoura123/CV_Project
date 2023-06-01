@@ -38,9 +38,9 @@ vector<Mat> segment_plates(const Mat& img) {
         int radius = c[2];
 
 
-        for (int j = 0; j < mask.rows-1; ++j)
+        for (int j = 0; j < mask.rows; ++j)
         {
-            for (int k= 0; k < mask.cols - 1; ++k)
+            for (int k= 0; k < mask.cols; ++k)
             {
 
                 if((pow((int(c[1])-j),2) + pow((int(c[0])-k),2)) <= (pow((int(radius)),2))) {
