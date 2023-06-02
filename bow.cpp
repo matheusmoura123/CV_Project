@@ -84,37 +84,31 @@ void readDetectComputeimage(const string& className, int imageNumbers, int class
 
 Mat kCenters, kLabels;
 Mat getDataVector(Mat descriptors) {
-    BFMatcher matcher;
-    vector<DMatch> matches;
-    matcher.match(descriptors, kCenters, matches);
+    BFMatcher matcher(NORM_L2);
+    vector<vector<DMatch>> matches;
+    matcher.knnMatch(descriptors, kCenters, matches, 2);
 
+    const float ratio_thresh = 0.7f;
+    vector<DMatch> good_matches;
+
+    for (auto & matche : matches)
+    {
+        if (matche[0].distance < ratio_thresh * matche[1].distance)
+        {
+            good_matches.push_back(matche[0]);
+        }
+    }
     //Make a Histogram of visual words
     Mat datai = Mat::zeros(1, DICT_SIZE, CV_32F);
     int index = 0;
-    for (auto j = matches.begin(); j < matches.end(); j++, index++) {
-        datai.at<float>(0, matches.at(index).trainIdx) = datai.at<float>(0, matches.at(index).trainIdx) + 1;
+    for (auto j = good_matches.begin(); j < good_matches.end(); j++, index++) {
+        datai.at<float>(0, good_matches.at(index).trainIdx) = datai.at<float>(0, good_matches.at(index).trainIdx) + 1;
     }
     return datai;
 }
 
 Mat inputData;
 Mat inputDataLables;
-void getHistogram(const string& className, int imageNumbers, int classLable) {
-    for (int i = 1; i <= imageNumbers; i++) {
-        Mat grayimg;
-        Ptr<SIFT> siftptr = SIFT::create();
-        cvtColor(imread(DATASET_PATH + className + "/" + className + to_string(i) + IMAGE_EXT), grayimg, COLOR_BGR2GRAY);
-
-        vector<KeyPoint> keypoints;
-        Mat descriptors;
-        siftptr->detect(grayimg, keypoints);
-        siftptr->compute(grayimg, keypoints, descriptors);
-
-        inputData.push_back(getDataVector(descriptors));
-        inputDataLables.push_back(Mat(1, 1, CV_32SC1, classLable));
-    }
-}
-
 void getHistogramFast() {
         for (int i = 0; i < allDescPerImgNum; i++) {
             Mat dvec = getDataVector(allDescPerImg[i]);
@@ -125,28 +119,6 @@ void getHistogramFast() {
 }
 
 Ptr<SVM> svm;
-double testData(const string& className, int imageNumbers, int classLable) {
-    int allTests = 0;
-    int correctTests = 0;
-    for (int i = TESTING_PERCENT_PER; i <= imageNumbers; i += TESTING_PERCENT_PER) {
-        float r = 0;
-        Mat grayimg;
-        Ptr<SIFT> siftptr = SIFT::create();
-        cvtColor(imread(DATASET_PATH + className + "/" + className + to_string(i) + IMAGE_EXT), grayimg, COLOR_BGR2GRAY);
-
-        vector<KeyPoint> keypoints;
-        Mat descriptors;
-        siftptr->detect(grayimg, keypoints);
-        siftptr->compute(grayimg, keypoints, descriptors);
-
-        Mat dvector = getDataVector(descriptors);
-        allTests++;
-        if (svm->predict(dvector) == classLable) {
-            correctTests++;
-        }
-    }
-    return (double)correctTests / allTests;
-}
 
 void predictImg(const Mat& img, Mat& dst, string& className) {
     Mat grayimg;
@@ -169,6 +141,7 @@ void predictImg(const Mat& img, Mat& dst, string& className) {
 
     Mat out;
     drawKeypoints(img, keypoints, out);
+
     dst = out.clone();
     className = predicted_dish;
 }
