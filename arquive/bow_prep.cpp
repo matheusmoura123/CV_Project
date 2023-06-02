@@ -10,7 +10,7 @@
 #include <cmath>
 #include <cstdio>
 
-#include "segment_plates.h"
+#include "../segment_plates.h"
 
 using namespace std;
 using namespace cv;
@@ -18,7 +18,7 @@ using namespace cv::ml;
 
 const string DATASET_PATH = "../FoodCategories/";
 const string IMAGE_EXT = ".jpg";
-const int NUMBER_CLASSES = 18;
+const int NUMBER_CLASSES = 16;
 const int DICT_SIZE = 80*NUMBER_CLASSES;	//80 word per class
 const int TESTING_PERCENT_PER = 7;
 
@@ -43,13 +43,13 @@ class food {
 };
 
 const vector<food> foodCategories{
-                         {"plate", 4, 0},
+                         //{"plate", 4, 0},
 				         {"pasta", 12, 17},
                          {"pesto", 4, 1},
                          {"beans", 13, 10},
                          {"pomodoro", 5, 2},
                          {"ragu", 2, 3},
-                         {"pasta_clams", 8, 4},
+                         //{"pasta_clams", 8, 4},
                          {"rice", 7, 5},
                          {"pork", 9, 6},
                          {"fish", 10, 7},

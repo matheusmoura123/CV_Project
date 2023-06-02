@@ -9,6 +9,7 @@
 #include <iomanip>
 #include <cmath>
 #include <cstdio>
+#include <sys/stat.h>
 
 #include "segment_plates.h"
 
@@ -19,8 +20,6 @@ using namespace cv::ml;
 const string DATASET_PATH = "../FoodCategories/";
 const string TRAY_PATH = "../Food_leftover_dataset/tray";
 const string IMAGE_EXT = ".jpg";
-const int NUMBER_CLASSES = 18;
-const int DICT_SIZE = 80*NUMBER_CLASSES;	//80 word per class
 const int TESTING_PERCENT_PER = 7;
 bool EXIT = false;
 const int NUMBER_TRAYS = 8;
@@ -57,6 +56,9 @@ const vector<food> foodCategories{
                          {"pepper", 2, 15},
                          {"tomato", 10, 16}
                     };
+
+const int NUMBER_CLASSES = int(foodCategories.size());
+const int DICT_SIZE = 80*NUMBER_CLASSES;	//80 word per class
 
 Mat allDescriptors;
 vector<Mat> allDescPerImg;
@@ -173,14 +175,38 @@ void predictImg(const Mat& img, Mat& dst, string& className) {
 
 int main(int argc, char **argv)
 {
+    clock_t sTime = clock();
     for (int i = 0; i < NUMBER_CLASSES; ++i) {
         readDetectComputeimage(foodCategories[i].className, foodCategories[i].imageNumbers, foodCategories[i].classLable);
     };
 
-    FileStorage storage("kmeans_FoodCategories.yml", FileStorage::READ);
-    storage["kLabels"] >> kLabels;
-    storage["kCenters"] >> kCenters;
-    storage.release();
+    try {
+
+        const char* dir = "./kmeans_FoodCategories.yml";
+        struct stat sb{};
+        if (stat(dir, &sb) == 0){
+            FileStorage storage("kmeans_FoodCategories.yml", FileStorage::READ);
+            storage["kLabels"] >> kLabels;
+            storage["kCenters"] >> kCenters;
+            storage.release();
+        }
+        else{
+            cout << "The Kmeans haven't been calculated yet!" << endl;
+            throw 505;
+        }
+    }
+    catch(int err) {
+        int clusterCount = DICT_SIZE, attempts = 5, iterationNumber = 1e4;
+        sTime = clock();
+        cout << "Running kmeans..." << endl;
+        kmeans(allDescriptors, clusterCount, kLabels, TermCriteria(TermCriteria::MAX_ITER|TermCriteria::EPS, iterationNumber, 1e-4), attempts, KMEANS_PP_CENTERS, kCenters);
+        cout << "-> kmeans run in " << (clock() - sTime) / double(CLOCKS_PER_SEC) << " Second(s)." << endl;
+
+        FileStorage storage("kmeans_FoodCategories.yml", FileStorage::WRITE);
+        storage << "kLabels" << kLabels << "kCenters" << kCenters;
+        storage.release();
+        cout << "---------------------------------------------------" << endl;
+    }
 
     getHistogramFast();
 
@@ -194,6 +220,7 @@ int main(int argc, char **argv)
     int option = 2;
     cout << "[1] Run all trays" << endl;
     cout << "[2] Run specific trays" << endl;
+    cout << "[3] Run specific tray with no plate segmentation" << endl;
     cout << "Option: ";
     cin >> option;
     cout << "---------------------------------------------------" << endl;
@@ -316,6 +343,73 @@ int main(int argc, char **argv)
                 string window_name = to_string(i) + ": This image have " + predicted;
                 namedWindow(window_name, WINDOW_NORMAL);
                 resizeWindow(window_name, 400, 400);
+                imshow(window_name, dst);
+                moveWindow(window_name, 500, 500);
+                key = waitKeyEx(0);
+                if (key == 1048603) return(0);
+            }
+            destroyAllWindows();
+        }
+    }
+    else if(option == 3){
+        while (!EXIT) {
+            int key;
+            int tray_num, image_num;
+            cout << "Tray: ";
+            cin >> tray_num;
+            if (tray_num <= 0 or tray_num > 8) tray_num = 1;
+            cout << "Image Number {0, 1, 2, 3}: ";
+            cin >> image_num;
+            cout << "Press [ANY] key to keep going or [ESC] to exit." << endl;
+            cout << "---------------------------------------------------" << endl;
+            string file_name;
+            switch(image_num) {
+                case 0:
+                    file_name = "food_image";
+                    break;
+                case 1:
+                    file_name = "leftover1";
+                    break;
+                case 2:
+                    file_name = "leftover2";
+                    break;
+                case 3:
+                    file_name = "leftover3";
+                    break;
+                default:
+                    file_name = "food_image";
+            }
+
+            Mat img;
+            //img1 = imread(argv[1]);
+            img = imread(TRAY_PATH + to_string(tray_num) + "/" + file_name + IMAGE_EXT);
+
+            string window_name_img = "Tray " + to_string(tray_num) + " " + file_name;
+            /*
+            namedWindow(window_name_img, WINDOW_NORMAL);
+            resizeWindow(window_name_img, 600, 400);
+            imshow(window_name_img, img);
+            moveWindow(window_name_img, 500, 500);
+            key = waitKeyEx(0);
+            if (key == 1048603) return(0); //if press ESC end program
+            */
+
+            Mat img_to_predict, dst;
+            vector<Mat> predictions, dishes(1);
+            string predicted;
+            vector<string> predicted_classes;
+            dishes[0] = img;
+            int i=0;
+            for (const auto & dishe : dishes) {
+                i++;
+                img_to_predict = dishe.clone();
+                predictImg(img_to_predict, dst, predicted);
+                predictions.push_back(dst);
+                predicted_classes.push_back(predicted);
+
+                string window_name = to_string(i) + ": This image have " + predicted;
+                namedWindow(window_name, WINDOW_NORMAL);
+                resizeWindow(window_name, 600, 400);
                 imshow(window_name, dst);
                 moveWindow(window_name, 500, 500);
                 key = waitKeyEx(0);
