@@ -38,9 +38,7 @@ class food {
 
 const vector<food> foodCategories{
                          {"plate", 4, 0},
-				         {"pasta", 12, 17},
                          {"pesto", 4, 1},
-                         {"beans", 13, 10},
                          {"pomodoro", 5, 2},
                          {"ragu", 2, 3},
                          {"pasta_clams", 8, 4},
@@ -49,12 +47,14 @@ const vector<food> foodCategories{
                          {"fish", 10, 7},
                          {"rabbit", 12, 8},
                          {"seafood", 5, 9},
+                         {"beans", 13, 10},
                          {"potato", 13, 11},
+                         {"lettuce", 15, 12},
                          {"bread", 12, 13},
                          {"carrot", 6, 14},
-                         {"lettuce", 15, 12},
                          {"pepper", 2, 15},
-                         {"tomato", 10, 16}
+                         {"tomato", 10, 16},
+                         {"pasta", 12, 17},
                     };
 
 const int NUMBER_CLASSES = int(foodCategories.size());
@@ -181,7 +181,6 @@ int main(int argc, char **argv)
     };
 
     try {
-
         const char* dir = "./kmeans_FoodCategories.yml";
         struct stat sb{};
         if (stat(dir, &sb) == 0){
@@ -201,11 +200,12 @@ int main(int argc, char **argv)
         cout << "Running kmeans..." << endl;
         kmeans(allDescriptors, clusterCount, kLabels, TermCriteria(TermCriteria::MAX_ITER|TermCriteria::EPS, iterationNumber, 1e-4), attempts, KMEANS_PP_CENTERS, kCenters);
         cout << "-> kmeans run in " << (clock() - sTime) / double(CLOCKS_PER_SEC) << " Second(s)." << endl;
+        cout << "---------------------------------------------------" << endl;
 
         FileStorage storage("kmeans_FoodCategories.yml", FileStorage::WRITE);
         storage << "kLabels" << kLabels << "kCenters" << kCenters;
         storage.release();
-        cout << "---------------------------------------------------" << endl;
+
     }
 
     getHistogramFast();
