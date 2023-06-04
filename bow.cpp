@@ -33,29 +33,33 @@ class food {
 };
 
 vector<food> categories_left;
+const vector<food> pastaCategories{
+        {"pesto", 4, 1},
+        {"pomodoro", 5, 2},
+        {"ragu", 2, 3},
+        {"pasta_clams", 8, 4},
+};
 const vector<food> foodCategories{
-                         {"plate", 4, 0},
-                         {"pesto", 4, 1},
-                         {"pomodoro", 5, 2},
-                         {"ragu", 2, 3},
-                         {"pasta_clams", 8, 4},
-                         {"rice", 7, 5},
-                         {"pork", 9, 6},
-                         {"fish", 10, 7},
-                         {"rabbit", 12, 8},
-                         {"seafood", 5, 9},
-                         {"beans", 13, 10},
-                         {"potato", 13, 11},
-                         {"lettuce", 15, 12},
-                         {"bread", 12, 13},
-                         {"carrot", 6, 14},
-                         {"pepper", 2, 15},
-                         {"tomato", 10, 16},
-                         {"pasta", 12, 17},
-                    };
+        //{"plate", 4, 0},
+        {"rice", 7, 5},
+        {"pork", 9, 6},
+        {"fish", 10, 7},
+        {"rabbit", 12, 8},
+        //{"seafood", 5, 9},
+        {"beans", 13, 10},
+        {"potato", 13, 11},
+        //{"lettuce", 15, 12},
+        //{"bread", 12, 13},
+        //{"carrot", 6, 14},
+        //{"pepper", 2, 15},
+        //{"tomato", 10, 16},
+        {"pasta", 31, 17},
+        {"salad", 15, 18},
+        //{"plate_salad", 3, 19},
+};
 
 const int NUMBER_CLASSES = int(foodCategories.size());
-const int DICT_SIZE = 80*NUMBER_CLASSES;	//80 word per class
+const int DICT_SIZE = 200*NUMBER_CLASSES;	//80 word per class
 
 Mat allDescriptors;
 vector<Mat> allDescPerImg;
@@ -530,7 +534,7 @@ int main(int argc, char **argv)
                         readDetectComputeimage(categories_left[i].className, categories_left[i].imageNumbers, categories_left[i].classLable);
                     }
 
-                    int clusterCount = 80*int(categories_left.size()), attempts = 5, iterationNumber = 1e4;
+                    int clusterCount = 200*int(categories_left.size()), attempts = 5, iterationNumber = 1e4;
                     kmeans(allDescriptors, clusterCount, kLabels, TermCriteria(TermCriteria::MAX_ITER|TermCriteria::EPS, iterationNumber, 1e-4), attempts, KMEANS_PP_CENTERS, kCenters);
 
                     getHistogramFast();
