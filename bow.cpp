@@ -4,11 +4,8 @@
 #include <opencv2/xfeatures2d.hpp>
 #include <opencv2/ml/ml.hpp>
 
-#include <sstream>
 #include <iostream>
-#include <iomanip>
 #include <cmath>
-#include <cstdio>
 #include <sys/stat.h>
 
 #include "segment_plates.h"
@@ -20,7 +17,6 @@ using namespace cv::ml;
 const string DATASET_PATH = "../FoodCategories/";
 const string TRAY_PATH = "../Food_leftover_dataset/tray";
 const string IMAGE_EXT = ".jpg";
-const int TESTING_PERCENT_PER = 7;
 bool EXIT = false;
 const int NUMBER_TRAYS = 8;
 
@@ -36,6 +32,7 @@ class food {
         }
 };
 
+vector<food> categories_left;
 const vector<food> foodCategories{
                          {"plate", 4, 0},
                          {"pesto", 4, 1},
@@ -132,12 +129,13 @@ void predictImg(const Mat& img, Mat& dst, string& className) {
 
     Mat dvector = getDataVector(descriptors);
     string predicted_dish;
-    float prediction = svm->predict(dvector);
+    Mat results;
+    svm->predict(dvector, results, StatModel::RAW_OUTPUT);
     for (const auto & foodCategorie : foodCategories) {
-        if (prediction == float(foodCategorie.classLable)){
+        if (int(results.at<float>(0)) == foodCategorie.classLable){
             predicted_dish = foodCategorie.className;
         }
-    };
+    }
 
     Mat out;
     drawKeypoints(img, keypoints, out);
@@ -146,12 +144,22 @@ void predictImg(const Mat& img, Mat& dst, string& className) {
     className = predicted_dish;
 }
 
+void redo_training() {
+    svm->clear();
+    svm = SVM::create();
+    svm->setType(SVM::C_SVC);
+    svm->setKernel(SVM::RBF);
+    svm->setTermCriteria(TermCriteria( TermCriteria::MAX_ITER, 1e4, 1e-6));
+    Ptr<TrainData> td = TrainData::create(inputData, ROW_SAMPLE, inputDataLables);
+    svm->train(td);
+}
+
 int main(int argc, char **argv)
 {
     clock_t sTime = clock();
     for (int i = 0; i < NUMBER_CLASSES; ++i) {
         readDetectComputeimage(foodCategories[i].className, foodCategories[i].imageNumbers, foodCategories[i].classLable);
-    };
+    }
 
     try {
         const char* dir = "./kmeans_FoodCategories.yml";
@@ -186,17 +194,27 @@ int main(int argc, char **argv)
     svm = SVM::create();
     svm->setType(SVM::C_SVC);
     svm->setKernel(SVM::LINEAR);
-    svm->setTermCriteria(TermCriteria(TermCriteria::MAX_ITER, 1e4, 1e-6));
+    svm->setTermCriteria(TermCriteria( TermCriteria::MAX_ITER, 1e4, 1e-6));
     Ptr<TrainData> td = TrainData::create(inputData, ROW_SAMPLE, inputDataLables);
     svm->train(td);
 
     int option = 2;
-    cout << "[1] Run all trays" << endl;
-    cout << "[2] Run specific trays" << endl;
-    cout << "[3] Run specific tray with no plate segmentation" << endl;
-    cout << "Option: ";
-    cin >> option;
-    cout << "---------------------------------------------------" << endl;
+
+    if(argc == 2) {
+        cout << "A path was passed as argument." << endl;
+        cout << "Press [ESC] to exit." << endl;
+        cout << "---------------------------------------------------" << endl;
+        option = 4;
+    } else {
+        cout << "[1] Run all trays" << endl;
+        cout << "[2] Run specific trays" << endl;
+        cout << "[3] Run specific tray with no plate segmentation" << endl;
+        cout << "[4] Run from a given path" << endl;
+        cout << "[5] Run full tray mode" << endl;
+        cout << "Option: ";
+        cin >> option;
+        cout << "---------------------------------------------------" << endl;
+    }
 
     if (option == 1){
         cout << "Press [ANY] key to keep going or [ESC] to exit." << endl;
@@ -389,6 +407,258 @@ int main(int argc, char **argv)
                 if (key == 1048603) return(0);
             }
             destroyAllWindows();
+        }
+    }
+    else if(option == 4){
+        while (!EXIT) {
+            int key;
+            string path;
+            if(argc == 2) {
+                path = argv[1];
+            } else {
+                cout << "Path of the image: ";
+                cin >> path;
+                cout << "Press [ANY] key to keep going or [ESC] to exit." << endl;
+                cout << "---------------------------------------------------" << endl;
+            }
+
+            Mat img;
+            //img1 = imread(argv[1]);
+            img = imread(path);
+
+            string window_name_img = path;
+            /*
+            namedWindow(window_name_img, WINDOW_NORMAL);
+            resizeWindow(window_name_img, 600, 400);
+            imshow(window_name_img, img);
+            moveWindow(window_name_img, 500, 500);
+            key = waitKeyEx(0);
+            if (key == 1048603) return(0); //if press ESC end program
+            */
+
+            Mat img_to_predict, dst;
+            vector<Mat> predictions, dishes(1);
+            string predicted;
+            vector<string> predicted_classes;
+            //dishes = segment_plates(img);
+            dishes[0] = img.clone();
+            int i=0;
+            for (const auto & dishe : dishes) {
+                i++;
+                img_to_predict = dishe.clone();
+                predictImg(img_to_predict, dst, predicted);
+                predictions.push_back(dst);
+                predicted_classes.push_back(predicted);
+
+                string window_name = to_string(i) + ": This image have " + predicted;
+                namedWindow(window_name, WINDOW_NORMAL);
+                resizeWindow(window_name, 600, 400);
+                imshow(window_name, dst);
+                moveWindow(window_name, 500, 500);
+                key = waitKeyEx(0);
+                if (key == 1048603) return(0);
+            }
+            destroyAllWindows();
+        }
+    }
+    else if(option == 5){
+        while (!EXIT) {
+            int key;
+            int tray_num;
+            cout << "Tray: ";
+            cin >> tray_num;
+            if (tray_num <= 0 or tray_num > 8) tray_num = 1;
+            cout << "Press [ANY] key to keep going or [ESC] to exit." << endl;
+            cout << "---------------------------------------------------" << endl;
+            for (int image_num = 0; image_num < 4; ++image_num) {
+                string file_name;
+                if (image_num == 0){
+                    file_name = "food_image";
+                    Mat img;
+                    img = imread(TRAY_PATH + to_string(tray_num) + "/" + file_name + IMAGE_EXT);
+
+                    string window_name_img = "Tray " + to_string(tray_num) + " " + file_name;
+                    namedWindow(window_name_img, WINDOW_NORMAL);
+                    resizeWindow(window_name_img, 600, 400);
+                    imshow(window_name_img, img);
+                    moveWindow(window_name_img, 500, 500);
+                    key = waitKeyEx(0);
+                    if (key == 1048603) return(0); //if press ESC end program
+
+                    Mat img_to_predict, dst;
+                    vector<Mat> predictions, dishes;
+                    string predicted;
+                    vector<string> predicted_classes;
+                    dishes = segment_plates(img);
+                    int i=0;
+                    for (const auto & dishe : dishes) {
+                        i++;
+                        img_to_predict = dishe.clone();
+                        predictImg(img_to_predict, dst, predicted);
+                        predictions.push_back(dst);
+                        predicted_classes.push_back(predicted);
+
+                        for (int j = 0; j < foodCategories.size(); ++j) {
+                            if (foodCategories[j].className == predicted) {
+                                categories_left.push_back(foodCategories[j]);
+                            }
+                        }
+                        categories_left.push_back(foodCategories[0]);
+
+                        string window_name = to_string(i) + ": This image have " + predicted;
+                        namedWindow(window_name, WINDOW_NORMAL);
+                        resizeWindow(window_name, 400, 400);
+                        imshow(window_name, dst);
+                        moveWindow(window_name, 500, 500);
+                        key = waitKeyEx(0);
+                        if (key == 1048603) return(0);
+                    }
+                }
+                else if (image_num == 1){
+                    cout << "Running Leftover1..." << endl;
+                    allDescriptors.release();
+                    allDescPerImg.clear();
+                    allClassPerImg.clear();
+                    allDescPerImgNum = 0;
+                    kCenters.release();
+                    kLabels.release();
+                    inputData.release();
+                    inputDataLables.release();
+                    svm->clear();
+
+                    for (int i = 0; i < categories_left.size(); ++i) {
+                        readDetectComputeimage(categories_left[i].className, categories_left[i].imageNumbers, categories_left[i].classLable);
+                    }
+
+                    int clusterCount = 80*int(categories_left.size()), attempts = 5, iterationNumber = 1e4;
+                    kmeans(allDescriptors, clusterCount, kLabels, TermCriteria(TermCriteria::MAX_ITER|TermCriteria::EPS, iterationNumber, 1e-4), attempts, KMEANS_PP_CENTERS, kCenters);
+
+                    getHistogramFast();
+
+                    svm = SVM::create();
+                    svm->setType(SVM::C_SVC);
+                    svm->setKernel(SVM::LINEAR);
+                    svm->setTermCriteria(TermCriteria( TermCriteria::MAX_ITER, 1e4, 1e-6));
+                    Ptr<TrainData> td1 = TrainData::create(inputData, ROW_SAMPLE, inputDataLables);
+                    svm->train(td1);
+
+                    file_name = "leftover1";
+                    Mat img;
+                    img = imread(TRAY_PATH + to_string(tray_num) + "/" + file_name + IMAGE_EXT);
+
+                    string window_name_img = "Tray " + to_string(tray_num) + " " + file_name;
+                    namedWindow(window_name_img, WINDOW_NORMAL);
+                    resizeWindow(window_name_img, 600, 400);
+                    imshow(window_name_img, img);
+                    moveWindow(window_name_img, 500, 500);
+                    key = waitKeyEx(0);
+                    if (key == 1048603) return(0); //if press ESC end program
+
+                    Mat img_to_predict, dst;
+                    vector<Mat> predictions, dishes;
+                    string predicted;
+                    vector<string> predicted_classes;
+                    dishes = segment_plates(img);
+                    int i=0;
+                    for (const auto & dishe : dishes) {
+                        i++;
+                        img_to_predict = dishe.clone();
+                        predictImg(img_to_predict, dst, predicted);
+                        predictions.push_back(dst);
+                        predicted_classes.push_back(predicted);
+
+
+                        string window_name = to_string(i) + ": This image have " + predicted;
+                        namedWindow(window_name, WINDOW_NORMAL);
+                        resizeWindow(window_name, 400, 400);
+                        imshow(window_name, dst);
+                        moveWindow(window_name, 500, 500);
+                        key = waitKeyEx(0);
+                        if (key == 1048603) return(0);
+                    }
+                }
+                else if (image_num == 2) {
+                    cout << "Running Leftover2..." << endl;
+
+                    file_name = "leftover2";
+                    Mat img;
+                    img = imread(TRAY_PATH + to_string(tray_num) + "/" + file_name + IMAGE_EXT);
+
+                    string window_name_img = "Tray " + to_string(tray_num) + " " + file_name;
+                    namedWindow(window_name_img, WINDOW_NORMAL);
+                    resizeWindow(window_name_img, 600, 400);
+                    imshow(window_name_img, img);
+                    moveWindow(window_name_img, 500, 500);
+                    key = waitKeyEx(0);
+                    if (key == 1048603) return(0); //if press ESC end program
+
+                    Mat img_to_predict, dst;
+                    vector<Mat> predictions, dishes;
+                    string predicted;
+                    vector<string> predicted_classes;
+                    dishes = segment_plates(img);
+                    int i=0;
+                    for (const auto & dishe : dishes) {
+                        i++;
+                        img_to_predict = dishe.clone();
+                        predictImg(img_to_predict, dst, predicted);
+                        predictions.push_back(dst);
+                        predicted_classes.push_back(predicted);
+
+
+                        string window_name = to_string(i) + ": This image have " + predicted;
+                        namedWindow(window_name, WINDOW_NORMAL);
+                        resizeWindow(window_name, 400, 400);
+                        imshow(window_name, dst);
+                        moveWindow(window_name, 500, 500);
+                        key = waitKeyEx(0);
+                        if (key == 1048603) return(0);
+                    }
+                }
+                else if (image_num == 3) {
+                    cout << "Running Leftover3..." << endl;
+
+                    file_name = "leftover3";
+                    Mat img;
+                    img = imread(TRAY_PATH + to_string(tray_num) + "/" + file_name + IMAGE_EXT);
+
+                    string window_name_img = "Tray " + to_string(tray_num) + " " + file_name;
+                    namedWindow(window_name_img, WINDOW_NORMAL);
+                    resizeWindow(window_name_img, 600, 400);
+                    imshow(window_name_img, img);
+                    moveWindow(window_name_img, 500, 500);
+                    key = waitKeyEx(0);
+                    if (key == 1048603) return(0); //if press ESC end program
+
+                    Mat img_to_predict, dst;
+                    vector<Mat> predictions, dishes;
+                    string predicted;
+                    vector<string> predicted_classes;
+                    dishes = segment_plates(img);
+                    int i=0;
+                    for (const auto & dishe : dishes) {
+                        i++;
+                        img_to_predict = dishe.clone();
+                        predictImg(img_to_predict, dst, predicted);
+                        predictions.push_back(dst);
+                        predicted_classes.push_back(predicted);
+
+
+                        string window_name = to_string(i) + ": This image have " + predicted;
+                        namedWindow(window_name, WINDOW_NORMAL);
+                        resizeWindow(window_name, 400, 400);
+                        imshow(window_name, dst);
+                        moveWindow(window_name, 500, 500);
+                        key = waitKeyEx(0);
+                        if (key == 1048603) return(0);
+                    }
+                }
+                else return(0);
+            }
+            key = waitKeyEx(0);
+            if (key == 1048603) return(0);
+            destroyAllWindows();
+            return(0);
         }
     }
     else return(0);
