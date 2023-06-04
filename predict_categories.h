@@ -30,7 +30,12 @@ public:
     }
 };
 
-void predict_categories(vector<food> categories, vector<Mat> images_to_predict, vector<string>& predicted_classNames);
+const string DATASET_PATH = "../FoodCategories/";
+const string IMAGE_EXT = ".jpg";
+
+void predict_categories(vector<Mat> images_to_predict,
+                        vector<food> categories,
+                        vector<string>& predicted_classNames);
 
 #endif
 
