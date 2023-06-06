@@ -13,7 +13,7 @@ const vector<food> pastaCategories{
         {"pasta_clams", 8, 4},
 };
 const vector<food> foodCategories{
-        //{"plate", 4, 0},
+        //{"plate", 9, 0},
         {"rice", 7, 5},
         {"pork", 9, 6},
         {"fish", 10, 7},
@@ -22,7 +22,7 @@ const vector<food> foodCategories{
         {"beans", 13, 10},
         {"potato", 13, 11},
         //{"lettuce", 15, 12},
-        //{"bread", 12, 13},
+        {"bread", 18, 13},
         //{"carrot", 6, 14},
         //{"pepper", 2, 15},
         //{"tomato", 10, 16},
@@ -48,7 +48,6 @@ int main(int argc, char **argv)
         cout << "[5] Run full tray mode" << endl;
         cout << "Option: ";
         cin >> option;
-        cout << "---------------------------------------------------" << endl;
     }
 
     if (option == 1){
@@ -97,7 +96,7 @@ int main(int argc, char **argv)
                         predicted_classes[k] = new_class[0];
                     }
                     //Show Image with keypoints
-                    string window_name = to_string(k) + ": This image have " + predicted_classes[k];
+                    string window_name = to_string(k+1) + ": This image have " + predicted_classes[k];
                     namedWindow(window_name, WINDOW_NORMAL);
                     resizeWindow(window_name, 400, 400);
                     imshow(window_name, dishes[k]);
@@ -216,13 +215,46 @@ int main(int argc, char **argv)
             Mat img;
             //img1 = imread(argv[1]);
             img = imread(path);
-
             string window_name_img = path;
+            namedWindow(window_name_img, WINDOW_NORMAL);
+            resizeWindow(window_name_img, 600, 400);
+            imshow(window_name_img, img);
+            key = waitKeyEx(0);
+            if (key == 1048603) return (0);
 
-            vector <Mat> dishes;
+            vector<Mat> img_sections;
+            int rect_size = 200;
+            for (int y=0; y<img.rows; y+=rect_size) {
+                for (int x=0; x<img.cols; x+=rect_size) {
+                    //CROPPING Section
+                    int rowf_y, colf_x;
+                    rowf_y = y + rect_size;
+                    colf_x = x + rect_size;
+                    if (rowf_y >= img.rows) {
+                        rowf_y = img.rows-1;
+                        if (rowf_y - y < 100) continue;
+                    }
+                    if (colf_x >= img.cols) {
+                        colf_x = img.cols-1;
+                        if (colf_x - x < 100) continue;
+                    }
+                    img_sections.push_back(img(Range(y, rowf_y), Range(x, colf_x)));
+                }
+            }
+            /*
+            string crp_img_name = to_string(y) + ":" + to_string(x) + "Img";
+            namedWindow(crp_img_name, WINDOW_NORMAL);
+            resizeWindow(crp_img_name, 400, 400);
+            imshow(crp_img_name, img_section);
+            key = waitKeyEx(0);
+            if (key == 1048603) return (0);
+             */
+
             vector <string> predicted_classes;
-            dishes = segment_plates(img);
-            predict_categories(dishes, foodCategories, predicted_classes);
+            predict_categories(img_sections, foodCategories, predicted_classes);
+            for (const auto & predicted: predicted_classes) {
+                cout << predicted << endl;
+            }
             destroyAllWindows();
         }
     }

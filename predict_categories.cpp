@@ -109,6 +109,8 @@ void predict_categories(vector<Mat> images_to_predict,
         name_categories += to_string(category.classLable) + "_";
     }
     string k_path = "./kmeans_" + name_categories + ".yml";
+    string svm_path = "./svm_" + name_categories + ".yml";
+
     try {
         const char* dir = k_path.c_str();
         struct stat sb{};
@@ -151,8 +153,13 @@ void predict_categories(vector<Mat> images_to_predict,
         Mat dst;
         string predicted;
         predictImg(img, dst,  predicted, categories, svm);
-        //cout << predicted << endl;
+        string crp_img_name = to_string(k) + ":" + predicted;
+        namedWindow(crp_img_name, WINDOW_NORMAL);
+        resizeWindow(crp_img_name, 400, 400);
+        imshow(crp_img_name, dst);
         //Add predictions to output of function
         predicted_classNames.push_back(predicted);
     }
+    key = waitKeyEx(0);
+    if (key == 1048603) return;
 }
