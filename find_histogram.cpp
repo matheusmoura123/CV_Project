@@ -8,7 +8,7 @@
 using namespace cv;
 using namespace std;
 
-vector<float> find_histogram(const Mat& src) {
+array<int,4> find_histogram(const Mat& src) {
     Mat new_img;
     cvtColor(src, new_img, COLOR_BGR2HSV);
 
@@ -39,11 +39,12 @@ vector<float> find_histogram(const Mat& src) {
     normalize(g_hist, g_hist, 0, histImage.rows, NORM_MINMAX, -1, Mat() );
     normalize(r_hist, r_hist, 0, histImage.rows, NORM_MINMAX, -1, Mat() );
 
-    vector<float> max_values;
-    float max1, max2, max3, max4, max5 = 0.0;
+    //vector<float> max_values;
+    array <int, 4> max_values{0, 0, 0, 0};
+    float max = 0.0;
     int position;
 
-    for( int i = 2; i < histSize; i++ )
+    for( int i = 1; i < histSize; i++ )
     {
         line( histImage, Point( bin_w*(i-1), hist_h - cvRound(b_hist.at<float>(i-1)) ) ,
               Point( bin_w*(i), hist_h - cvRound(b_hist.at<float>(i)) ),
@@ -57,25 +58,56 @@ vector<float> find_histogram(const Mat& src) {
               Scalar( 0, 0, 255), 2, 8, 0  );
               */
 
-        if (b_hist.at<float>(i) > max1) {
-            max5 = max4;
-            max4 = max3;
-            max3 = max2;
-            max2 = max1;
-            max1 = b_hist.at<float>(i);
+        /*
+        if (b_hist.at<float>(i) > max) {
+            max = b_hist.at<float>(i);
             position = i;
+            max_values[4] = max_values[3];
+            max_values[3] = max_values[2];
+            max_values[2] = max_values[1];
+            max_values[1] = max_values[0];
+            max_values[0] = position;
+        }
+        //max_values.push_back(r_hist.at<float>(i));
+ */
+    }
+
+    float max1 = 0.0;
+    float max2 = 0.0;
+    float max3 = 0.0;
+    float max4 = 0.0;
+    for( int i = 1; i < histSize/4; i++ ){
+        if (b_hist.at<float>(i) > max1) {
+            max_values[0] = i;
         }
 
-        max_values.push_back(r_hist.at<float>(i));
+        if (b_hist.at<float>(2*i) > max2) {
+            max_values[1] = 2*i;
+        }
+
+        if (b_hist.at<float>(3*i) > max3) {
+            max_values[2] = 3*i;
+        }
+
+        if (b_hist.at<float>(4*i) > max4) {
+            max_values[3] = 4*i;
+        }
+
 
     }
 
-    sort(max_values.begin(), max_values.end(), greater<>());
-    //cout << max_values[0] << endl;
 
-    //namedWindow("calcHist Demo");
-    //imshow("calcHist Demo", histImage);
-    //waitKey(0);
+
+    cout << "---------------------------" << endl;
+    cout << max_values[0] << endl <<  max_values[1] << endl <<  max_values[2] << endl <<  max_values[3] << endl;
+
+
+    // sort(max_values.begin(), max_values.end(), greater<>());
+   // cout << max_values[0] << endl;
+
+    namedWindow("calcHist Demo");
+    imshow("calcHist Demo", histImage);
+    waitKey(0);
 
     return max_values;
 

@@ -28,7 +28,7 @@ vector<Mat> segment_plates(const Mat& img) {
 
 
     vector<Mat> plates;
-    vector<Mat> histograms;
+    vector<array<int,4>> histograms;
 
     for(size_t i = 0; i < circles.size(); i++)
     {
@@ -50,14 +50,18 @@ vector<Mat> segment_plates(const Mat& img) {
                 }
             }
         }
-        find_histogram(mask);
+        array<int,4> histogram = find_histogram(mask);
+        plates.push_back(mask);
+        histograms.push_back(histogram);
 
         Mat segmented = mask.clone();
 
-        segment_hsv(mask, segmented,10, 200, 100);
+        for (int l = 0; l < 4; ++l){
+            segment_hsv(mask, segmented,histogram[l] , 200, 100);
+            imshow("Segmented", segmented);
+            waitKey();
+        }
 
-        plates.push_back(mask);
-        //histograms.push_back(histogram);
 
         //CROPPING PLATES
         int row0_y, rowf_y, col0_x, colf_x;
@@ -116,6 +120,7 @@ int segment_hsv(const Mat& src, Mat &dst, int T_hue, int T_sat, int T_value) {
     Mat img_hsv;
 
     cvtColor(src, img_hsv, COLOR_BGR2HSV);
+    cvtColor(dst, dst, COLOR_BGR2HSV);
 
 
     for (int i = 0; i < dst.rows; ++i)
@@ -128,7 +133,7 @@ int segment_hsv(const Mat& src, Mat &dst, int T_hue, int T_sat, int T_value) {
             int value = int(img_hsv.at<Vec3b>(i,j)[2]);
 
 
-            if(abs(hue - T_hue) < 30 && abs(saturation - T_sat) < 60   && abs(value - T_value) < 150) {
+            if(abs(hue - 5) < 50 && abs(saturation - T_sat) < 60   && abs(value - T_value) < 150) {
                 dst.at<Vec3b>(i,j)[0] = 255;
                 dst.at<Vec3b>(i,j)[1] = 255;
                 dst.at<Vec3b>(i,j)[2] = 255;
