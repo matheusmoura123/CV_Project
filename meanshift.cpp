@@ -48,11 +48,14 @@ int main(int argc, char **argv)
     cvtColor(dst, gray_img, COLOR_BGR2GRAY);
     find_histogram(gray_img);
 
+
     Mat otu_img;
+    /*
     threshold(gray_img, otu_img, 0, 255,  THRESH_BINARY | THRESH_OTSU);
     string o_name = " Otus Method";
     namedWindow(o_name, WINDOW_NORMAL);
     imshow(o_name, otu_img);
+     */
 
     //Divide Img in multiple sections num_grid X num_grid
     Mat src;
@@ -81,6 +84,7 @@ int main(int argc, char **argv)
             imshow("src", src);
             threshold(src(grid_rect), otu_img, 0, 255,  THRESH_BINARY | THRESH_OTSU);
             imshow(format("grid%d",k), src(grid_rect));
+            imshow("otu", otu_img);
             waitKey();
         }
     }
