@@ -58,8 +58,8 @@ vector<Mat> segment_plates(const Mat& img) {
 
         for (int l = 0; l < 4; ++l){
             segment_hsv(mask, segmented,histogram[l] , 200, 100);
-            imshow("Segmented", segmented);
-            waitKey();
+            //imshow("Segmented", segmented);
+            //waitKey();
         }
 
 

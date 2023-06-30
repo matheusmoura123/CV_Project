@@ -98,16 +98,16 @@ array<int,4> find_histogram(const Mat& src) {
 
 
 
-    cout << "---------------------------" << endl;
-    cout << max_values[0] << endl <<  max_values[1] << endl <<  max_values[2] << endl <<  max_values[3] << endl;
+    //cout << "---------------------------" << endl;
+    //cout << max_values[0] << endl <<  max_values[1] << endl <<  max_values[2] << endl <<  max_values[3] << endl;
 
 
     // sort(max_values.begin(), max_values.end(), greater<>());
    // cout << max_values[0] << endl;
 
-    namedWindow("calcHist Demo");
-    imshow("calcHist Demo", histImage);
-    waitKey(0);
+    //namedWindow("calcHist Demo");
+    //imshow("calcHist Demo", histImage);
+    //waitKey(0);
 
     return max_values;
 

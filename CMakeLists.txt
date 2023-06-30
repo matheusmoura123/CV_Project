@@ -15,3 +15,6 @@ target_link_libraries(bow ${OpenCV_LIBS} )
 
 add_executable(img_seg ../img_seg.cpp ../segment_plates.cpp ../segment_plates.h ../sift_matching.cpp ../sift_matching.h ../find_histogram.h ../find_histogram.cpp)
 target_link_libraries(img_seg ${OpenCV_LIBS} )
+
+add_executable(meanshift ../meanshift.cpp ../segment_plates.cpp ../segment_plates.h ../sift_matching.cpp ../sift_matching.h ../find_histogram.h ../find_histogram.cpp)
+target_link_libraries(meanshift ${OpenCV_LIBS} )
