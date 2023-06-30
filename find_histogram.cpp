@@ -11,7 +11,7 @@ using namespace std;
 array<int,4> find_histogram(const Mat& src) {
     int histSize = 256;
 
-    float range[] = { 0, 256 } ;
+    float range[] = { 10, 256 } ;
     const float* histRange = { range };
 
     bool uniform = true; bool accumulate = false;
