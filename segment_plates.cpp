@@ -219,6 +219,7 @@ Mat contour_hsv(const Mat& input) {
 
 
 //---------------GRAVE OF DEAD IDEAS--------------------
+// hahahahahahahahha
 
 //find_histogram(mask);
 
