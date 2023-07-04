@@ -15,17 +15,26 @@ int main(int argc, char **argv) {
         path = argv[1];
     }
 
-    Mat rgb_img, hsv_img, gray_img, dst;
+    //Read image
+    Mat rgb_img, hsv_img, gray_img, mean_img;
     Mat img = imread(path);
     string name = "Original Img";
     namedWindow(name, WINDOW_NORMAL);
     imshow(name, img);
 
+    //Separate dishes
     vector<Mat> dishes;
     vector<string> predicted_classes;
     dishes = segment_plates(img);
-    rgb_img = dishes[1];
-    cvtColor(rgb_img, hsv_img, COLOR_BGR2HSV);
+    rgb_img = dishes[0];
+    //cvtColor(rgb_img, hsv_img, COLOR_BGR2HSV);
+
+    //Bilateral filter to try to create sharper edges
+    Mat bi_img;
+    bilateralFilter(rgb_img, bi_img, 5, 150, 50);
+    imshow("bilateral filter", bi_img);
+
+    //MeanShift
     TermCriteria termcrit = TermCriteria(TermCriteria::MAX_ITER + TermCriteria::EPS, 20, 1);
     vector<int> sp{50}; //Spatial window radius
     vector<int> sr{70}; //Color window radius
@@ -33,26 +42,24 @@ int main(int argc, char **argv) {
     for (auto &sp_i: sp) {
         for (auto &sr_i: sr) {
             cout << "Calculating meanshift..." << endl;
-            pyrMeanShiftFiltering(rgb_img, dst, sp_i, sr_i, 3, termcrit);
+            pyrMeanShiftFiltering(bi_img, mean_img, sp_i, sr_i, 3, termcrit);
             string w_name = to_string(sp_i) + "-" + to_string(sr_i) + " Level 3";
             cout << w_name << endl;
             namedWindow(w_name, WINDOW_NORMAL);
-            imshow(w_name, dst);
+            imshow(w_name, mean_img);
         }
 
     }
 
-    //cvtColor(dst, gray_img, COLOR_HSV2BGR);
-    cvtColor(dst, gray_img, COLOR_BGR2GRAY);
+    //cvtColor(mean_img, gray_img, COLOR_HSV2BGR);
+    cvtColor(mean_img, gray_img, COLOR_BGR2GRAY);
     find_histogram(gray_img);
 
     //Divide Img in multiple sections num_grid X num_grid and perform Otu separately in each one
-    Mat src;
-    gray_img.copyTo(src);
-    //cvtColor( dst_c, dst_c, COLOR_BGR2GRAY );
-    //dst_c.copyTo(src);
-    int width = src.cols;
-    int height = src.rows;
+    Mat otu_img;
+    gray_img.copyTo(otu_img);
+    int width = otu_img.cols;
+    int height = otu_img.rows;
     int num_grid = 3;
     int step_SIZE_x = floor(width / num_grid);
     int step_SIZE_y = floor(height / num_grid);
@@ -70,15 +77,37 @@ int main(int argc, char **argv) {
             Rect grid_rect(x, y, GRID_SIZE_x, GRID_SIZE_y);
             //cout << grid_rect << endl;
             mCells.push_back(grid_rect);
-            //rectangle(src, grid_rect, Scalar(0, 255, 0), 1);
-            //imshow("src", src);
-            threshold(src(grid_rect), src(grid_rect), 0, 255, THRESH_BINARY | THRESH_OTSU);
-            //imshow(format("grid%d%d",y, x), src(grid_rect));
-            //imshow("otu with grid", src);
+            //rectangle(otu_img, grid_rect, Scalar(0, 255, 0), 1);
+            //imshow("otu_img", otu_img);
+            threshold(otu_img(grid_rect), otu_img(grid_rect), 0, 255, THRESH_BINARY | THRESH_OTSU);
+            //imshow(format("grid%d%d",y, x), otu_img(grid_rect));
+            //imshow("otu with grid", otu_img);
             //waitKey();
         }
     }
-    imshow("otu with grid", src);
+
+   //invert otu
+    otu_img = 255- otu_img;
+    imshow("inv otu with grid", otu_img);
+
+    // Morphological Closing
+    int morph_size = 1;
+    Mat element = getStructuringElement(MORPH_RECT, Size(2 * morph_size + 1, 2 * morph_size + 1), Point(morph_size, morph_size));
+    Mat morph_img;
+    morphologyEx(otu_img, morph_img, MORPH_CLOSE, element, Point(-1, -1), 10);
+    imshow("morph", morph_img);
+
+    //Using Otu as mask
+    for (int y = 0; y < rgb_img.rows; ++y) {
+        for (int x = 0; x < rgb_img.cols; ++x) {
+            if(morph_img.at<uchar>(y, x) == 0 ) {
+                rgb_img.at<Vec3b>(y,x)[0] = 0;
+                rgb_img.at<Vec3b>(y,x)[1] = 0;
+                rgb_img.at<Vec3b>(y,x)[2] = 0;
+            }
+        }
+    }
+    imshow("mask", rgb_img);
     waitKey();
 }
 
@@ -87,6 +116,17 @@ int main(int argc, char **argv) {
 
 
 //---------------GRAVEYARD OF DEAD IDEAS_______________________________________
+
+    /*
+    //Log Transform to deal with the shadows
+    Mat log_img;
+    rgb_img.convertTo(log_img, CV_32F);
+    log_img = log_img + 1;
+    log(log_img, log_img);
+    normalize(log_img, log_img, 0, 255, NORM_MINMAX);
+    convertScaleAbs(log_img, log_img);
+    imshow("log transform", log_img);
+    */
 
     /*
     //CANNY TRY
