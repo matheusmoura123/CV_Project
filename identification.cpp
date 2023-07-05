@@ -56,15 +56,21 @@ int main(int argc, char **argv) {
         path = argv[1];
     }
 
+    //Find the index of className
     string className = "potato";
     int index=0;
     for (index; index < foodCategories.size(); ++index) {
         if (className == foodCategories[index].className) break;
     }
 
-    for (int i = 1; i <= foodCategories[index].imageNumbers; ++i) {
-        Mat img = imread(DATASET_PATH + className + "/" + className + to_string(i) + IMAGE_EXT);
-        find_histogram(img);
+    for (auto &food: foodCategories ) {
+        vector<Mat> imgs;
+        for (int i = 1; i <= food.imageNumbers; ++i) {
+            Mat img = imread(DATASET_PATH + food.className + "/" + food.className + to_string(i) + IMAGE_EXT);
+            //find_histogram(img);
+            imgs.push_back(img);
+        }
+        mean_histogram(imgs);
     }
 
 }
