@@ -9,16 +9,16 @@ using namespace cv;
 using namespace std;
 
 Mat mean_histogram(const vector<Mat>& vector_src) {
-    int histSize = 256;
+    int histSize = 255;
 
-    float range[] = {0, 256};
+    float range[] = {1, 255};
     const float *histRange = {range};
 
     bool uniform = true;
     bool accumulate = false;
 
     // Draw the histograms for B, G and R
-    int hist_w = 1024;
+    int hist_w = 256;
     int hist_h = 400;
     int bin_w = cvRound((double) hist_w / histSize);
 
@@ -103,13 +103,13 @@ Mat mean_histogram(const vector<Mat>& vector_src) {
 array<int,4> find_histogram(const Mat& src) {
     int histSize = 256;
 
-    float range[] = { 0, 256 } ;
+    float range[] = { 0, 255 } ;
     const float* histRange = { range };
 
     bool uniform = true; bool accumulate = false;
 
     // Draw the histograms for B, G and R
-    int hist_w = 1024; int hist_h = 400;
+    int hist_w = 256; int hist_h = 400;
     int bin_w = cvRound( (double) hist_w/histSize );
 
     Mat histImage( hist_h, hist_w, CV_8UC3, Scalar( 0,0,0) );

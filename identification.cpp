@@ -73,4 +73,7 @@ int main(int argc, char **argv) {
         mean_histogram(imgs);
     }
 
+    Mat test_img = imread("../FoodCategories/pure/pure_beans1.jpg");
+    find_histogram(test_img);
+
 }
