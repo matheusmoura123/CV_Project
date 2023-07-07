@@ -8,6 +8,55 @@
 using namespace cv;
 using namespace std;
 
+array<double, 2> compare_histogram(const Mat& src_hist, const vector<Mat>& categories_hist) {
+
+    double comp_values;
+    double max_value=0, max_index;
+    int k = 0;
+    for(auto &type_hist: categories_hist) {
+        comp_values = compareHist(src_hist, type_hist, 0);
+        cout << comp_values << endl;
+        if (comp_values > max_value) {
+            max_value = comp_values;
+            max_index = k;
+        }
+        k++;
+    }
+    return {max_value, max_index};
+}
+
+Mat mean_histogram2(const vector<Mat>& vector_src) {
+
+    int h_bins = 180, s_bins = 256, v_bins = 256;
+    int histSize[] = { h_bins, s_bins, v_bins };
+    // hue varies from 0 to 179, saturation and value from 0 to 255
+    float h_ranges[] = { 0, 180 };
+    float s_ranges[] = { 0, 256 };
+    float v_ranges[] = { 0, 256 };
+    const float* ranges[] = { h_ranges, s_ranges, v_ranges };
+    // Use all channels
+    int channels[] = { 0, 1, 2 };
+
+    bool uniform = true;
+    bool accumulate = false;
+
+    int sz[] = {180, 256, 256};
+    Mat mean_hist(3, sz, CV_8UC1);
+    Mat img_hist;
+
+    int k = 0;
+    for (auto &src: vector_src) {
+        cvtColor(src, src, COLOR_BGR2HSV);
+
+        calcHist(&src, 1, channels, Mat(), img_hist, 3, histSize, ranges, uniform, accumulate);
+        normalize(img_hist, img_hist, 0, 1, NORM_MINMAX, -1, Mat());
+        add(mean_hist, img_hist, mean_hist, noArray(), 5);
+        k++;
+    }
+    mean_hist = mean_hist/k;
+    return mean_hist;
+}
+
 Mat mean_histogram(const vector<Mat>& vector_src) {
     int histSize = 255;
 
@@ -19,7 +68,7 @@ Mat mean_histogram(const vector<Mat>& vector_src) {
 
     // Draw the histograms for B, G and R
     int hist_w = 256;
-    int hist_h = 400;
+    int hist_h = 100;
     int bin_w = cvRound((double) hist_w / histSize);
 
     Mat histImage(hist_h, hist_w, CV_8UC3, Scalar(0, 0, 0));
@@ -43,9 +92,8 @@ Mat mean_histogram(const vector<Mat>& vector_src) {
                  Point(bin_w * (i), hist_h - cvRound(mean_hist.at<float>(i))),
                  Scalar(255, 0, 0), 2, 8, 0);
         }
-        namedWindow("calcHist Demo");
-        imshow("calcHist Demo", histImage);
-        waitKey(0);
+        namedWindow("Mean_hist");
+        imshow("Mean_hist", histImage);
 
         return mean_hist;
 
@@ -90,9 +138,8 @@ Mat mean_histogram(const vector<Mat>& vector_src) {
                  Point(bin_w * (i), hist_h - cvRound(mean_hist[2].at<float>(i))),
                  Scalar(0, 0, 255), 2, 8, 0);
         }
-        namedWindow("calcHist Demo");
-        imshow("calcHist Demo", histImage);
-        waitKey(0);
+        namedWindow("Mean_hist");
+        imshow("Mean_hist", histImage);
 
         Mat m;
         merge(mean_hist, 3, m);
@@ -109,7 +156,7 @@ array<int,4> find_histogram(const Mat& src) {
     bool uniform = true; bool accumulate = false;
 
     // Draw the histograms for B, G and R
-    int hist_w = 256; int hist_h = 400;
+    int hist_w = 256; int hist_h = 100;
     int bin_w = cvRound( (double) hist_w/histSize );
 
     Mat histImage( hist_h, hist_w, CV_8UC3, Scalar( 0,0,0) );

@@ -40,7 +40,7 @@ const vector<food> foodCategories{
         {"beans", 13, 10},
         {"potato", 13, 11},
         //{"lettuce", 15, 12},
-        {"bread", 18, 13},
+        //{"bread", 18, 13},
         //{"carrot", 6, 14},
         //{"pepper", 2, 15},
         //{"tomato", 10, 16},
@@ -62,7 +62,7 @@ int main(int argc, char **argv) {
     for (index; index < foodCategories.size(); ++index) {
         if (className == foodCategories[index].className) break;
     }
-
+    vector<Mat> categories_hist;
     for (auto &food: foodCategories ) {
         vector<Mat> imgs;
         for (int i = 1; i <= food.imageNumbers; ++i) {
@@ -70,10 +70,17 @@ int main(int argc, char **argv) {
             //find_histogram(img);
             imgs.push_back(img);
         }
-        mean_histogram(imgs);
+        categories_hist.push_back(mean_histogram2(imgs));
     }
 
-    Mat test_img = imread("../FoodCategories/pure/pure_beans1.jpg");
-    find_histogram(test_img);
 
+    vector<Mat> test_img = {imread("../FoodCategories/pure/pure_beans3.jpg")};
+    Mat test_hist = mean_histogram2(test_img);
+
+    array<double, 2> values;
+    values = compare_histogram(test_hist, categories_hist);
+
+    cout << "--------------------------------------" << endl;
+    cout << values[0] << endl;
+    cout << values[1]+1 << endl;
 }
