@@ -51,7 +51,7 @@ const vector<food> foodCategories{
 
 
 int main(int argc, char **argv) {
-    string path;
+    string path = "../FoodCategories/pure/pure_beans2.jpg";
     if (argc == 2) {
         path = argv[1];
     }
@@ -73,8 +73,7 @@ int main(int argc, char **argv) {
         categories_hist.push_back(mean_histogram2(imgs));
     }
 
-
-    vector<Mat> test_img = {imread("../FoodCategories/pure/pure_beans3.jpg")};
+    vector<Mat> test_img = {imread(path)};
     Mat test_hist = mean_histogram2(test_img);
 
     array<double, 2> values;
@@ -82,5 +81,5 @@ int main(int argc, char **argv) {
 
     cout << "--------------------------------------" << endl;
     cout << values[0] << endl;
-    cout << values[1]+1 << endl;
+    cout << foodCategories[int(values[1])].className << endl;
 }
