@@ -180,13 +180,14 @@ array<int,4> find_histogram(const Mat& src) {
         calcHist( &src, 1, 0, Mat(), gray_hist, 1, &histSize, &histRange, uniform, accumulate );
         normalize(gray_hist, gray_hist, 0, histImage.rows, NORM_MINMAX, -1, Mat() );
 
+        /*
         for( int i = 1; i < histSize; i++ )
         {
             line( histImage, Point( bin_w*(i-1), hist_h - cvRound(gray_hist.at<float>(i-1)) ) ,
                   Point( bin_w*(i), hist_h - cvRound(gray_hist.at<float>(i)) ),
                   Scalar( 255, 0, 0), 2, 8, 0  );
 
-            /*
+
             if (b_hist.at<float>(i) > max) {
                 max = b_hist.at<float>(i);
                 position = i;
@@ -197,9 +198,9 @@ array<int,4> find_histogram(const Mat& src) {
                 max_values[0] = position;
             }
             //max_values.push_back(r_hist.at<float>(i));
-     */
-        }
 
+        }
+    */
 
         for( int i = 1; i < histSize/4; i++ ){
             if (gray_hist.at<float>(i) > max1) {
@@ -237,7 +238,7 @@ array<int,4> find_histogram(const Mat& src) {
         normalize(r_hist, r_hist, 0, histImage.rows, NORM_MINMAX, -1, Mat() );
 
 
-
+        /*
         for( int i = 1; i < histSize; i++ )
         {
             line( histImage, Point( bin_w*(i-1), hist_h - cvRound(b_hist.at<float>(i-1)) ) ,
@@ -252,7 +253,7 @@ array<int,4> find_histogram(const Mat& src) {
                   Scalar( 0, 0, 255), 2, 8, 0  );
 
 
-            /*
+
             if (b_hist.at<float>(i) > max) {
                 max = b_hist.at<float>(i);
                 position = i;
@@ -263,8 +264,8 @@ array<int,4> find_histogram(const Mat& src) {
                 max_values[0] = position;
             }
             //max_values.push_back(r_hist.at<float>(i));
-     */
         }
+         */
 
         for( int i = 1; i < histSize/4; i++ ){
             if (b_hist.at<float>(i) > max1) {
@@ -287,7 +288,7 @@ array<int,4> find_histogram(const Mat& src) {
         }
     }
 
-
+    /*
     cout << "---------------------------" << endl;
     cout << max_values[0] << endl <<  max_values[1] << endl <<  max_values[2] << endl <<  max_values[3] << endl;
 
@@ -298,6 +299,7 @@ array<int,4> find_histogram(const Mat& src) {
     namedWindow("calcHist Demo");
     imshow("calcHist Demo", histImage);
     waitKey(0);
+     */
 
     return max_values;
 
