@@ -1,4 +1,4 @@
-#include "main_header.h"
+#include "../main_header.h"
 
 const string TRAY_PATH = "../Food_leftover_dataset/tray";
 const string IMAGE_EXT = ".jpg";
