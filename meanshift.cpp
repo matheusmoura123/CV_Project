@@ -42,7 +42,7 @@ int main(int argc, char **argv) {
     for (auto &sp_i: sp) {
         for (auto &sr_i: sr) {
             cout << "Calculating meanshift..." << endl;
-            pyrMeanShiftFiltering(bi_img, mean_img, sp_i, sr_i, 3, termcrit);
+            pyrMeanShiftFiltering(bi_img, mean_img, sp_i, sr_i, 2, termcrit);
             string w_name = to_string(sp_i) + "-" + to_string(sr_i) + " Level 3";
             cout << w_name << endl;
             namedWindow(w_name, WINDOW_NORMAL);
@@ -60,7 +60,7 @@ int main(int argc, char **argv) {
     gray_img.copyTo(otu_img);
     int width = otu_img.cols;
     int height = otu_img.rows;
-    int num_grid = 3;
+    int num_grid = 1;
     int step_SIZE_x = floor(width / num_grid);
     int step_SIZE_y = floor(height / num_grid);
     vector<Rect> mCells;
@@ -86,6 +86,7 @@ int main(int argc, char **argv) {
         }
     }
 
+    getContours(otu_img, otu_img);
    //invert otu
     otu_img = 255- otu_img;
     imshow("inv otu with grid", otu_img);
@@ -110,7 +111,6 @@ int main(int argc, char **argv) {
     imshow("mask", rgb_img);
     waitKey();
 }
-
 
 
 
@@ -222,4 +222,6 @@ int main(int argc, char **argv) {
     imshow(b_name, dst);
     waitKey(0);
     */
+
+
 
