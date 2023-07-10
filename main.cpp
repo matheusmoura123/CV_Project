@@ -1,6 +1,4 @@
-#include "segment_plates.h"
-#include "sift_matching.h"
-
+#include "main_header.h"
 
 int main(int argc, char** argv) {
     Mat img1,img2;

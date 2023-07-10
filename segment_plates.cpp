@@ -1,7 +1,4 @@
-#include "segment_plates.h"
-#include "sift_matching.h"
-#include "find_histogram.h"
-
+#include "main_header.h"
 
 vector<Mat> segment_plates(const Mat& img) {
 

@@ -1,13 +1,4 @@
-#include <iostream>
-#include <opencv2/imgcodecs.hpp>
-#include <opencv2/imgproc.hpp>
-#include <opencv2/highgui.hpp>
-
-#include "segment_plates.h"
-#include "find_histogram.h"
-
-using namespace cv;
-using namespace std;
+#include "main_header.h"
 
 int main(int argc, char **argv) {
     string path;
@@ -86,7 +77,6 @@ int main(int argc, char **argv) {
         }
     }
 
-    getContours(otu_img, otu_img);
    //invert otu
     otu_img = 255- otu_img;
     imshow("inv otu with grid", otu_img);

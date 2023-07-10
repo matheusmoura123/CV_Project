@@ -1,31 +1,9 @@
-#include <iostream>
-#include <opencv2/imgcodecs.hpp>
-#include <opencv2/imgproc.hpp>
-#include <opencv2/highgui.hpp>
-
-#include "segment_plates.h"
-#include "find_histogram.h"
-
-using namespace cv;
-using namespace std;
+#include "main_header.h"
 
 const string TRAY_PATH = "../Food_leftover_dataset/tray";
 const string DATASET_PATH_CATEGORIES = "../FoodCategories/";
 const string IMAGE_EXT = ".jpg";
 const int NUMBER_TRAYS = 8;
-
-
-class food {
-public:
-    string className;
-    int imageNumbers;
-    int classLable;
-    food(string x, int y, int z) { // Constructor with parameters
-        className = std::move(x);
-        imageNumbers = y;
-        classLable = z;
-    }
-};
 
 const vector<food> pastaCategories{
         {"pesto", 4, 1},

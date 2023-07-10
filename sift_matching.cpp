@@ -1,12 +1,4 @@
-#include <opencv2/core.hpp>
-#include <opencv2/highgui.hpp>
-#include <iostream>
-#include <opencv2/features2d/features2d.hpp>
-#include <vector>
-#include "sift_matching.h"
-
-using namespace std;
-using namespace cv;
+#include "main_header.h"
 
 int sift_matching(const Mat& img1, const Mat& img2){
 

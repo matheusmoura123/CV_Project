@@ -1,12 +1,4 @@
-#include <opencv2/core.hpp>
-#include <opencv2/highgui.hpp>
-#include <opencv2/imgcodecs.hpp>
-#include <opencv2/imgproc.hpp>
-#include <iostream>
-#include <opencv2/core/types_c.h>
-
-using namespace cv;
-using namespace std;
+#include "main_header.h"
 
 array<double, 2> compare_histogram(const Mat& src_hist, const vector<Mat>& categories_hist) {
 

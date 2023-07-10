@@ -1,4 +1,11 @@
-#include "predict_categories.h"
+#include "main_header.h"
+
+using namespace cv::ml;
+
+
+const string DATASET_PATH = "../FoodCategories/";
+const string IMAGE_EXT = ".jpg";
+
 
 int NUMBER_CLASSES = 0;
 int DICT_SIZE = 0;

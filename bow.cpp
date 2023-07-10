@@ -1,9 +1,10 @@
-#include "segment_plates.h"
-#include "predict_categories.h"
+#include "main_header.h"
 
 const string TRAY_PATH = "../Food_leftover_dataset/tray";
+const string IMAGE_EXT = ".jpg";
 bool EXIT = false;
 const int NUMBER_TRAYS = 8;
+
 
 vector<food> categories_left;
 const vector<food> pastaCategories{
