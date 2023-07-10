@@ -54,7 +54,7 @@ const vector<food> foodCategories{
 
 
 int main(int argc, char **argv) {
-    /*
+
     //Read all trays and segment plates
     for (int i = 0; i < NUMBER_TRAYS; ++i) {
         for (int j = 0; j < 4; ++j) {
@@ -91,7 +91,7 @@ int main(int argc, char **argv) {
             }
         }
     }
-    */
+
 
     //Find the index of className
     string className = "potato";
