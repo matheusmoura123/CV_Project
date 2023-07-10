@@ -9,8 +9,11 @@
 using namespace cv;
 using namespace std;
 
-const string DATASET_PATH = "../FoodCategories/";
+const string TRAY_PATH = "../Food_leftover_dataset/tray";
+const string DATASET_PATH_CATEGORIES = "../FoodCategories/";
 const string IMAGE_EXT = ".jpg";
+const int NUMBER_TRAYS = 8;
+
 
 class food {
 public:
@@ -45,16 +48,50 @@ const vector<food> foodCategories{
         //{"pepper", 2, 15},
         //{"tomato", 10, 16},
         {"pasta", 20, 17},
-        {"salad", 15, 18},
+        //{"salad", 15, 18},
         //{"plate_salad", 3, 19},
 };
 
 
 int main(int argc, char **argv) {
-    string path = "../FoodCategories/pure/pure_beans2.jpg";
-    if (argc == 2) {
-        path = argv[1];
+    /*
+    //Read all trays and segment plates
+    for (int i = 0; i < NUMBER_TRAYS; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            int key;
+            string file_name;
+            switch (j) {
+                case 0:
+                    file_name = "food_image";
+                    break;
+                case 1:
+                    file_name = "leftover1";
+                    break;
+                case 2:
+                    file_name = "leftover2";
+                    break;
+                case 3:
+                    file_name = "leftover3";
+                    break;
+                default:
+                    file_name = "food_image";
+            }
+
+            Mat img;
+            img = imread(TRAY_PATH + to_string(i + 1) + "/" + file_name + IMAGE_EXT);
+
+            vector<Mat> dishes;
+            dishes = segment_plates(img);
+            for (const auto & dishe : dishes) {
+                string window_name_img = "Tray " + to_string(i + 1) + " " + file_name;
+                namedWindow(window_name_img);
+                imshow(window_name_img, dishe);
+                cout << dishe.size() << endl;
+                waitKey(0);
+            }
+        }
     }
+    */
 
     //Find the index of className
     string className = "potato";
@@ -62,17 +99,22 @@ int main(int argc, char **argv) {
     for (index; index < foodCategories.size(); ++index) {
         if (className == foodCategories[index].className) break;
     }
+    //Load all reference imgs
     vector<Mat> categories_hist;
     for (auto &food: foodCategories ) {
         vector<Mat> imgs;
         for (int i = 1; i <= food.imageNumbers; ++i) {
-            Mat img = imread(DATASET_PATH + food.className + "/" + food.className + to_string(i) + IMAGE_EXT);
+            Mat img = imread(DATASET_PATH_CATEGORIES + food.className + "/" + food.className + to_string(i) + IMAGE_EXT);
             //find_histogram(img);
             imgs.push_back(img);
         }
         categories_hist.push_back(mean_histogram2(imgs));
     }
 
+    string path = "../FoodCategories/pure/pure_potato1.jpg";
+    if (argc == 2) {
+        path = argv[1];
+    }
     vector<Mat> test_img = {imread(path)};
     Mat test_hist = mean_histogram2(test_img);
 
@@ -82,4 +124,5 @@ int main(int argc, char **argv) {
     cout << "--------------------------------------" << endl;
     cout << values[0] << endl;
     cout << foodCategories[int(values[1])].className << endl;
+
 }
