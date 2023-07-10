@@ -10,30 +10,32 @@ int main(int argc, char **argv) {
     Mat rgb_img, hsv_img, gray_img, mean_img;
     Mat img = imread(path);
     string name = "Original Img";
-    namedWindow(name, WINDOW_NORMAL);
-    imshow(name, img);
+    //namedWindow(name, WINDOW_NORMAL);
+    //imshow(name, img);
 
     //Separate dishes
     vector<Mat> dishes;
     vector<string> predicted_classes;
     dishes = segment_plates(img);
     rgb_img = dishes[0];
+    imshow("Plate", rgb_img);
     //cvtColor(rgb_img, hsv_img, COLOR_BGR2HSV);
 
     //Bilateral filter to try to create sharper edges
     Mat bi_img;
     bilateralFilter(rgb_img, bi_img, 5, 150, 50);
-    imshow("bilateral filter", bi_img);
+    //imshow("bilateral filter", bi_img);
+
 
     //MeanShift
     TermCriteria termcrit = TermCriteria(TermCriteria::MAX_ITER + TermCriteria::EPS, 20, 1);
     vector<int> sp{50}; //Spatial window radius
-    vector<int> sr{70}; //Color window radius
+    vector<int> sr{85}; //Color window radius
     vector<int> p{0, 1, 2, 3};
     for (auto &sp_i: sp) {
         for (auto &sr_i: sr) {
             cout << "Calculating meanshift..." << endl;
-            pyrMeanShiftFiltering(bi_img, mean_img, sp_i, sr_i, 2, termcrit);
+            pyrMeanShiftFiltering(bi_img, mean_img, sp_i, sr_i, 1, termcrit);
             string w_name = to_string(sp_i) + "-" + to_string(sr_i) + " Level 3";
             cout << w_name << endl;
             namedWindow(w_name, WINDOW_NORMAL);
@@ -46,8 +48,12 @@ int main(int argc, char **argv) {
     cvtColor(mean_img, gray_img, COLOR_BGR2GRAY);
     find_histogram(gray_img);
 
+
+    /*
+
     //Divide Img in multiple sections num_grid X num_grid and perform Otu separately in each one
     Mat otu_img;
+
     gray_img.copyTo(otu_img);
     int width = otu_img.cols;
     int height = otu_img.rows;
@@ -77,24 +83,70 @@ int main(int argc, char **argv) {
         }
     }
 
-    Mat img_out = get_contours(bi_img);
+    //invert otu
+    //otu_img = 255- otu_img;
+
+     */
+
+
+    Mat hsv_segment = segment_hsv(mean_img, 10, 150, 100);
+    // only converting hsv_segment to otu, so I don't have to change each of the name
+    Mat otu_img = hsv_segment;
+
+
+
+
+    Mat otsu_rgb;
+    Mat in[3] = {otu_img, otu_img, otu_img};
+    merge(in, 3, otsu_rgb);
+
+    for (int i = 0; i < otu_img.rows; ++i)
+    {
+        for (int j = 0; j < otu_img.cols; ++j)
+        {
+            int blue_temp = int(rgb_img.at<Vec3b>(i,j)[0]);
+            int green_temp = int(rgb_img.at<Vec3b>(i,j)[1]);
+            int red_temp = int(rgb_img.at<Vec3b>(i,j)[2]);
+
+            if(blue_temp == 0 && green_temp == 0 && red_temp == 0) {
+                otsu_rgb.at<Vec3b>(i,j)[0] = 0;
+                otsu_rgb.at<Vec3b>(i,j)[1] = 0;
+                otsu_rgb.at<Vec3b>(i,j)[2] = 0;
+            }
+        }
+    }
+
+    imshow("inv otu with grid", otsu_rgb);
+
+
+
+
+    Mat img_out = get_contours(otsu_rgb);
+
+    namedWindow("konture");
     imshow("konture", img_out);
-    waitKey(0);
-   //invert otu
-    otu_img = 255- otu_img;
-    imshow("inv otu with grid", otu_img);
+
+    cvtColor(img_out, img_out, COLOR_BGR2GRAY);
 
     // Morphological Closing
-    int morph_size = 1;
-    Mat element = getStructuringElement(MORPH_RECT, Size(2 * morph_size + 1, 2 * morph_size + 1), Point(morph_size, morph_size));
+    int morph_size = 2;
+    Mat element = getStructuringElement(MORPH_CROSS, Size(2 * morph_size + 1, 2 * morph_size + 1), Point(morph_size, morph_size));
     Mat morph_img;
-    morphologyEx(otu_img, morph_img, MORPH_CLOSE, element, Point(-1, -1), 10);
+    morphologyEx(img_out, morph_img, MORPH_OPEN, element, Point(-1, -1), 6);
     imshow("morph", morph_img);
+
+    Mat morph_rgb;
+    Mat chan[3] = {morph_img, morph_img, morph_img};
+    merge(chan, 3, morph_rgb);
+
+    Mat final = get_contours(morph_rgb);
+    cvtColor(final, final, COLOR_BGR2GRAY);
+
 
     //Using Otu as mask
     for (int y = 0; y < rgb_img.rows; ++y) {
         for (int x = 0; x < rgb_img.cols; ++x) {
-            if(morph_img.at<uchar>(y, x) == 0 ) {
+            if(final.at<uchar>(y, x) == 0 ) {
                 rgb_img.at<Vec3b>(y,x)[0] = 0;
                 rgb_img.at<Vec3b>(y,x)[1] = 0;
                 rgb_img.at<Vec3b>(y,x)[2] = 0;
@@ -103,6 +155,7 @@ int main(int argc, char **argv) {
     }
     imshow("mask", rgb_img);
     waitKey();
+
 }
 
 

@@ -53,11 +53,13 @@ vector<Mat> segment_plates(const Mat& img) {
 
         Mat segmented = mask.clone();
 
+        /*
         for (int l = 0; l < 4; ++l){
             segment_hsv(mask, segmented,histogram[l] , 200, 100);
             //imshow("Segmented", segmented);
             //waitKey();
         }
+         */
 
 
         //CROPPING PLATES
@@ -96,16 +98,40 @@ Mat get_contours(const Mat& img) {
     vector<Vec4i> hierarchy;
 
     findContours(gray, contours, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
-    drawContours(img, contours, 0, Scalar(0, 0, 255), 1);
+    //drawContours(img_out, contours, -1, Scalar(0, 0, 255), 1);
 
-    /*
     vector<vector<Point>> conPoly(contours.size());
+    vector<int> area;
 
-    float peri = arcLength(contours[0], false);
-    approxPolyDP(contours[0], conPoly[0], 0.02*peri, false);
-    drawContours(img_out, conPoly, 0, Scalar(0, 0, 255), 1);
-    //line(img, conPoly[0][1], conPoly[0][3],Scalar(0,0,255), 1, LINE_AA);
-     */
+    for (int i = 0; i < contours.size(); i++) {
+
+        int area_tmp = contourArea(contours[i]);
+
+        area.push_back(area_tmp);
+
+//        drawContours(img_out, contours, i, Scalar(255, 0, 255), 2);
+
+
+    }
+
+    sort(area.begin(), area.end(), greater<int>());
+
+    for (int j = 0; j < contours.size(); j++) {
+
+        int area_tmp = contourArea(contours[j]);
+
+
+        if(area_tmp == area[0]){
+            fillPoly(img_out, contours[j], Scalar(255, 255, 255));
+        }
+        else{
+            fillPoly(img_out, contours[j], Scalar(0, 0, 0));
+        }
+
+    }
+
+
+    cout << area.size() << endl;
 
 
     return img_out;
@@ -113,11 +139,11 @@ Mat get_contours(const Mat& img) {
 }
 
 
-int segment_hsv(const Mat& src, Mat &dst, int T_hue, int T_sat, int T_value) {
-    Mat img_hsv;
+Mat segment_hsv(const Mat& src, int T_hue, int T_sat, int T_value) {
+    Mat img_hsv, dst;
 
     cvtColor(src, img_hsv, COLOR_BGR2HSV);
-    cvtColor(dst, dst, COLOR_BGR2HSV);
+    dst = img_hsv.clone();
 
 
     for (int i = 0; i < dst.rows; ++i)
@@ -130,7 +156,7 @@ int segment_hsv(const Mat& src, Mat &dst, int T_hue, int T_sat, int T_value) {
             int value = int(img_hsv.at<Vec3b>(i,j)[2]);
 
 
-            if(abs(hue - 5) < 50 && abs(saturation - T_sat) < 60   && abs(value - T_value) < 150) {
+            if(abs(hue - T_hue) < 50 && abs(saturation - T_sat) < 60   && abs(value - T_value) < 150) {
                 dst.at<Vec3b>(i,j)[0] = 255;
                 dst.at<Vec3b>(i,j)[1] = 255;
                 dst.at<Vec3b>(i,j)[2] = 255;
@@ -147,11 +173,15 @@ int segment_hsv(const Mat& src, Mat &dst, int T_hue, int T_sat, int T_value) {
     erode(dst, dst, kernel);
     dilate(dst, dst, kernel);
 
-    //imshow("hsv img", dst);
-    //waitKey(0);
+    Mat final;
+    cvtColor(dst, dst, COLOR_HSV2BGR);
+    cvtColor(dst, final, COLOR_BGR2GRAY);
+
+    imshow("hsv img", final);
+    waitKey(0);
 
 
-    return 0;
+    return final;
 
 }
 
