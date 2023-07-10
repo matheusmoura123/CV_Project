@@ -77,6 +77,9 @@ int main(int argc, char **argv) {
         }
     }
 
+    Mat img_out = get_contours(bi_img);
+    imshow("konture", img_out);
+    waitKey(0);
    //invert otu
     otu_img = 255- otu_img;
     imshow("inv otu with grid", otu_img);
