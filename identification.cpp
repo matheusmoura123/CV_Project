@@ -77,6 +77,8 @@ int main(int argc, char **argv) {
     for (index; index < foodCategories.size(); ++index) {
         if (className == foodCategories[index].className) break;
     }
+
+
     //Load all reference imgs
     vector<Mat> categories_hist;
     for (auto &food: foodCategories ) {

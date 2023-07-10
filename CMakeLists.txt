@@ -13,5 +13,5 @@ target_link_libraries( ${PROJECT_NAME} ${OpenCV_LIBS} )
 add_executable(meanshift ../meanshift.cpp ../segment_plates.cpp ../find_histogram.cpp ../main_header.h)
 target_link_libraries(meanshift ${OpenCV_LIBS} )
 
-add_executable(identification ../segment_plates.cpp ../find_histogram.cpp ../identification.cpp ../main_header.h)
+add_executable(identification ../identification.cpp ../segment_plates.cpp ../find_histogram.cpp  ../main_header.h)
 target_link_libraries(identification ${OpenCV_LIBS} )
