@@ -79,11 +79,12 @@ int main(int argc, char **argv) {
                 }
             }
 
-
+            /*
             //Print the boxes
             for(const auto box:boxes) {
                 cout << box.ID << " " << box.p0x << " " << box.p0y << " " << box.width << " " << box.height << endl;
             }
+            */
 
             //Creating bounding_box result files
             string result_box_path = RESULTS_PATH + to_string(i + 1) + "/bounding_boxes/" + file_name + "_result_box.txt";
@@ -94,10 +95,12 @@ int main(int argc, char **argv) {
             string true_box_path = TRAY_PATH + to_string(i + 1) + "/bounding_boxes/" + file_name + "_bounding_box.txt";
             box_file_reader(truth_boxes, true_box_path);
 
+            /*
             //Print the boxes
             for(const auto box:truth_boxes) {
                 cout << box.ID << " " << box.p0x << " " << box.p0y << " " << box.width << " " << box.height << endl;
             }
+             */
 
             //Find the index of ID
             int ID = 12;
@@ -111,7 +114,7 @@ int main(int argc, char **argv) {
 
             //Compare two boxes
             double salad_IoU = boxes_IoU(truth_boxes[index2], boxes[index1]);
-            cout << "IoU = " << salad_IoU << endl;
+            cout << "Salad IoU = " << salad_IoU << endl;
         }
     }
 
@@ -136,11 +139,12 @@ int main(int argc, char **argv) {
     vector<Mat> test_img = {imread(path)};
     Mat test_hist = mean_histogram2(test_img);
 
-    array<double, 2> values;
+    array<double, 3> values{};
     values = compare_histogram(test_hist, categories_hist);
 
     cout << "--------------------------------------" << endl;
     cout << values[0] << endl;
     cout << foodCategories[int(values[1])].className << endl;
+    cout << "Confidence: " << values[2] << endl;
 
 }

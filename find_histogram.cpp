@@ -1,20 +1,24 @@
 #include "main_header.h"
 
-array<double, 2> compare_histogram(const Mat& src_hist, const vector<Mat>& categories_hist) {
+array<double, 3> compare_histogram(const Mat& src_hist, const vector<Mat>& categories_hist) {
 
-    double comp_values;
-    double max_value=0, max_index;
+    double comp_values, sum_comp_values = 0;
+    double confidence;
+    double max_value = 0, sec_max,  max_index;
     int k = 0;
     for(auto &type_hist: categories_hist) {
         comp_values = compareHist(src_hist, type_hist, 0);
+        sum_comp_values += comp_values;
         //cout << comp_values << endl;
-        if (comp_values > max_value) {
+        if (comp_values >= max_value) {
+            sec_max = max_value;
             max_value = comp_values;
             max_index = k;
         }
         k++;
     }
-    return {max_value, max_index};
+    confidence = max_value/(max_value+sec_max);
+    return {max_value, max_index, confidence};
 }
 
 Mat mean_histogram2(const vector<Mat>& vector_src) {
