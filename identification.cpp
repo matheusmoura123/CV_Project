@@ -88,8 +88,15 @@ int main(int argc, char **argv) {
             //Creating bounding_box result files
             string result_box_path = RESULTS_PATH + to_string(i + 1) + "/bounding_boxes/" + file_name + "_result_box.txt";
             box_file_writer(boxes, result_box_path);
+
+            //Read box from file
+            vector<box> truth_boxes;
+            string true_box_path = TRAY_PATH + to_string(i + 1) + "/bounding_boxes/" + file_name + "_bounding_box.txt";
+            box_file_reader(truth_boxes, true_box_path);
         }
     }
+
+
 
     /*
     //Find the index of className
