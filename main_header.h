@@ -4,6 +4,7 @@
 #include <iostream>
 #include <cmath>
 #include <utility>
+#include <optional>
 #include <sys/stat.h>
 #include <opencv2/opencv.hpp>
 #include <opencv2/core.hpp>
@@ -29,6 +30,22 @@ public:
         className = std::move(x);
         imageNumbers = y;
         classLable = z;
+    }
+};
+
+class box {
+public:
+    int ID;
+    int p0x;
+    int p0y;
+    int width;
+    int height;
+    box(int a, int b, int c, int d, int e) { // Constructor with parameters
+        ID = a;
+        p0x = b;
+        p0y = c;
+        width = d;
+        height = e;
     }
 };
 

@@ -12,7 +12,6 @@ const vector<food> pastaCategories{
         {"pasta_clams", 8, 4},
 };
 const vector<food> foodCategories{
-        //{"plate", 9, 0},
         {"rice", 7, 5},
         {"pork", 9, 6},
         {"fish", 10, 7},
@@ -20,12 +19,13 @@ const vector<food> foodCategories{
         {"seafood", 5, 9},
         {"beans", 13, 10},
         {"potato", 13, 11},
+        {"pasta", 20, 17},
         //{"lettuce", 15, 12},
         //{"bread", 18, 13},
         //{"carrot", 6, 14},
         //{"pepper", 2, 15},
         //{"tomato", 10, 16},
-        {"pasta", 20, 17},
+        //{"plate", 9, 0},
         //{"salad", 15, 18},
         //{"plate_salad", 3, 19},
 };
@@ -33,9 +33,14 @@ const vector<food> foodCategories{
 
 int main(int argc, char **argv) {
 
+    vector<Mat> dishes;
+    vector<int> dishes_areas;
+    optional<vector<box>> boxes;
     //Read all trays and segment plates
+    //for (int i = 0; i < NUMBER_TRAYS; ++i) {
     for (int i = 0; i < NUMBER_TRAYS; ++i) {
-        for (int j = 0; j < 4; ++j) {
+        //for (int j = 0; j < 4; ++j) {
+        for (int j = 0; j < 1; ++j) {
             int key;
             string file_name;
             switch (j) {
@@ -58,18 +63,24 @@ int main(int argc, char **argv) {
             Mat img;
             img = imread(TRAY_PATH + to_string(i + 1) + "/" + file_name + IMAGE_EXT);
 
-            vector<Mat> dishes;
-            dishes = segment_plates(img);
+            dishes = segment_plates(img, boxes);
             for (const auto & dishe : dishes) {
                 string window_name_img = "Tray " + to_string(i + 1) + " " + file_name;
                 namedWindow(window_name_img);
                 imshow(window_name_img, dishe);
                 cout << dishe.size() << endl;
+                dishes_areas.push_back(int(dishe.cols*dishe.rows));
                 waitKey(0);
+            }
+            for (const auto box: *boxes) {
+                cout << box.p0x << endl;
             }
         }
     }
 
+    sort(dishes_areas.begin(), dishes_areas.end(), greater<int>());
+    if (dishes.size() > 2) {
+    }
 
     //Find the index of className
     string className = "potato";
@@ -77,7 +88,6 @@ int main(int argc, char **argv) {
     for (index; index < foodCategories.size(); ++index) {
         if (className == foodCategories[index].className) break;
     }
-
 
     //Load all reference imgs
     vector<Mat> categories_hist;
@@ -91,6 +101,7 @@ int main(int argc, char **argv) {
         categories_hist.push_back(mean_histogram2(imgs));
     }
 
+    //Test histogram comparison
     string path = "../FoodCategories/pure/pure_potato1.jpg";
     if (argc == 2) {
         path = argv[1];
