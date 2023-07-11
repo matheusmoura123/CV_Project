@@ -21,16 +21,19 @@ double boxes_IoU (const box& box1, const box& box2) {
 }
 
 double masks_mIoU (const Mat& mask_truth, const Mat& mask_result) {
+    Mat gray_truth, gray_result;
+    cvtColor(mask_truth, gray_truth, COLOR_BGR2GRAY);
+    cvtColor(mask_result, gray_result, COLOR_BGR2GRAY);
     int number_of_categories = 14; //including background
     vector<double> overlap_cat(number_of_categories, 0);
     vector<double> truth_cat(number_of_categories, 0);
     vector<double> result_cat(number_of_categories, 0);
-    for (int y = 0; y < mask_truth.rows; ++y) {
-        for (int x = 0; x < mask_truth.cols; ++x) {
-            truth_cat[int(mask_truth.at<uchar>(y, x))] += 1;
-            result_cat[int(mask_result.at<uchar>(y, x))] += 1;
-            if (mask_truth.at<uchar>(y, x) == mask_result.at<uchar>(y, x)) {
-                overlap_cat[int(mask_truth.at<uchar>(y, x))] += 1;
+    for (int y = 0; y < gray_truth.rows; ++y) {
+        for (int x = 0; x < gray_truth.cols; ++x) {
+            truth_cat[gray_truth.at<uchar>(y, x)] += 1;
+            result_cat[gray_result.at<uchar>(y, x)] += 1;
+            if (gray_truth.at<uchar>(y, x) == gray_result.at<uchar>(y, x)) {
+                overlap_cat[gray_truth.at<uchar>(y, x)] += 1;
             }
         }
     }
@@ -41,12 +44,13 @@ double masks_mIoU (const Mat& mask_truth, const Mat& mask_result) {
             ++truth_categories;
         }
     }
+    /*
+    //Just showing each category count
     cout << "truth result overlap" << endl;
     for (int k = 0; k < number_of_categories; ++k) {
         cout << truth_cat[k] << " " << result_cat[k] << " " << overlap_cat[k] << endl;
     }
-
     cout << truth_categories << endl;
-
+    */
     return sum_IoU/truth_categories;
 }
