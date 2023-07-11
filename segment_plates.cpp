@@ -51,7 +51,7 @@ vector<box> segment_plates(const Mat& img, vector<Mat>& dst) {
         else colf_x = int(c[0])+int(radius);
 
         theCircles.push_back(mask(Range(row0_y, rowf_y), Range(col0_x, colf_x)));
-        plates_boxes.emplace_back(0, col0_x, row0_y, colf_x-col0_x, rowf_y-row0_y);
+        plates_boxes.emplace_back(-1, col0_x, row0_y, colf_x-col0_x, rowf_y-row0_y); //ID: -1 indicates that the box is not yet identified
     }
 
     dst.assign(theCircles.begin(), theCircles.end());

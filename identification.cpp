@@ -79,10 +79,13 @@ int main(int argc, char **argv) {
                 }
             }
 
+
+            //Print the boxes
             for(const auto box:boxes) {
                 cout << box.ID << " " << box.p0x << " " << box.p0y << " " << box.width << " " << box.height << endl;
             }
 
+            //Creating bounding_box result files
             string result_box_path = RESULTS_PATH + to_string(i + 1) + "/bounding_boxes/" + file_name + "_result_box.txt";
             box_file_writer(boxes, result_box_path);
         }

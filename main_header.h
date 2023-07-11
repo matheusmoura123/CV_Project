@@ -78,4 +78,6 @@ void predict_categories(vector<Mat> images_to_predict, vector<food> categories, 
 
 int box_file_writer (const vector<box>& boxes, const string& path);
 
+double boxes_IoU (const box& box1, const box& box2);
+
 #endif //CV_PROJECT_MAIN_HEADER_H
