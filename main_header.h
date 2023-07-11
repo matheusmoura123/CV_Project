@@ -2,6 +2,8 @@
 #define CV_PROJECT_MAIN_HEADER_H
 
 #include <iostream>
+#include <string>
+#include <fstream>
 #include <cmath>
 #include <utility>
 #include <sys/stat.h>
@@ -48,6 +50,12 @@ public:
     }
 };
 
+const string TRAY_PATH = "../Food_leftover_dataset/tray";
+const string CATEGORIES_PATH = "../FoodCategories/";
+const string RESULTS_PATH = "../FoodResults/tray";
+const string IMAGE_EXT = ".jpg";
+const int NUMBER_TRAYS = 8;
+
 array<int,4> find_histogram(const cv::Mat& src);
 
 Mat mean_histogram(const vector<cv::Mat>& src);
@@ -66,8 +74,8 @@ Mat contour_hsv(const Mat& img);
 
 int sift_matching(const cv::Mat& img1, const cv::Mat& img2);
 
-void predict_categories(vector<Mat> images_to_predict,
-                        vector<food> categories,
-                        vector<string>& predicted_classNames);
+void predict_categories(vector<Mat> images_to_predict, vector<food> categories, vector<string>& predicted_classNames);
+
+int box_file_writer (const vector<box>& boxes, const string& path);
 
 #endif //CV_PROJECT_MAIN_HEADER_H

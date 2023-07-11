@@ -8,25 +8,16 @@ vector<box> segment_plates(const Mat& img, vector<Mat>& dst) {
     cvtColor(img, gray, COLOR_BGR2GRAY);
     GaussianBlur(gray, Gaus,Size(3,3), 1.5, 1.5);
 
-    //Mat img(200, 200, CV_8UC3);
-
-
     // DETECTING CIRCLES (PLATES)
-
-    /*these parameters are good for every image except food_image tray 4, 6 and 7
-     * HoughCircles(Gaus, circles, HOUGH_GRADIENT, 1,
-                 Gaus.cols/3, 200, 50, 160, 500);
-     *     cvtColor(img, gray, COLOR_BGR2GRAY);
+    /*
+    these parameters are good for every image except food_image tray 4, 6 and 7
+    HoughCircles(Gaus, circles, HOUGH_GRADIENT, 1, Gaus.cols/3, 200, 50, 160, 500); cvtColor(img, gray, COLOR_BGR2GRAY);
     GaussianBlur(gray, Gaus,Size(3,3), 1.5, 1.5);
      */
 
     vector<Vec3f> circles;
-    HoughCircles(Gaus, circles, HOUGH_GRADIENT, 1,
-                 Gaus.cols/3, 200, 50, 160, 500);
-
-
+    HoughCircles(Gaus, circles, HOUGH_GRADIENT, 1, Gaus.cols/3, 200, 50, 160, 500);
     vector<Mat> plates;
-    vector<array<int,4>> histograms;
 
     for(size_t i = 0; i < circles.size(); i++)
     {
@@ -35,12 +26,8 @@ vector<box> segment_plates(const Mat& img, vector<Mat>& dst) {
         //Point center = Point(c[0], c[1]);
         int radius = c[2];
 
-
-        for (int j = 0; j < mask.rows; ++j)
-        {
-            for (int k= 0; k < mask.cols; ++k)
-            {
-
+        for (int j = 0; j < mask.rows; ++j) {
+            for (int k= 0; k < mask.cols; ++k) {
                 if((pow((int(c[1])-j),2) + pow((int(c[0])-k),2)) <= (pow((int(radius)),2))) {
                     mask.at<Vec3b>(j,k)[0] = int(img.at<Vec3b>(j,k)[0]);
                     mask.at<Vec3b>(j,k)[1] = int(img.at<Vec3b>(j,k)[1]);
@@ -48,20 +35,9 @@ vector<box> segment_plates(const Mat& img, vector<Mat>& dst) {
                 }
             }
         }
-        array<int,4> histogram = find_histogram(mask);
         plates.push_back(mask);
-        histograms.push_back(histogram);
 
         Mat segmented = mask.clone();
-
-        /*
-        for (int l = 0; l < 4; ++l){
-            segment_hsv(mask, segmented,histogram[l] , 200, 100);
-            //imshow("Segmented", segmented);
-            //waitKey();
-        }
-         */
-
 
         //CROPPING PLATES
         int row0_y, rowf_y, col0_x, colf_x;
@@ -75,18 +51,12 @@ vector<box> segment_plates(const Mat& img, vector<Mat>& dst) {
         else colf_x = int(c[0])+int(radius);
 
         theCircles.push_back(mask(Range(row0_y, rowf_y), Range(col0_x, colf_x)));
-        //imshow("Detected circles", mask);
-        //waitKey();
+        plates_boxes.emplace_back(0, col0_x, row0_y, colf_x-col0_x, rowf_y-row0_y);
     }
-
-   // Mat histogram = find_histogram(plates[0]);
-
-    //imshow("Detected circles", plates[0]);
-    //waitKey();
 
     dst.assign(theCircles.begin(), theCircles.end());
     return plates_boxes;
-};
+}
 
 
 Mat get_contours(const Mat& img) {
