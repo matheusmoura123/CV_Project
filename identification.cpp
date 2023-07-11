@@ -35,7 +35,7 @@ int main(int argc, char **argv) {
 
     vector<Mat> dishes;
     vector<int> dishes_areas;
-    optional<vector<box>> boxes;
+    vector<box> boxes;
     //Read all trays and segment plates
     //for (int i = 0; i < NUMBER_TRAYS; ++i) {
     for (int i = 0; i < NUMBER_TRAYS; ++i) {
@@ -63,7 +63,7 @@ int main(int argc, char **argv) {
             Mat img;
             img = imread(TRAY_PATH + to_string(i + 1) + "/" + file_name + IMAGE_EXT);
 
-            dishes = segment_plates(img, boxes);
+            segment_plates(img, dishes);
             for (const auto & dishe : dishes) {
                 string window_name_img = "Tray " + to_string(i + 1) + " " + file_name;
                 namedWindow(window_name_img);
@@ -71,9 +71,6 @@ int main(int argc, char **argv) {
                 cout << dishe.size() << endl;
                 dishes_areas.push_back(int(dishe.cols*dishe.rows));
                 waitKey(0);
-            }
-            for (const auto box: *boxes) {
-                cout << box.p0x << endl;
             }
         }
     }

@@ -16,7 +16,7 @@ int main(int argc, char **argv) {
     //Separate dishes
     vector<Mat> dishes;
     vector<string> predicted_classes;
-    dishes = segment_plates(img);
+    segment_plates(img, dishes);
     rgb_img = dishes[0];
     imshow("Plate", rgb_img);
     //cvtColor(rgb_img, hsv_img, COLOR_BGR2HSV);

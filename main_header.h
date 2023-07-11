@@ -4,7 +4,6 @@
 #include <iostream>
 #include <cmath>
 #include <utility>
-#include <optional>
 #include <sys/stat.h>
 #include <opencv2/opencv.hpp>
 #include <opencv2/core.hpp>
@@ -57,7 +56,7 @@ Mat mean_histogram2(const vector<cv::Mat>& src);
 
 array<double, 2> compare_histogram(const Mat& src_hist, const vector<Mat>& categories_hist);
 
-vector<Mat> segment_plates(const Mat& img);
+vector<box> segment_plates(const Mat& img, vector<Mat>& dst);
 
 Mat get_contours(const Mat& img);
 

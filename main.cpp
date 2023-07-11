@@ -8,7 +8,7 @@ int main(int argc, char** argv) {
 
     //sift_matching(img1,img2);
 
-    seg = segment_plates(img1);
+    segment_plates(img1, seg);
 
 
    // imshow("Original", img);

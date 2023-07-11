@@ -1,9 +1,10 @@
 #include "main_header.h"
 
-vector<Mat> segment_plates(const Mat& img) {
+vector<box> segment_plates(const Mat& img, vector<Mat>& dst) {
 
     Mat gray, Gaus, binaryImg;
     vector<Mat> theCircles;
+    vector<box> plates_boxes;
     cvtColor(img, gray, COLOR_BGR2GRAY);
     GaussianBlur(gray, Gaus,Size(3,3), 1.5, 1.5);
 
@@ -83,9 +84,8 @@ vector<Mat> segment_plates(const Mat& img) {
     //imshow("Detected circles", plates[0]);
     //waitKey();
 
-
-    return theCircles;
-
+    dst.assign(theCircles.begin(), theCircles.end());
+    return plates_boxes;
 };
 
 
