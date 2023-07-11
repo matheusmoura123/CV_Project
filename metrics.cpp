@@ -8,11 +8,11 @@ double boxes_IoU (const box& box1, const box& box2) {
     int x_max = max(box1.p0x+box1.width, box2.p0x+box2.width);
     for (int y = y_min; y <= y_max; ++y) {
         for (int x = x_min; x <= x_max; ++x) {
-            if ((y >= box1.p0y && y <= box1.p0y+box1.height) && (x >= box1.p0x && x <= box1.p0x+box1.width)) {
-                if ((y >= box2.p0y && y <= box2.p0y+box2.height) && (x >= box2.p0x && x <= box2.p0x+box2.width)) {
+            if (box1.is_inside(y,x)) {
+                if (box2.is_inside(y, x)) {
                     ++c[0];
                 } else ++c[1];
-            } else if ((y >= box2.p0y && y <= box2.p0y+box2.height) && (x >= box2.p0x && x <= box2.p0x+box2.width)) {
+            } else if (box2.is_inside(y, x)) {
                 ++c[2];
             }
         }

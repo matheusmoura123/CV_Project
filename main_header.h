@@ -48,7 +48,11 @@ public:
         width = d;
         height = e;
     }
+    [[nodiscard]] bool is_inside(const int& y, const int& x) const {
+        return((y >= p0y && y <= p0y+height) && (x >= p0x && x <= p0x+width));
+    }
 };
+
 
 const string TRAY_PATH = "../Food_leftover_dataset/tray";
 const string CATEGORIES_PATH = "../FoodCategories/";
