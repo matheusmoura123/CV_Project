@@ -93,19 +93,28 @@ int main(int argc, char **argv) {
             vector<box> truth_boxes;
             string true_box_path = TRAY_PATH + to_string(i + 1) + "/bounding_boxes/" + file_name + "_bounding_box.txt";
             box_file_reader(truth_boxes, true_box_path);
+
+            //Print the boxes
+            for(const auto box:truth_boxes) {
+                cout << box.ID << " " << box.p0x << " " << box.p0y << " " << box.width << " " << box.height << endl;
+            }
+
+            //Find the index of ID
+            int ID = 12;
+            int index1=0, index2=0;
+            for (index1; index1 < boxes.size(); ++index1) {
+                if (ID == boxes[index1].ID) break;
+            }
+            for (index2; index2 < truth_boxes.size(); ++index2) {
+                if (ID == truth_boxes[index2].ID) break;
+            }
+
+            //Compare two boxes
+            double salad_IoU = boxes_IoU(truth_boxes[index2], boxes[index1]);
+            cout << "IoU = " << salad_IoU << endl;
         }
     }
 
-
-
-    /*
-    //Find the index of className
-    string className = "potato";
-    int index=0;
-    for (index; index < foodCategories.size(); ++index) {
-        if (className == foodCategories[index].className) break;
-    }
-    */
 
     //Load all reference imgs
     vector<Mat> categories_hist;

@@ -33,7 +33,6 @@ int box_file_reader (vector<box>& boxes, const string& path) {
         if (fw.is_open())
         {
             while (getline(fw, line)) {
-                cout << line << endl;
                 string str;
                 vector<string> vec;
                 stringstream ss(line);

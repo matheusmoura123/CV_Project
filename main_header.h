@@ -74,6 +74,7 @@ int box_file_reader (vector<box>& boxes, const string& path);
 
 //metrics.cpp
 double boxes_IoU (const box& box1, const box& box2);
+double masks_mIoU (const Mat& mask1, const Mat& mask2);
 
 //archive
 int sift_matching(const cv::Mat& img1, const cv::Mat& img2);

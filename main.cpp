@@ -1,19 +1,12 @@
 #include "main_header.h"
 
 int main(int argc, char** argv) {
-    Mat img1,img2;
-    vector<Mat> seg;
-    img1 = imread(argv[1]);
-   //img2 = imread(argv[2]);
 
-    //sift_matching(img1,img2);
+    //test for masks_mIoU
+    Mat mask_truth = imread("../Food_leftover_dataset/tray5/masks/food_image_mask.png");
+    Mat mask_result = imread("../Food_leftover_dataset/tray5/masks/leftover1.png");
 
-    segment_plates(img1, seg);
-
-
-   // imshow("Original", img);
-   //waitKey(0);
-
+    cout << masks_mIoU(mask_truth, mask_result) << endl;
 
     return 0;
 }
