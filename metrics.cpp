@@ -20,6 +20,31 @@ double boxes_IoU (const box& box1, const box& box2) {
     return c[0]/(c[0]+c[1]+c[2]);
 }
 
+double img_mAp (const vector<box>& boxes_truth, const vector<box>& boxes_result) {
+    //The confidence doesn't matter because we have only one box for each class
+    double iou_tresh = 0.5;
+    double total_truth = boxes_truth.size();
+    vector<double> TP(boxes_result.size(), 0);
+    vector<double> FP(boxes_result.size(), 0);
+    vector<double> AP(boxes_result.size(), 0);
+    //vector<double> FN(boxes_result.size(), 0);
+    for (int i = 0; i < boxes_result.size(); ++i) {
+        double precision = 0, recall = 0, round_recall;
+        for (int j = 0; j < boxes_truth.size(); ++j) {
+            if (boxes_result[i].ID == boxes_truth[j].ID){
+                if (boxes_IoU(boxes_result[i], boxes_truth[j]) >= iou_tresh) {
+                    TP[i] += 1;
+                } else FP[i] += 1;
+            } else FP[i] += 1;
+        }
+        precision = TP[i]/(TP[i] + FP[i]);
+        recall = TP[i]/total_truth;
+        round_recall= floor(recall*10)+1;
+        AP[i] = precision*round_recall/11;
+    }
+    return std::accumulate(AP.begin(),AP.end(), 0.0)/boxes_result.size();
+}
+
 double masks_mIoU (const Mat& mask_truth, const Mat& mask_result) {
     Mat gray_truth, gray_result;
     cvtColor(mask_truth, gray_truth, COLOR_BGR2GRAY);
