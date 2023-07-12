@@ -45,8 +45,8 @@ int main(int argc, char **argv) {
     }
 
     //cvtColor(mean_img, gray_img, COLOR_HSV2BGR);
-    cvtColor(mean_img, gray_img, COLOR_BGR2GRAY);
-    find_histogram(gray_img);
+    //cvtColor(mean_img, gray_img, COLOR_BGR2GRAY);
+    //find_histogram(gray_img);
 
 
     /*
@@ -88,6 +88,7 @@ int main(int argc, char **argv) {
 
      */
 
+    //find_histogram(mean_img);
 
     Mat hsv_segment = segment_hsv(mean_img, 10, 150, 100);
     // only converting hsv_segment to otu, so I don't have to change each of the name

@@ -61,10 +61,11 @@ const string IMAGE_EXT = ".jpg";
 const int NUMBER_TRAYS = 8;
 
 //find_histogram.cpp
-array<int,4> find_histogram(const cv::Mat& src);
+array<int,3> find_histogram(const cv::Mat& src);
 Mat mean_histogram2(const vector<cv::Mat>& src);
 Mat mean_histogram(const vector<cv::Mat>& src);
 array<double, 3> compare_histogram(const Mat& src_hist, const vector<Mat>& categories_hist);
+void plot_histogram(const Mat& src);
 
 //segment_plates.cpp
 vector<box> segment_plates(const Mat& img, vector<Mat>& dst);
