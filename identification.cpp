@@ -40,20 +40,11 @@ int main(int argc, char **argv) {
             int key;
             string file_name;
             switch (j) {
-                case 0:
-                    file_name = "food_image";
-                    break;
-                case 1:
-                    file_name = "leftover1";
-                    break;
-                case 2:
-                    file_name = "leftover2";
-                    break;
-                case 3:
-                    file_name = "leftover3";
-                    break;
-                default:
-                    file_name = "food_image";
+                case 0: file_name = "food_image"; break;
+                case 1: file_name = "leftover1"; break;
+                case 2: file_name = "leftover2"; break;
+                case 3: file_name = "leftover3"; break;
+                default: file_name = "food_image";
             }
 
             Mat img;
