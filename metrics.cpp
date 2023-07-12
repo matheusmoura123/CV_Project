@@ -107,11 +107,11 @@ vector<vector<double>> leftover_ratio (const Mat& mask_before, const Mat& mask_a
         if (double(hist_before.at<float>(i)) != 0)
             leftover_ratio.push_back({double(i), (hist_after.at<float>(i))/double(hist_before.at<float>(i))});
     }
-
+    /*
     cout << "ratio" << endl;
     for (int i = 0; i < leftover_ratio.size(); ++i) {
         cout << leftover_ratio[i][0] << ", " << leftover_ratio[i][1] << endl;
     }
-
+    */
     return leftover_ratio;
 }
