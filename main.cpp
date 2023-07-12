@@ -18,10 +18,25 @@ int main(int argc, char** argv) {
     cout << "img_mAp = " <<  map << endl;
     */
 
+
+    /*
     //test for leftover_ratio
     Mat mask_before = imread("../Food_leftover_dataset/tray5/masks/food_image_mask.png");
     Mat mask_after = imread("../Food_leftover_dataset/tray5/masks/leftover3.png");
     leftover_ratio (mask_before, mask_after);
+
+     */
+
+    // testing for histogram
+    Mat img = imread(argv[1]);
+    /*
+    plot_histogram(img);
+    find_histogram(img);
+     */
+
+
+    cout << img.type() << endl;
+
 
     return 0;
 }

@@ -110,11 +110,10 @@ Mat get_contours(const Mat& img) {
 }
 
 
-Mat segment_hsv(const Mat& src, int T_hue, int T_sat, int T_value) {
+Mat segment_hsv(const Mat& src, int hue, int sat, int val, int T_hue, int T_sat, int T_value) {
     Mat img_hsv, dst;
 
-    cvtColor(src, img_hsv, COLOR_BGR2HSV);
-    dst = img_hsv.clone();
+    dst = src.clone();
 
 
     for (int i = 0; i < dst.rows; ++i)
@@ -122,12 +121,12 @@ Mat segment_hsv(const Mat& src, int T_hue, int T_sat, int T_value) {
         for (int j = 0; j < dst.cols; ++j)
         {
 
-            int hue = int(img_hsv.at<Vec3b>(i,j)[0]);
-            int saturation = int(img_hsv.at<Vec3b>(i,j)[1]);
-            int value = int(img_hsv.at<Vec3b>(i,j)[2]);
+            int huee = int(src.at<Vec3b>(i,j)[0]);
+            int saturation = int(src.at<Vec3b>(i,j)[1]);
+            int value = int(src.at<Vec3b>(i,j)[2]);
 
 
-            if(abs(hue - T_hue) < 50 && abs(saturation - T_sat) < 60   && abs(value - T_value) < 150) {
+            if(abs(huee - hue) < T_hue && abs(saturation - sat) < T_sat   && abs(value - val) < T_value) {
                 dst.at<Vec3b>(i,j)[0] = 255;
                 dst.at<Vec3b>(i,j)[1] = 255;
                 dst.at<Vec3b>(i,j)[2] = 255;
@@ -145,7 +144,16 @@ Mat segment_hsv(const Mat& src, int T_hue, int T_sat, int T_value) {
     dilate(dst, dst, kernel);
 
     Mat final;
-    cvtColor(dst, dst, COLOR_HSV2BGR);
+    try {
+        cvtColor(dst, dst, COLOR_HSV2BGR);
+    }
+    catch (string error) {
+        error = "BGR image";
+
+        cout << error << endl;
+    }
+
+
     cvtColor(dst, final, COLOR_BGR2GRAY);
 
     imshow("hsv img", final);
@@ -212,6 +220,66 @@ Mat contour_hsv(const Mat& input) {
 
     return outputH;
 }
+
+Mat meanshift(Mat img, int spatial, int color){
+    Mat mean_img;
+    mean_img = img.clone();
+    //MeanShift
+    TermCriteria termcrit = TermCriteria(TermCriteria::MAX_ITER + TermCriteria::EPS, 20, 1);
+    vector<int> sp{spatial}; //Spatial window radius
+    vector<int> sr{color}; //Color window radius
+    vector<int> p{0, 1, 2, 3};
+    for (auto &sp_i: sp) {
+        for (auto &sr_i: sr) {
+            cout << "Calculating meanshift..." << endl;
+            pyrMeanShiftFiltering(img, mean_img, sp_i, sr_i, 1, termcrit);
+            string w_name = to_string(sp_i) + "-" + to_string(sr_i) + " Level 3";
+            cout << w_name << endl;
+            namedWindow(w_name, WINDOW_NORMAL);
+            imshow(w_name, mean_img);
+        }
+    }
+
+    return mean_img;
+}
+
+Mat otsu_segmentation(Mat gray_img, int num_grid){
+    Mat otsu_img = gray_img.clone();
+
+    //Divide Img in multiple sections num_grid X num_grid and perform Otu separately in each one
+    gray_img.copyTo(otsu_img);
+    int width = otsu_img.cols;
+    int height = otsu_img.rows;
+    int step_SIZE_x = floor(width / num_grid);
+    int step_SIZE_y = floor(height / num_grid);
+    vector<Rect> mCells;
+    for (int y = 0; y < height; y += step_SIZE_y) {
+        for (int x = 0; x < width; x += step_SIZE_x) {
+            int GRID_SIZE_x = floor(width / num_grid);
+            int GRID_SIZE_y = floor(height / num_grid);
+            if (x + GRID_SIZE_x >= width) {
+                GRID_SIZE_x = width - x - 1;
+            }
+            if (y + GRID_SIZE_y >= height) {
+                GRID_SIZE_y = height - y - 1;
+            }
+            Rect grid_rect(x, y, GRID_SIZE_x, GRID_SIZE_y);
+            //cout << grid_rect << endl;
+            mCells.push_back(grid_rect);
+            //rectangle(otu_img, grid_rect, Scalar(0, 255, 0), 1);
+            //imshow("otu_img", otu_img);
+            threshold(otsu_img(grid_rect), otsu_img(grid_rect), 0, 255, THRESH_BINARY | THRESH_OTSU);
+            //imshow(format("grid%d%d",y, x), otu_img(grid_rect));
+            //imshow("otu with grid", otu_img);
+            //waitKey();
+        }
+    }
+    //invert otu
+    otsu_img = 255- otsu_img;
+
+    return otsu_img;
+}
+
 
 
 

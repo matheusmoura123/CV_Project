@@ -26,109 +26,54 @@ int main(int argc, char **argv) {
     bilateralFilter(rgb_img, bi_img, 5, 150, 50);
     //imshow("bilateral filter", bi_img);
 
-
-    //MeanShift
-    TermCriteria termcrit = TermCriteria(TermCriteria::MAX_ITER + TermCriteria::EPS, 20, 1);
-    vector<int> sp{50}; //Spatial window radius
-    vector<int> sr{85}; //Color window radius
-    vector<int> p{0, 1, 2, 3};
-    for (auto &sp_i: sp) {
-        for (auto &sr_i: sr) {
-            cout << "Calculating meanshift..." << endl;
-            pyrMeanShiftFiltering(bi_img, mean_img, sp_i, sr_i, 1, termcrit);
-            string w_name = to_string(sp_i) + "-" + to_string(sr_i) + " Level 3";
-            cout << w_name << endl;
-            namedWindow(w_name, WINDOW_NORMAL);
-            imshow(w_name, mean_img);
-        }
-
-    }
+    mean_img = meanshift(bi_img, 70, 50);
 
     //cvtColor(mean_img, gray_img, COLOR_HSV2BGR);
     //cvtColor(mean_img, gray_img, COLOR_BGR2GRAY);
     //find_histogram(gray_img);
 
 
-    /*
 
-    //Divide Img in multiple sections num_grid X num_grid and perform Otu separately in each one
-    Mat otu_img;
+    //array<int, 3> hue_val = find_histogram(mean_img);
+    //
+    // cvtColor(mean_img,mean_img,COLOR_BGR2HSV);
+    Mat hsv_segment = segment_hsv(mean_img, 160, 160, 160, 80, 80, 80);
 
-    gray_img.copyTo(otu_img);
-    int width = otu_img.cols;
-    int height = otu_img.rows;
-    int num_grid = 1;
-    int step_SIZE_x = floor(width / num_grid);
-    int step_SIZE_y = floor(height / num_grid);
-    vector<Rect> mCells;
-    for (int y = 0; y < height; y += step_SIZE_y) {
-        for (int x = 0; x < width; x += step_SIZE_x) {
-            int GRID_SIZE_x = floor(width / num_grid);
-            int GRID_SIZE_y = floor(height / num_grid);
-            if (x + GRID_SIZE_x >= width) {
-                GRID_SIZE_x = width - x - 1;
-            }
-            if (y + GRID_SIZE_y >= height) {
-                GRID_SIZE_y = height - y - 1;
-            }
-            Rect grid_rect(x, y, GRID_SIZE_x, GRID_SIZE_y);
-            //cout << grid_rect << endl;
-            mCells.push_back(grid_rect);
-            //rectangle(otu_img, grid_rect, Scalar(0, 255, 0), 1);
-            //imshow("otu_img", otu_img);
-            threshold(otu_img(grid_rect), otu_img(grid_rect), 0, 255, THRESH_BINARY | THRESH_OTSU);
-            //imshow(format("grid%d%d",y, x), otu_img(grid_rect));
-            //imshow("otu with grid", otu_img);
-            //waitKey();
-        }
-    }
-
-    //invert otu
-    //otu_img = 255- otu_img;
-
-     */
-
-    //find_histogram(mean_img);
-
-    Mat hsv_segment = segment_hsv(mean_img, 10, 150, 100);
-    // only converting hsv_segment to otu, so I don't have to change each of the name
-    Mat otu_img = hsv_segment;
+    // here was otsu
 
 
 
+    Mat hsv_image;
+    Mat in[3] = {hsv_segment, hsv_segment, hsv_segment};
+    merge(in, 3, hsv_image);
 
-    Mat otsu_rgb;
-    Mat in[3] = {otu_img, otu_img, otu_img};
-    merge(in, 3, otsu_rgb);
 
-    for (int i = 0; i < otu_img.rows; ++i)
+
+    for (int i = 0; i < hsv_segment.rows; ++i)
     {
-        for (int j = 0; j < otu_img.cols; ++j)
+        for (int j = 0; j < hsv_segment.cols; ++j)
         {
             int blue_temp = int(rgb_img.at<Vec3b>(i,j)[0]);
             int green_temp = int(rgb_img.at<Vec3b>(i,j)[1]);
             int red_temp = int(rgb_img.at<Vec3b>(i,j)[2]);
 
             if(blue_temp == 0 && green_temp == 0 && red_temp == 0) {
-                otsu_rgb.at<Vec3b>(i,j)[0] = 0;
-                otsu_rgb.at<Vec3b>(i,j)[1] = 0;
-                otsu_rgb.at<Vec3b>(i,j)[2] = 0;
+                hsv_image.at<Vec3b>(i,j)[0] = 0;
+                hsv_image.at<Vec3b>(i,j)[1] = 0;
+                hsv_image.at<Vec3b>(i,j)[2] = 0;
             }
         }
     }
 
-    imshow("inv otu with grid", otsu_rgb);
-
-
-
-
-    Mat img_out = get_contours(otsu_rgb);
+    Mat img_out = get_contours(hsv_image);
 
     namedWindow("konture");
     imshow("konture", img_out);
 
     cvtColor(img_out, img_out, COLOR_BGR2GRAY);
 
+
+    //cvtColor(otsu_rgb, otsu_rgb, COLOR_BGR2GRAY);
     // Morphological Closing
     int morph_size = 2;
     Mat element = getStructuringElement(MORPH_CROSS, Size(2 * morph_size + 1, 2 * morph_size + 1), Point(morph_size, morph_size));
@@ -142,7 +87,6 @@ int main(int argc, char **argv) {
 
     Mat final = get_contours(morph_rgb);
     cvtColor(final, final, COLOR_BGR2GRAY);
-
 
     //Using Otu as mask
     for (int y = 0; y < rgb_img.rows; ++y) {
