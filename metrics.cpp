@@ -30,18 +30,25 @@ double img_mAp (const vector<box>& boxes_truth, const vector<box>& boxes_result)
     //vector<double> FN(boxes_result.size(), 0);
     for (int i = 0; i < boxes_result.size(); ++i) {
         double precision = 0, recall = 0, round_recall;
+        int find = 0;
         for (int j = 0; j < boxes_truth.size(); ++j) {
             if (boxes_result[i].ID == boxes_truth[j].ID){
                 if (boxes_IoU(boxes_result[i], boxes_truth[j]) >= iou_tresh) {
                     TP[i] += 1;
                 } else FP[i] += 1;
-            } else FP[i] += 1;
+                ++find;
+            }
         }
+        if(!find) FP[i] += 1;
         precision = TP[i]/(TP[i] + FP[i]);
         recall = TP[i]/total_truth;
-        round_recall= floor(recall*10)+1;
-        AP[i] = precision*round_recall/11;
+        //round_recall= floor(recall*10)+1;
+        //AP[i] = precision*round_recall/11;
+        AP[i] = precision;
+        cout << AP[i] << endl;
     }
+    cout << "ac = " << accumulate(AP.begin(),AP.end(), 0.0) << endl;
+    cout << "size = " << boxes_result.size() << endl;
     return std::accumulate(AP.begin(),AP.end(), 0.0)/boxes_result.size();
 }
 
