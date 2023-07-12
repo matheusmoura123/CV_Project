@@ -45,7 +45,11 @@ int box_file_reader (vector<box>& boxes, const string& path) {
                         stoi(vec[2].substr(1, vec[2].size()-2)),
                         stoi(vec[3].substr(0, vec[3].size()-1)),
                         stoi(vec[4].substr(0, vec[4].size()-1)),
-                        stoi(vec[5].substr(0, vec[5].size()-1))
+                        stoi(vec[5].substr(0, vec[5].size()-1)),
+                        -1,
+                        Mat::zeros(stoi(vec[5].substr(0, vec[5].size()-1)),
+                                   stoi(vec[4].substr(0, vec[4].size()-1)),
+                                   CV_8UC3)
                         );
             }
             fw.close();

@@ -6,6 +6,7 @@
 #include <fstream>
 #include <cmath>
 #include <utility>
+#include <numeric>
 #include <sys/stat.h>
 #include <opencv2/opencv.hpp>
 #include <opencv2/core.hpp>
@@ -41,12 +42,16 @@ public:
     int p0y;
     int width;
     int height;
-    box(int a, int b, int c, int d, int e) { // Constructor with parameters
+    double conf;
+    Mat img;
+    box(int a, int b, int c, int d, int e, double f, const Mat& g) { // Constructor with parameters
         ID = a;
         p0x = b;
         p0y = c;
         width = d;
         height = e;
+        conf = f;
+        img = g.clone();
     }
     [[nodiscard]] bool is_inside(const int& y, const int& x) const {
         return((y >= p0y && y <= p0y+height) && (x >= p0x && x <= p0x+width));
@@ -79,7 +84,9 @@ int box_file_reader (vector<box>& boxes, const string& path);
 
 //metrics.cpp
 double boxes_IoU (const box& box1, const box& box2);
+double img_mAp (const vector<box>& boxes_truth, const vector<box>& boxes_result);
 double masks_mIoU (const Mat& mask1, const Mat& mask2);
+vector<vector<double>> leftover_ratio (const Mat& mask_before, const Mat& mask_after);
 
 //archive
 int sift_matching(const cv::Mat& img1, const cv::Mat& img2);
