@@ -2,7 +2,7 @@
 
 int box_file_writer (const vector<box>& boxes, const string& path) {
     try {
-        //cout << "Writing  array contents to file..." << endl;
+        cout << "Writing box contents to file..." << endl;
         //open file for writing
         ofstream fw(path, std::ofstream::out);
         //check if file was successfully opened for writing
@@ -14,18 +14,18 @@ int box_file_writer (const vector<box>& boxes, const string& path) {
             }
             fw.close();
         }
-        else cout << "Problem with opening file";
+        else cout << "Problem with opening file" << endl;
     }
     catch (const char* msg) {
         cerr << msg << endl;
     }
-    //cout << "Done!" << endl;
+    cout << "Done!" << endl;
     return 0;
 }
 
 int box_file_reader (vector<box>& boxes, const string& path) {
     try {
-        //cout << "Reading array contents from file..." << endl;
+        cout << "Reading box contents from file..." << endl;
         string line;
         //open file for reading
         ifstream fw(path, ifstream::in);
@@ -54,11 +54,11 @@ int box_file_reader (vector<box>& boxes, const string& path) {
             }
             fw.close();
         }
-        else cout << "Problem with opening file";
+        else cout << "Problem with opening file" << endl;
     }
     catch (const char* msg) {
         cerr << msg << endl;
     }
-    //cout << "Done!" << endl;
+    cout << "Done!" << endl;
     return 0;
 }

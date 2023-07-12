@@ -4,8 +4,8 @@ int main(int argc, char** argv) {
 
     /*
     //test for masks_mIoU
-    Mat mask_truth = imread("../Food_leftover_dataset/tray5/masks/food_image_mask.png");
-    Mat mask_result = imread("../Food_leftover_dataset/tray5/masks/leftover1.png");
+    Mat mask_truth = imread("../Food_leftover_dataset/tray5/masks/food_image_mask_result.png");
+    Mat mask_result = imread("../Food_leftover_dataset/tray5/masks/leftover1_result.png");
     cout << masks_mIoU(mask_truth, mask_result) << endl;
     */
 
@@ -18,10 +18,16 @@ int main(int argc, char** argv) {
     cout << "img_mAp = " <<  map << endl;
     */
 
+    /*
     //test for leftover_ratio
-    Mat mask_before = imread("../Food_leftover_dataset/tray5/masks/food_image_mask.png");
-    Mat mask_after = imread("../Food_leftover_dataset/tray5/masks/leftover3.png");
+    Mat mask_before = imread("../Food_leftover_dataset/tray5/masks/food_image_mask_result.png");
+    Mat mask_after = imread("../Food_leftover_dataset/tray5/masks/leftover3_result.png");
     leftover_ratio (mask_before, mask_after);
+     */
+
+    //results.cpp test
+    //food_localization();
+    food_segmentation ();
 
     return 0;
 }

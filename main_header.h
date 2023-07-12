@@ -88,7 +88,8 @@ double masks_mIoU (const Mat& mask1, const Mat& mask2);
 vector<vector<double>> leftover_ratio (const Mat& mask_before, const Mat& mask_after);
 
 //results.cpp
-int food_localization (int argc, char **argv) ;
+int food_localization();
+int food_segmentation ();
 
 //archive
 int sift_matching(const cv::Mat& img1, const cv::Mat& img2);
