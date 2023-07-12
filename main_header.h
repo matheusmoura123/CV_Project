@@ -85,6 +85,7 @@ int box_file_reader (vector<box>& boxes, const string& path);
 double boxes_IoU (const box& box1, const box& box2);
 double img_mAp (const vector<box>& boxes_truth, const vector<box>& boxes_result);
 double masks_mIoU (const Mat& mask1, const Mat& mask2);
+vector<vector<double>> leftover_ratio (const Mat& mask_before, const Mat& mask_after);
 
 //archive
 int sift_matching(const cv::Mat& img1, const cv::Mat& img2);

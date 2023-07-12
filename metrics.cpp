@@ -45,10 +45,10 @@ double img_mAp (const vector<box>& boxes_truth, const vector<box>& boxes_result)
         //round_recall= floor(recall*10)+1;
         //AP[i] = precision*round_recall/11;
         AP[i] = precision;
-        cout << AP[i] << endl;
+        //cout << AP[i] << endl;
     }
-    cout << "ac = " << accumulate(AP.begin(),AP.end(), 0.0) << endl;
-    cout << "size = " << boxes_result.size() << endl;
+    //cout << "ac = " << accumulate(AP.begin(),AP.end(), 0.0) << endl;
+    //cout << "size = " << boxes_result.size() << endl;
     return std::accumulate(AP.begin(),AP.end(), 0.0)/boxes_result.size();
 }
 
@@ -85,4 +85,33 @@ double masks_mIoU (const Mat& mask_truth, const Mat& mask_result) {
     cout << truth_categories << endl;
     */
     return sum_IoU/truth_categories;
+}
+
+vector<vector<double>> leftover_ratio (const Mat& mask_before, const Mat& mask_after) {
+    Mat gray_before, gray_after;
+    cvtColor(mask_before, gray_before, COLOR_BGR2GRAY);
+    cvtColor(mask_after, gray_after, COLOR_BGR2GRAY);
+    //parameters for histogram
+    int cat_bins = 14;
+    int histSize = cat_bins;
+    float cat_ranges[] = {0, 14};
+    const float *ranges[] = {cat_ranges};
+    bool uniform = true;
+    bool accumulate = false;
+    Mat hist_before, hist_after;
+    calcHist(&gray_before, 1, nullptr, Mat(), hist_before, 1, &histSize, ranges, uniform, accumulate);
+    calcHist(&gray_after, 1, nullptr, Mat(), hist_after, 1, &histSize, ranges, uniform, accumulate);
+
+    vector<vector<double>> leftover_ratio;
+    for (int i = 1; i < histSize; ++i) {
+        if (double(hist_before.at<float>(i)) != 0)
+            leftover_ratio.push_back({double(i), (hist_after.at<float>(i))/double(hist_before.at<float>(i))});
+    }
+
+    cout << "ratio" << endl;
+    for (int i = 0; i < leftover_ratio.size(); ++i) {
+        cout << leftover_ratio[i][0] << ", " << leftover_ratio[i][1] << endl;
+    }
+
+    return leftover_ratio;
 }
