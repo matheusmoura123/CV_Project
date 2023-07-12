@@ -90,6 +90,7 @@ vector<vector<double>> leftover_ratio (const Mat& mask_before, const Mat& mask_a
 //results.cpp
 int food_localization();
 int food_segmentation ();
+int food_leftover();
 
 //archive
 int sift_matching(const cv::Mat& img1, const cv::Mat& img2);

@@ -1,0 +1,267 @@
+Tray1.leftover1
+Truth
+ID 1 leftover= 0.74178
+ID 6 leftover= 0.817034
+ID 10 leftover= 1.28525
+ID 13 leftover= 0.869691
+Algorithm
+ID 1 leftover= 0.74178
+ID 6 leftover= 0.817034
+ID 10 leftover= 1.28525
+ID 13 leftover= 0.869691
+Tray1.leftover2
+Truth
+ID 1 leftover= 0.487009
+ID 6 leftover= 0.431042
+ID 10 leftover= 0.844993
+ID 13 leftover= 0.814793
+Algorithm
+ID 1 leftover= 0.487009
+ID 6 leftover= 0.431042
+ID 10 leftover= 0.844993
+ID 13 leftover= 0.814793
+Tray1.leftover3
+Truth
+ID 1 leftover= 0
+ID 6 leftover= 0
+ID 10 leftover= 1.06789
+ID 13 leftover= 0.560792
+Algorithm
+ID 1 leftover= 0
+ID 6 leftover= 0
+ID 10 leftover= 1.06789
+ID 13 leftover= 0.560792
+Tray2.leftover1
+Truth
+ID 2 leftover= 1.00452
+ID 7 leftover= 1.06755
+ID 11 leftover= 1.07653
+ID 12 leftover= 1.23643
+Algorithm
+ID 1 leftover= 0.74178
+ID 6 leftover= 0.817034
+ID 10 leftover= 1.28525
+ID 13 leftover= 0.869691
+Tray2.leftover2
+Truth
+ID 2 leftover= 0.342139
+ID 7 leftover= 0.747241
+ID 11 leftover= 0.732584
+ID 12 leftover= 0.707645
+Algorithm
+ID 1 leftover= 0.487009
+ID 6 leftover= 0.431042
+ID 10 leftover= 0.844993
+ID 13 leftover= 0.814793
+Tray2.leftover3
+Truth
+ID 2 leftover= 0
+ID 7 leftover= 0.357688
+ID 11 leftover= 0.247132
+ID 12 leftover= 0
+Algorithm
+ID 1 leftover= 0
+ID 6 leftover= 0
+ID 10 leftover= 1.06789
+ID 13 leftover= 0.560792
+Tray3.leftover1
+Truth
+ID 2 leftover= 0.344395
+ID 8 leftover= 0.770495
+ID 12 leftover= 0.748498
+Algorithm
+ID 1 leftover= 0.74178
+ID 6 leftover= 0.817034
+ID 10 leftover= 1.28525
+ID 13 leftover= 0.869691
+Tray3.leftover2
+Truth
+ID 2 leftover= 0.31897
+ID 8 leftover= 0.843748
+ID 12 leftover= 0.795874
+Algorithm
+ID 1 leftover= 0.487009
+ID 6 leftover= 0.431042
+ID 10 leftover= 0.844993
+ID 13 leftover= 0.814793
+Tray3.leftover3
+Truth
+ID 2 leftover= 0
+ID 8 leftover= 0.893565
+ID 12 leftover= 0
+Algorithm
+ID 1 leftover= 0
+ID 6 leftover= 0
+ID 10 leftover= 1.06789
+ID 13 leftover= 0.560792
+Tray4.leftover1
+Truth
+ID 5 leftover= 1.08734
+ID 7 leftover= 0.598829
+ID 11 leftover= 0.590009
+ID 12 leftover= 1.16589
+ID 13 leftover= 1.45638
+Algorithm
+ID 1 leftover= 0.74178
+ID 6 leftover= 0.817034
+ID 10 leftover= 1.28525
+ID 13 leftover= 0.869691
+Tray4.leftover2
+Truth
+ID 5 leftover= 0.868573
+ID 7 leftover= 0.583037
+ID 11 leftover= 0.556059
+ID 12 leftover= 0
+ID 13 leftover= 1.28941
+Algorithm
+ID 1 leftover= 0.487009
+ID 6 leftover= 0.431042
+ID 10 leftover= 0.844993
+ID 13 leftover= 0.814793
+Tray4.leftover3
+Truth
+ID 5 leftover= 0.203754
+ID 7 leftover= 0
+ID 11 leftover= 0.156899
+ID 12 leftover= 0.480295
+ID 13 leftover= 0.368781
+Algorithm
+ID 1 leftover= 0
+ID 6 leftover= 0
+ID 10 leftover= 1.06789
+ID 13 leftover= 0.560792
+Tray5.leftover1
+Truth
+ID 3 leftover= 0.477786
+ID 8 leftover= 0.698276
+ID 10 leftover= 0.662834
+ID 13 leftover= 0.709774
+Algorithm
+ID 1 leftover= 0.74178
+ID 6 leftover= 0.817034
+ID 10 leftover= 1.28525
+ID 13 leftover= 0.869691
+Tray5.leftover2
+Truth
+ID 3 leftover= 0
+ID 8 leftover= 0.679048
+ID 10 leftover= 0.254444
+ID 13 leftover= 0.963237
+Algorithm
+ID 1 leftover= 0.487009
+ID 6 leftover= 0.431042
+ID 10 leftover= 0.844993
+ID 13 leftover= 0.814793
+Tray5.leftover3
+Truth
+ID 3 leftover= 0
+ID 8 leftover= 0.62035
+ID 10 leftover= 0.266487
+ID 13 leftover= 0.836973
+Algorithm
+ID 1 leftover= 0
+ID 6 leftover= 0
+ID 10 leftover= 1.06789
+ID 13 leftover= 0.560792
+Tray6.leftover1
+Truth
+ID 4 leftover= 0.606354
+ID 6 leftover= 0.278475
+ID 10 leftover= 1.23784
+ID 12 leftover= 1.08448
+Algorithm
+ID 1 leftover= 0.74178
+ID 6 leftover= 0.817034
+ID 10 leftover= 1.28525
+ID 13 leftover= 0.869691
+Tray6.leftover2
+Truth
+ID 4 leftover= 0.617408
+ID 6 leftover= 0.235287
+ID 10 leftover= 1.24126
+ID 12 leftover= 1.00899
+Algorithm
+ID 1 leftover= 0.487009
+ID 6 leftover= 0.431042
+ID 10 leftover= 0.844993
+ID 13 leftover= 0.814793
+Tray6.leftover3
+Truth
+ID 4 leftover= 0.266998
+ID 6 leftover= 0
+ID 10 leftover= 0
+ID 12 leftover= 0.445794
+Algorithm
+ID 1 leftover= 0
+ID 6 leftover= 0
+ID 10 leftover= 1.06789
+ID 13 leftover= 0.560792
+Tray7.leftover1
+Truth
+ID 4 leftover= 0.512507
+ID 7 leftover= 0.416106
+ID 11 leftover= 0.494382
+ID 12 leftover= 0.912117
+Algorithm
+ID 1 leftover= 0.74178
+ID 6 leftover= 0.817034
+ID 10 leftover= 1.28525
+ID 13 leftover= 0.869691
+Tray7.leftover2
+Truth
+ID 4 leftover= 0.561853
+ID 7 leftover= 0.488259
+ID 11 leftover= 0.537616
+ID 12 leftover= 0.97884
+Algorithm
+ID 1 leftover= 0.487009
+ID 6 leftover= 0.431042
+ID 10 leftover= 0.844993
+ID 13 leftover= 0.814793
+Tray7.leftover3
+Truth
+ID 4 leftover= 0.269982
+ID 7 leftover= 0
+ID 11 leftover= 0.163289
+ID 12 leftover= 0
+Algorithm
+ID 1 leftover= 0
+ID 6 leftover= 0
+ID 10 leftover= 1.06789
+ID 13 leftover= 0.560792
+Tray8.leftover1
+Truth
+ID 4 leftover= 0.227241
+ID 9 leftover= 0.317146
+ID 10 leftover= 0.259124
+ID 11 leftover= 0
+ID 12 leftover= 0.417156
+Algorithm
+ID 1 leftover= 0.74178
+ID 6 leftover= 0.817034
+ID 10 leftover= 1.28525
+ID 13 leftover= 0.869691
+Tray8.leftover2
+Truth
+ID 4 leftover= 0.554285
+ID 9 leftover= 1.31142
+ID 10 leftover= 1.27521
+ID 11 leftover= 0
+ID 12 leftover= 1.12043
+Algorithm
+ID 1 leftover= 0.487009
+ID 6 leftover= 0.431042
+ID 10 leftover= 0.844993
+ID 13 leftover= 0.814793
+Tray8.leftover3
+Truth
+ID 4 leftover= 0.260787
+ID 9 leftover= 0
+ID 10 leftover= 0
+ID 11 leftover= 0
+ID 12 leftover= 0
+Algorithm
+ID 1 leftover= 0
+ID 6 leftover= 0
+ID 10 leftover= 1.06789
+ID 13 leftover= 0.560792

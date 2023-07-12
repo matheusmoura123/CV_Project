@@ -27,7 +27,8 @@ int main(int argc, char** argv) {
 
     //results.cpp test
     //food_localization();
-    food_segmentation ();
+    //food_segmentation ();
+    food_leftover();
 
     return 0;
 }
