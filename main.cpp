@@ -25,10 +25,12 @@ int main(int argc, char** argv) {
     leftover_ratio (mask_before, mask_after);
      */
 
-    //results.cpp test
-    //food_localization();
-    //food_segmentation ();
+    /*
+    //test results.cpp
+    food_localization();
+    food_segmentation ();
     food_leftover();
+    */
 
     return 0;
 }

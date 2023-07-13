@@ -32,6 +32,19 @@ int main(int argc, char **argv) {
     vector<Mat> dishes;
     vector<int> dishes_areas;
     vector<box> boxes;
+
+    //Load all reference imgs
+    vector<Mat> categories_hist;
+    for (auto &food: foodCategories ) {
+        vector<Mat> imgs;
+        for (int i = 1; i <= food.imageNumbers; ++i) {
+            Mat img = imread(CATEGORIES_PATH + food.className + "/" + food.className + to_string(i) + IMAGE_EXT);
+            //find_histogram(img);
+            imgs.push_back(img);
+        }
+        categories_hist.push_back(mean_histogram2(imgs));
+    }
+
     //Read all trays and segment plates
     //for (int i = 0; i < NUMBER_TRAYS; ++i) {
     for (int i = 1; i < 2; ++i) {
@@ -60,6 +73,9 @@ int main(int argc, char **argv) {
                 waitKey();
             }
 
+            string mask_path = "../FoodResults/tray1/masks/food_image_mask_result.png";
+            mask_file_writer(boxes, mask_path);
+
             //1. Identifying Salad
             sort(dishes_areas.begin(), dishes_areas.end(), greater<int>());
             if (dishes.size() > 2) {
@@ -77,15 +93,6 @@ int main(int argc, char **argv) {
             }
             */
 
-            //Creating bounding_box result files
-            string result_box_path = RESULTS_PATH + to_string(i + 1) + "/bounding_boxes/" + file_name + "_result_box.txt";
-            box_file_writer(boxes, result_box_path);
-
-            //Read box from file
-            vector<box> truth_boxes;
-            string true_box_path = TRAY_PATH + to_string(i + 1) + "/bounding_boxes/" + file_name + "_bounding_box.txt";
-            box_file_reader(truth_boxes, true_box_path);
-
             /*
             //Print the boxes
             for(const auto box:truth_boxes) {
@@ -93,6 +100,7 @@ int main(int argc, char **argv) {
             }
              */
 
+            /*
             //Find the index of ID
             int ID = 12;
             int index1=0, index2=0;
@@ -106,22 +114,13 @@ int main(int argc, char **argv) {
             //Compare two boxes
             double salad_IoU = boxes_IoU(truth_boxes[index2], boxes[index1]);
             cout << "Salad IoU = " << salad_IoU << endl;
+            */
         }
     }
 
 
-    //Load all reference imgs
-    vector<Mat> categories_hist;
-    for (auto &food: foodCategories ) {
-        vector<Mat> imgs;
-        for (int i = 1; i <= food.imageNumbers; ++i) {
-            Mat img = imread(CATEGORIES_PATH + food.className + "/" + food.className + to_string(i) + IMAGE_EXT);
-            //find_histogram(img);
-            imgs.push_back(img);
-        }
-        categories_hist.push_back(mean_histogram2(imgs));
-    }
 
+    /*
     //Test histogram comparison
     string path = "../FoodCategories/pure/pure_beans1.jpg";
     if (argc == 2) {
@@ -137,5 +136,6 @@ int main(int argc, char **argv) {
     cout << values[0] << endl;
     cout << foodCategories[int(values[1])].className << endl;
     cout << "Confidence: " << values[2] << endl;
+    */
 
 }

@@ -84,6 +84,8 @@ Mat otsu_segmentation(Mat gray_img, int num_grid);
 //files_manager.cpp
 int box_file_writer (const vector<box>& boxes, const string& path);
 int box_file_reader (vector<box>& boxes, const string& path);
+Mat mask_img_builder (const vector<box>& boxes);
+int mask_file_writer (const vector<box>& boxes, const string& path);
 
 //metrics.cpp
 double boxes_IoU (const box& box1, const box& box2);
