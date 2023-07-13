@@ -58,11 +58,37 @@ public:
     }
 };
 
+const vector<food> pastaCategories{
+        {"pesto", 4, 1},
+        {"pomodoro", 5, 2},
+        {"ragu", 2, 3},
+        {"pasta_clams", 8, 4},
+};
+const vector<food> foodCategories{
+        //{className, numberOfImgs, ID},
+        //{"plate", 9, 0},
+        {"rice", 7, 5},
+        {"pork", 9, 6},
+        {"fish", 10, 7},
+        {"rabbit", 12, 8},
+        {"seafood", 5, 9},
+        {"beans", 13, 10},
+        {"potato", 13, 11},
+        {"pasta", 20, 19},
+        //{"salad", 15, 12},
+        //{"bread", 18, 13},
+        //{"carrot", 6, 14},
+        //{"pepper", 2, 15},
+        //{"tomato", 10, 16},
+        //{"lettuce", 15, 17},
+        //{"plate_salad", 3, 18},
+};
 
 const string TRAY_PATH = "../Food_leftover_dataset/tray";
 const string CATEGORIES_PATH = "../FoodCategories/";
 const string RESULTS_PATH = "../FoodResults/tray";
 const string IMAGE_EXT = ".jpg";
+const string MASK_EXT = ".png";
 const int NUMBER_TRAYS = 8;
 
 //find_histogram.cpp
