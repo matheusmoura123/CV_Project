@@ -115,6 +115,8 @@ Mat meanshift(Mat img, int spatial, int color);
 Mat otsu_segmentation(Mat gray_img, int num_grid);
 //vector<box> segment_food(const Mat& img, vector<Mat>& dst);
 box segment_food(const box& plate_box);
+vector<box> separate_food(const box food_box);
+
 
 
 //files_manager.cpp
