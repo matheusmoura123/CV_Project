@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
 
     //Go through all trays and imgs
     //for (int i = 0; i < NUMBER_TRAYS; ++i) {
-    for (int i = 0; i < NUMBER_TRAYS; ++i) {
+    for (int i = 0; i < 1; ++i) {
         //for (int j = 0; j < 4; ++j) {
         for (int j = 0; j < 1; ++j) {
             int key;
@@ -79,7 +79,7 @@ int main(int argc, char **argv) {
             //imshow("img", img);
 
             //Extract each box from img
-            boxes = segment_plates(img, dishes);
+            boxes = segment_food(img, dishes);
 
             /*
             //Show the plates
@@ -105,7 +105,7 @@ int main(int argc, char **argv) {
             }
 
             //Show the plates
-            for (int k = 0; k < 1; ++k) {
+            for (int k = 0; k < boxes.size(); ++k) {
                 string window_name_img = "Tray" + to_string(i + 1) + " " + file_name + " Food" + to_string(k + 1);
                 namedWindow(window_name_img);
                 imshow(window_name_img, boxes[k].img);

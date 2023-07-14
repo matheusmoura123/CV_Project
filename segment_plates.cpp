@@ -110,21 +110,16 @@ Mat get_contours(const Mat& img) {
 }
 
 
-Mat segment_rgb_hsv(const Mat& src, int hue, int sat, int val, int T_hue, int T_sat, int T_value) {
+Mat segment_rgb_hsv(const Mat& src, int hue, int sat, int val, int T_hue, int T_sat, int T_value, bool is_hsv) {
     Mat img_hsv, dst;
 
     dst = src.clone();
 
-
-    for (int i = 0; i < dst.rows; ++i)
-    {
-        for (int j = 0; j < dst.cols; ++j)
-        {
-
+    for (int i = 0; i < dst.rows; ++i) {
+        for (int j = 0; j < dst.cols; ++j) {
             int huee = int(src.at<Vec3b>(i,j)[0]);
             int saturation = int(src.at<Vec3b>(i,j)[1]);
             int value = int(src.at<Vec3b>(i,j)[2]);
-
 
             if(abs(huee - hue) < T_hue && abs(saturation - sat) < T_sat   && abs(value - val) < T_value) {
                 dst.at<Vec3b>(i,j)[0] = 255;
@@ -144,22 +139,12 @@ Mat segment_rgb_hsv(const Mat& src, int hue, int sat, int val, int T_hue, int T_
     dilate(dst, dst, kernel);
 
     Mat final;
-    try {
-        cvtColor(dst, dst, COLOR_HSV2BGR);
-    }
-    catch (string error) {
-        error = "BGR image";
-
-        cout << error << endl;
-    }
-
+    if (is_hsv) cvtColor(dst, dst, COLOR_HSV2BGR);
 
     cvtColor(dst, final, COLOR_BGR2GRAY);
 
-    imshow("hsv img", final);
-    waitKey(0);
-
-
+    //imshow("hsv img", final);
+    //waitKey();
     return final;
 
 }
@@ -234,9 +219,9 @@ Mat meanshift(Mat img, int spatial, int color){
             cout << "Calculating meanshift..." << endl;
             pyrMeanShiftFiltering(img, mean_img, sp_i, sr_i, 1, termcrit);
             string w_name = to_string(sp_i) + "-" + to_string(sr_i) + " Level 3";
-            cout << w_name << endl;
-            namedWindow(w_name, WINDOW_NORMAL);
-            imshow(w_name, mean_img);
+            //cout << w_name << endl;
+            //namedWindow(w_name, WINDOW_NORMAL);
+            //imshow(w_name, mean_img);
         }
     }
 
@@ -295,8 +280,7 @@ vector<box> segment_food(const Mat& img, vector<Mat>& dst){
         mean_img = meanshift(bi_img, 50, 70);
         cvtColor(mean_img, mean_img, COLOR_BGR2HSV);
 
-        Mat hsv_segment = segment_rgb_hsv(mean_img, 10, 150, 100, 30, 150, 150);
-
+        Mat hsv_segment = segment_rgb_hsv(mean_img, 10, 150, 100, 30, 150, 150, true);
 
         Mat image_3c;
         Mat in[3] = {hsv_segment, hsv_segment, hsv_segment};
@@ -339,7 +323,6 @@ vector<box> segment_food(const Mat& img, vector<Mat>& dst){
         Mat final = get_contours(morph_rgb);
         cvtColor(final, final, COLOR_BGR2GRAY);
 
-
         for (int y = 0; y < rgb_img.rows; ++y) {
             for (int x = 0; x < rgb_img.cols; ++x) {
                 if(final.at<uchar>(y, x) == 0 ) {
@@ -349,38 +332,63 @@ vector<box> segment_food(const Mat& img, vector<Mat>& dst){
                 }
             }
         }
+        //dishes.push_back(rgb_img);
+        //imshow("mask", rgb_img);
+        //waitKey();
 
-        dishes.push_back(rgb_img);
-
-        imshow("mask", rgb_img);
-        waitKey();
-
-        int row0_y, rowf_y, col0_x, colf_x;
+        //Crop only food
+        int row0_y=0, rowf_y=0, col0_x=0, colf_x=0;
+        Mat gray_result;
+        cvtColor(rgb_img, gray_result, COLOR_BGR2GRAY);
         //vector<int> rows, columns;
-        for (int y = 0; y < rgb_img.rows; ++y) {
-            for (int x = 0; x < rgb_img.cols; ++x){
-                if(rgb_img.at<uchar>(y, x) != 0) row0_y=y;
+        for (int y = 0; y < gray_result.rows; ++y) {
+            bool done = false;
+            for (int x = 0; x < gray_result.cols; ++x){
+                if(gray_result.at<uchar>(y, x) != 0) {
+                    row0_y = y;
+                    done = true;
+                    break;}
             }
+            if(done) break;
         }
-        for (int x = 0; x < rgb_img.cols; ++x){
-            for (int y = 0; y < rgb_img.rows; ++y) {
-                if(rgb_img.at<uchar>(y, x) != 0) col0_x=x;
+        for (int x = 0; x < gray_result.cols; ++x){
+            bool done = false;
+            for (int y = 0; y < gray_result.rows; ++y) {
+                if(gray_result.at<uchar>(y, x) != 0) {
+                    col0_x = x;
+                    done = true;
+                    break;}
             }
+            if(done) break;
         }
-        for (int y = rgb_img.rows; y > 0; --y) {
-            for (int x = 0; x < rgb_img.cols; ++x){
-                if(rgb_img.at<uchar>(y, x) != 0) rowf_y=y;
+        for (int y = gray_result.rows-1; y > 0; --y) {
+            int done = false;
+            for (int x = 0; x < gray_result.cols; ++x){
+                if(gray_result.at<uchar>(y, x) != 0) {
+                    rowf_y = y;
+                    done = true;
+                    break;}
             }
+            if(done) break;
         }
-        for (int x = rgb_img.cols; x > 0; --x){
-            for (int y = 0; y < rgb_img.rows; ++y) {
-                if(rgb_img.at<uchar>(y, x) != 0) colf_x=x;
+        for (int x = gray_result.cols-1; x > 0; --x){
+            int done = false;
+            for (int y = 0; y < gray_result.rows; ++y) {
+                if(gray_result.at<uchar>(y, x) != 0) {
+                    colf_x = x;
+                    done = true;
+                    break;}
             }
+            if(done) break;
         }
         Mat cropped_img = rgb_img(Range(row0_y, rowf_y), Range(col0_x, colf_x));
 
+        //imshow("new box img", cropped_img);
+        //waitKey();
+
         box_food.emplace_back(-1, col0_x, row0_y, colf_x-col0_x, rowf_y-row0_y, -1, cropped_img); //ID: -1 indicates that the box is not yet identified
     }
+
     return box_food;
 }
 

@@ -101,10 +101,11 @@ void plot_histogram(const Mat& src);
 //segment_plates.cpp
 vector<box> segment_plates(const Mat& img, vector<Mat>& dst);
 Mat get_contours(const Mat& img);
-Mat segment_rgb_hsv(const Mat& src, int hue, int sat, int val, int T_hue, int T_sat, int T_value);
+Mat segment_rgb_hsv(const Mat& src, int hue, int sat, int val, int T_hue, int T_sat, int T_value, bool is_hsv=false);
 Mat contour_hsv(const Mat& img);
 Mat meanshift(Mat img, int spatial, int color);
 Mat otsu_segmentation(Mat gray_img, int num_grid);
+vector<box> segment_food(const Mat& img, vector<Mat>& dst);
 
 
 //files_manager.cpp
