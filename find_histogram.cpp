@@ -17,6 +17,7 @@ array<double, 3> compare_histogram(const Mat& src_hist, const vector<Mat>& categ
         }
         k++;
     }
+    cout << "---------------------" << endl;
     confidence = max_value/(max_value+sec_max);
     return {max_value, max_index, confidence};
 }

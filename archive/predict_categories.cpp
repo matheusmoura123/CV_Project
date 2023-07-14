@@ -3,10 +3,6 @@
 using namespace cv::ml;
 
 
-const string DATASET_PATH = "../FoodCategories/";
-const string IMAGE_EXT = ".jpg";
-
-
 int NUMBER_CLASSES = 0;
 int DICT_SIZE = 0;
 Mat allDescriptors;
@@ -22,7 +18,7 @@ void readDetectComputeimage(const string& className, int imageNumbers, int class
     for (int i = 1; i <= imageNumbers; i++) {
         Mat grayimg;
         Ptr<SIFT> siftptr = SIFT::create();
-        cvtColor(imread(DATASET_PATH + className + "/" + className + to_string(i) + IMAGE_EXT), grayimg, COLOR_BGR2GRAY);
+        cvtColor(imread(CATEGORIES_PATH + className + "/" + className + to_string(i) + IMAGE_EXT), grayimg, COLOR_BGR2GRAY);
 
         vector<KeyPoint> keypoints;
         Mat descriptors;

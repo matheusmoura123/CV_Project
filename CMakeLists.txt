@@ -16,6 +16,4 @@ target_link_libraries(meanshift ${OpenCV_LIBS} )
 add_executable(identification ../identification.cpp ../main_header.h ../segment_plates.cpp ../find_histogram.cpp ../files_manager.cpp ../metrics.cpp ../results.cpp)
 target_link_libraries(identification ${OpenCV_LIBS} )
 
-add_executable(final_segmentation ../final_segmentation.cpp ../main_header.h ../segment_plates.cpp ../find_histogram.cpp ../files_manager.cpp ../metrics.cpp ../results.cpp)
-target_link_libraries(final_segmentation ${OpenCV_LIBS} )
 

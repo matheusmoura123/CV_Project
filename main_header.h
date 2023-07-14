@@ -67,6 +67,7 @@ const vector<food> pastaCategories{
 const vector<food> foodCategories{
         //{className, numberOfImgs, ID},
         //{"plate", 9, 0},
+        {"pasta", 13, 19},
         {"rice", 7, 5},
         {"pork", 9, 6},
         {"fish", 10, 7},
@@ -74,7 +75,6 @@ const vector<food> foodCategories{
         {"seafood", 5, 9},
         {"beans", 13, 10},
         {"potato", 13, 11},
-        {"pasta", 20, 19},
         //{"salad", 15, 12},
         //{"bread", 18, 13},
         //{"carrot", 6, 14},
@@ -101,7 +101,7 @@ void plot_histogram(const Mat& src);
 //segment_plates.cpp
 vector<box> segment_plates(const Mat& img, vector<Mat>& dst);
 Mat get_contours(const Mat& img);
-Mat segment_rgb_hsv(const Mat& src, int hue, int sat, int val, int T_hue, int T_sat, int T_value);
+Mat segment_rgb_hsv(const Mat& src, int hue, int sat, int val, int T_hue, int T_sat, int T_value, bool is_hsv=false);
 Mat contour_hsv(const Mat& img);
 Mat meanshift(Mat img, int spatial, int color);
 Mat otsu_segmentation(Mat gray_img, int num_grid);
