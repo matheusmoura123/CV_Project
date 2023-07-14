@@ -102,9 +102,6 @@ Mat get_contours(const Mat& img) {
     }
 
 
-    cout << area.size() << endl;
-
-
     return img_out;
 
 }
@@ -115,8 +112,17 @@ Mat segment_rgb_hsv(const Mat& src, int hue, int sat, int val, int T_hue, int T_
 
     dst = src.clone();
 
-    for (int i = 0; i < dst.rows; ++i) {
-        for (int j = 0; j < dst.cols; ++j) {
+    int neighborhood = 0;
+
+    // subtract one from the rows and cols
+    for (int i = neighborhood; i < dst.rows-neighborhood; ++i) {
+        for (int j = neighborhood; j < dst.cols-neighborhood; ++j) {
+
+            /*
+            Rect roi(i-neighborhood, j-neighborhood, 2*neighborhood+1, 2*neighborhood+1);
+            Scalar mean = cv:: mean(src(roi));
+             */
+
             int huee = int(src.at<Vec3b>(i,j)[0]);
             int saturation = int(src.at<Vec3b>(i,j)[1]);
             int value = int(src.at<Vec3b>(i,j)[2]);
@@ -138,10 +144,13 @@ Mat segment_rgb_hsv(const Mat& src, int hue, int sat, int val, int T_hue, int T_
     erode(dst, dst, kernel);
     dilate(dst, dst, kernel);
 
+
     Mat final;
     if (is_hsv) cvtColor(dst, dst, COLOR_HSV2BGR);
 
+
     cvtColor(dst, final, COLOR_BGR2GRAY);
+
 
     //imshow("hsv img", final);
     //waitKey();
@@ -217,7 +226,7 @@ Mat meanshift(Mat img, int spatial, int color){
     for (auto &sp_i: sp) {
         for (auto &sr_i: sr) {
             cout << "Calculating meanshift..." << endl;
-            pyrMeanShiftFiltering(img, mean_img, sp_i, sr_i, 1, termcrit);
+            pyrMeanShiftFiltering(img, mean_img, sp_i, sr_i, 0, termcrit);
             string w_name = to_string(sp_i) + "-" + to_string(sr_i) + " Level 3";
             //cout << w_name << endl;
             //namedWindow(w_name, WINDOW_NORMAL);
@@ -253,7 +262,7 @@ Mat otsu_segmentation(Mat gray_img, int num_grid){
             mCells.push_back(grid_rect);
             //rectangle(otu_img, grid_rect, Scalar(0, 255, 0), 1);
             //imshow("otu_img", otu_img);
-            threshold(otsu_img(grid_rect), otsu_img(grid_rect), 0, 255, THRESH_BINARY | THRESH_OTSU);
+            threshold(otsu_img(grid_rect), otsu_img(grid_rect), 1, 255, THRESH_BINARY | THRESH_OTSU);
             //imshow(format("grid%d%d",y, x), otu_img(grid_rect));
             //imshow("otu with grid", otu_img);
             //waitKey();
@@ -265,6 +274,82 @@ Mat otsu_segmentation(Mat gray_img, int num_grid){
     return otsu_img;
 }
 
+int watershed_region_growing(const Mat& img, Mat dst, int thresh_bw, float thresh_dist){
+    Mat kernel2 = (Mat_<float>(3,3) <<
+                                    1,  1, 1,
+            1, -8, 1,
+            1,  1, 1);
+
+    Mat imgLap, bw, dist, dist_8u;
+    Mat sharp = img.clone();
+    filter2D(sharp, imgLap, CV_32F, kernel2);
+    img.convertTo(sharp, CV_32F);
+    Mat imgResult = sharp - imgLap;
+
+    imgResult.convertTo(imgResult, CV_8UC3);
+    imgLap.convertTo(imgLap, CV_8UC3);
+
+    cvtColor(imgResult, bw, COLOR_BGR2GRAY);
+    threshold(bw, bw, thresh_bw, 255, THRESH_BINARY | THRESH_OTSU);
+
+    distanceTransform(bw, dist, DIST_L2, 3);
+    normalize(dist, dist, 0, 1., NORM_MINMAX);
+
+    threshold(dist, dist, thresh_dist, 1., THRESH_BINARY);
+    Mat kernel3 = Mat::ones(3, 3, CV_8UC1);
+    dilate(dist, dist, kernel3);
+
+    dist.convertTo(dist_8u, CV_8U);
+
+
+    vector<vector<Point>> contours;
+    findContours(dist_8u, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
+    Mat markers = Mat::zeros(dist.size(), CV_32SC1);
+
+
+
+    for (size_t i = 0; i < contours.size(); i++)
+        drawContours(markers, contours, static_cast<int>(i), Scalar::all(static_cast<int>(i)+1), -1);
+
+
+    circle(markers, Point(5,5), 3, CV_RGB(255,255,255), -1);
+
+    watershed(img, markers);
+
+    Mat mark = Mat::zeros(markers.size(), CV_8UC1);
+    markers.convertTo(mark, CV_8UC1);
+    bitwise_not(mark, mark);
+    //imshow("Markers_v2", mark);
+
+
+    vector<Vec3b> colors;
+    for (size_t i = 0; i < contours.size(); i++)
+    {
+        int b = theRNG().uniform(0,255);
+        int g = theRNG().uniform(0,255);
+        int r = theRNG().uniform(0,255);
+        colors.push_back(Vec3b((uchar)b, (uchar)g, (uchar)r));
+    }
+
+    //dst = Mat::zeros(markers.size(), CV_8UC3);
+
+    for (int i = 0; i < markers.rows; i++)
+    {
+        for (int j = 0; j < markers.cols; j++)
+        {
+            int index = markers.at<int>(i,j);
+            if (index > 0 && index <= static_cast<int>(contours.size()))
+                dst.at<Vec3b>(i,j) = colors[index-1];
+            else
+                dst.at<Vec3b>(i,j) = Vec3b(0,0,0);
+        }
+    }
+
+    imshow("watershed", dst);
+
+    return 0;
+}
+
 
 vector<box> segment_food(const Mat& img, vector<Mat>& dst){
     vector<Mat> dishes;
@@ -273,6 +358,8 @@ vector<box> segment_food(const Mat& img, vector<Mat>& dst){
 
     for (const auto &box: box_plates){
         //Bilateral filter to try to create sharper edges
+
+        /*
         Mat bi_img, mean_img;
         bilateralFilter(box.img, bi_img, 5, 150, 50);
 
@@ -287,6 +374,7 @@ vector<box> segment_food(const Mat& img, vector<Mat>& dst){
         merge(in, 3, image_3c);
 
         Mat rgb_img = box.img.clone();
+        Mat final_image =  box.img.clone();
 
 
         for (int i = 0; i < hsv_segment.rows; ++i)
@@ -335,11 +423,53 @@ vector<box> segment_food(const Mat& img, vector<Mat>& dst){
         //dishes.push_back(rgb_img);
         //imshow("mask", rgb_img);
         //waitKey();
+         */
+
+        Mat rgb_img = box.img.clone();
+        Mat final_image = rgb_img.clone();
+
+        Mat bi_img_new, gray_new;
+
+        //Let's segment the mask that we've got
+
+
+        cvtColor(rgb_img, gray_new, COLOR_BGR2GRAY);
+        Canny(gray_new, bi_img_new, 20, 60);
+
+
+        int morph_size_new = 2;
+        Mat element_new = getStructuringElement(MORPH_ELLIPSE, Size(2 * morph_size_new + 1, 2 * morph_size_new + 1), Point(morph_size_new, morph_size_new));
+        Mat morph_img_new;
+        morphologyEx(bi_img_new, morph_img_new, MORPH_CLOSE, element_new, Point(-1, -1), 3);
+        morphologyEx(morph_img_new, morph_img_new, MORPH_OPEN, element_new, Point(-1, -1), 2);
+
+
+        Mat morph_3c;
+        Mat in_morph[3] = {morph_img_new, morph_img_new, morph_img_new};
+        merge(in_morph, 3, morph_3c);
+
+        Mat img_contour = get_contours(morph_3c);
+
+        cvtColor(img_contour, img_contour, COLOR_BGR2GRAY);
+
+
+
+        for (int y = 0; y < final_image.rows; ++y) {
+            for (int x = 0; x < final_image.cols; ++x) {
+                if(img_contour.at<uchar>(y, x) == 0 ) {
+                    final_image.at<Vec3b>(y,x)[0] = 0;
+                    final_image.at<Vec3b>(y,x)[1] = 0;
+                    final_image.at<Vec3b>(y,x)[2] = 0;
+                }
+            }
+        }
+
+
 
         //Crop only food
         int row0_y=0, rowf_y=0, col0_x=0, colf_x=0;
         Mat gray_result;
-        cvtColor(rgb_img, gray_result, COLOR_BGR2GRAY);
+        cvtColor(final_image, gray_result, COLOR_BGR2GRAY);
         //vector<int> rows, columns;
         for (int y = 0; y < gray_result.rows; ++y) {
             bool done = false;
@@ -381,13 +511,16 @@ vector<box> segment_food(const Mat& img, vector<Mat>& dst){
             }
             if(done) break;
         }
-        Mat cropped_img = rgb_img(Range(row0_y, rowf_y), Range(col0_x, colf_x));
+        Mat cropped_img = final_image(Range(row0_y, rowf_y), Range(col0_x, colf_x));
 
-        //imshow("new box img", cropped_img);
-        //waitKey();
+        imshow("new box img", cropped_img);
+        waitKey();
+
 
         box_food.emplace_back(-1, col0_x, row0_y, colf_x-col0_x, rowf_y-row0_y, -1, cropped_img); //ID: -1 indicates that the box is not yet identified
     }
+
+
 
     return box_food;
 }
