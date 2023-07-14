@@ -106,10 +106,8 @@ int main(int argc, char **argv) {
                 if (boxes[k].ID == -1) {
                     boxes[k] = segment_food(copy[k]);
                     //Calculate histogram for box img
-                    waitKey();
                     vector<Mat> box_hist_img = {boxes[k].img.clone()};
                     Mat box_hist = mean_histogram2(box_hist_img);
-
                     //Compare with the pasta_hist
                     array<double, 3> values{};
                     values = compare_histogram(box_hist, pasta_hist);
@@ -166,8 +164,9 @@ int main(int argc, char **argv) {
             }
 
         }
+        waitKey();
+        destroyAllWindows();
     }
-    waitKey();
     return 0;
 }
 

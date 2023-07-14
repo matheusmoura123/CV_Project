@@ -113,7 +113,6 @@ Mat segment_rgb_hsv(const Mat& src, int hue, int sat, int val, int T_hue, int T_
 Mat contour_hsv(const Mat& img);
 Mat meanshift(Mat img, int spatial, int color);
 Mat otsu_segmentation(Mat gray_img, int num_grid);
-//vector<box> segment_food(const Mat& img, vector<Mat>& dst);
 box segment_food(const box& plate_box);
 vector<box> separate_food(const box food_box);
 
