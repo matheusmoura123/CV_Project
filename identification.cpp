@@ -21,7 +21,7 @@ int main(int argc, char **argv) {
         categories_hist.push_back(mean_histogram2(imgs));
     }
 
-    //Calculate pasta histogram
+    //Calculate pasta sauce histogram
     vector <Mat> pasta_sauce_hist;
     for (auto &food: pastaCategories) {
         vector <Mat> imgs;
@@ -34,24 +34,24 @@ int main(int argc, char **argv) {
     }
 
     //Calculate pasta histogram
-    vector <Mat> pasta_hist;
-    vector <Mat> imgs_pasta;
+    vector <Mat> pasta_hist, imgs_pasta;
     //Find the index of ID
-    int ID = 19;
-    int index1=0;
-    for (index1; index1 < foodCategories.size(); ++index1) {
-        if (ID == foodCategories[index1].classLable) break;
+    int ID = 19, index = 0;
+    for (index; index < foodCategories.size(); ++index) {
+        if (ID == foodCategories[index].classLable) break;
     }
-    for (int i = 1; i <= foodCategories[index1].imageNumbers; ++i) {
-        Mat img = imread(CATEGORIES_PATH + foodCategories[index1].className + "/" + foodCategories[index1].className + to_string(i) + IMAGE_EXT);
+    for (int i = 1; i <= foodCategories[index].imageNumbers; ++i) {
+        Mat img = imread(CATEGORIES_PATH + foodCategories[index].className + "/" + foodCategories[index].className + to_string(i) + IMAGE_EXT);
         //find_histogram(img);
+        resize(img, img, Size(500, 500));
         imgs_pasta.push_back(img);
     }
     pasta_hist.push_back(mean_histogram2(imgs_pasta));
 
     //Go through all trays and imgs
-    //for (int i = 0; i < NUMBER_TRAYS; ++i) {
-    for (int i = 0; i < 1; ++i) {
+    for (int i = 0; i < NUMBER_TRAYS; ++i) {
+    //for (int i = 0; i < 1; ++i) {
+        cout << "----- TRAY " << to_string(i+1) << " -----" << endl;
         //for (int j = 0; j < 4; ++j) {
         for (int j = 0; j < 1; ++j) {
             int key;
@@ -79,22 +79,15 @@ int main(int argc, char **argv) {
             //imshow("img", img);
 
             //Extract each box from img
-            boxes = segment_food(img, dishes);
+            boxes = segment_plates(img, dishes);
 
             /*
-            //Show the plates
-            for (int k = 0; k < boxes.size(); ++k) {
-                string window_name_img = "Tray" + to_string(i + 1) + " " + file_name + " Food" + to_string(k + 1);
-                namedWindow(window_name_img);
-                imshow(window_name_img, boxes[k].img);
-            }
-            */
-
             //Print the boxes
             cout << "from segment plates" << endl;
             for (const auto box: boxes) {
                 cout << box.ID << " " << box.p0x << " " << box.p0y << " " << box.width << " " << box.height << endl;
             }
+             */
 
             //Cascade Classification
             //1. Which one is salad
@@ -104,29 +97,40 @@ int main(int argc, char **argv) {
                 boxes[2].conf = 1;
             }
 
-            //Show the plates
-            for (int k = 0; k < boxes.size(); ++k) {
-                string window_name_img = "Tray" + to_string(i + 1) + " " + file_name + " Food" + to_string(k + 1);
-                namedWindow(window_name_img);
-                imshow(window_name_img, boxes[k].img);
-            }
-
-
             // 2. Which one is pasta
+            array<double, 3> values_max{};
+            vector<box> copy(boxes);
+            double max_value = 0;
+            int max_index;
             for (int k = 0; k < boxes.size(); ++k) {
                 if (boxes[k].ID == -1) {
+                    boxes[k] = segment_food(copy[k]);
                     //Calculate histogram for box img
-                    vector<Mat> box_hist_img = {boxes[k].img};
+                    waitKey();
+                    vector<Mat> box_hist_img = {boxes[k].img.clone()};
                     Mat box_hist = mean_histogram2(box_hist_img);
 
-                    //Compare with the categories hist
+                    //Compare with the pasta_hist
                     array<double, 3> values{};
                     values = compare_histogram(box_hist, pasta_hist);
-
-                    //Save to boxes
-                    boxes[k].ID = foodCategories[int(values[1])].classLable;
-                    boxes[k].conf = values[2];
+                    if (values[0] >= max_value) {
+                        max_value = values[0];
+                        values_max[0] = values[0];
+                        values_max[1] = values[1];
+                        values_max[2] = values[2];
+                        max_index = k;
+                    }
                 }
+            }
+            //Save to box that is pasta
+            boxes[max_index].ID = foodCategories[int(values_max[1])].classLable;
+            boxes[max_index].conf = values_max[2];
+
+            //Show the plates
+            for (int k = 0; k < boxes.size(); ++k) {
+                string window_name_img = "Tray" + to_string(i + 1) + " " + file_name + " Food" + to_string(boxes[k].ID);
+                namedWindow(window_name_img);
+                imshow(window_name_img, boxes[k].img);
             }
 
             /*
@@ -156,14 +160,13 @@ int main(int argc, char **argv) {
 
 
             //Print the boxes
-            cout << "after classification" << endl;
+            //cout << "after classification" << endl;
             for (const auto box: boxes) {
                 cout << box.ID << " " << box.p0x << " " << box.p0y << " " << box.width << " " << box.height << " " << box.conf << endl;
             }
 
         }
     }
-
     waitKey();
     return 0;
 }

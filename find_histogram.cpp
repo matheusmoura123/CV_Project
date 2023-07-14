@@ -2,22 +2,21 @@
 
 array<double, 3> compare_histogram(const Mat& src_hist, const vector<Mat>& categories_hist) {
 
-    double comp_values, sum_comp_values = 0;
-    double confidence;
-    double max_value = 0, sec_max,  max_index;
+    double comp_values = 0;
+    double confidence = 0;
+    double max_value = 0, sec_max = 0,  max_index = 0;
     int k = 0;
     for(auto &type_hist: categories_hist) {
         comp_values = compareHist(src_hist, type_hist, 0);
-        sum_comp_values += comp_values;
         cout << comp_values << endl;
         if (comp_values >= max_value) {
             sec_max = max_value;
             max_value = comp_values;
             max_index = k;
-        }
+        } else if (comp_values < 0) max_value = 0.00001;
         k++;
     }
-    cout << "---------------------" << endl;
+    //cout << "---------------------" << endl;
     confidence = max_value/(max_value+sec_max);
     return {max_value, max_index, confidence};
 }
@@ -38,6 +37,7 @@ Mat mean_histogram2(const vector<Mat>& vector_src) {
     bool accumulate = false;
 
     int sz[] = {180, 256, 256};
+    //Mat mean_hist = Mat::zeros(3, sz, CV_8UC1);
     Mat mean_hist(3, sz, CV_8UC1);
     Mat img_hist;
 
