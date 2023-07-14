@@ -230,7 +230,7 @@ Mat meanshift(Mat img, int spatial, int color){
     return mean_img;
 }
 
-Mat otsu_segmentation(Mat gray_img, int num_grid){
+Mat otsu_segmentation(Mat gray_img, int num_grid) {
     Mat otsu_img = gray_img.clone();
 
     //Divide Img in multiple sections num_grid X num_grid and perform Otu separately in each one
@@ -271,154 +271,149 @@ box segment_food(const box& plate_box) {
     Mat g = Mat::zeros(Size(0,0), CV_8UC1);
     box food_box = {-1, 0, 0, 0, 0, 0, g};
 
-        //Bilateral filter to try to create sharper edges
+    /*
+    //Bilateral filter to try to create sharper edges
+    Mat bi_img, mean_img;
+    bilateralFilter(plate_box.img, bi_img, 5, 150, 50);
 
-        /*
-        Mat bi_img, mean_img;
-        bilateralFilter(plate_box.img, bi_img, 5, 150, 50);
+    //First separating the darker foods
+    mean_img = meanshift(bi_img, 50, 70);
+    cvtColor(mean_img, mean_img, COLOR_BGR2HSV);
 
-        //First separating the darker foods
-        mean_img = meanshift(bi_img, 50, 70);
-        cvtColor(mean_img, mean_img, COLOR_BGR2HSV);
+    Mat hsv_segment = segment_rgb_hsv(mean_img, 10, 150, 100, 30, 150, 150, true);
 
-        Mat hsv_segment = segment_rgb_hsv(mean_img, 10, 150, 100, 30, 150, 150, true);
-
-        Mat image_3c;
-        Mat in[3] = {hsv_segment, hsv_segment, hsv_segment};
-        merge(in, 3, image_3c);
-        Mat rgb_img = plate_box.img.clone();
-        Mat final_image =  box.img.clone();
-        for (int i = 0; i < hsv_segment.rows; ++i) {
-            for (int j = 0; j < hsv_segment.cols; ++j) {
-                int blue_temp = int(rgb_img.at<Vec3b>(i,j)[0]);
-                int green_temp = int(rgb_img.at<Vec3b>(i,j)[1]);
-                int red_temp = int(rgb_img.at<Vec3b>(i,j)[2]);
-                if(blue_temp == 0 && green_temp == 0 && red_temp == 0) {
-                    image_3c.at<Vec3b>(i,j)[0] = 0;
-                    image_3c.at<Vec3b>(i,j)[1] = 0;
-                    image_3c.at<Vec3b>(i,j)[2] = 0;
-                }
+    Mat image_3c;
+    Mat in[3] = {hsv_segment, hsv_segment, hsv_segment};
+    merge(in, 3, image_3c);
+    Mat rgb_img = plate_box.img.clone();
+    Mat final_image =  box.img.clone();
+    for (int i = 0; i < hsv_segment.rows; ++i) {
+        for (int j = 0; j < hsv_segment.cols; ++j) {
+            int blue_temp = int(rgb_img.at<Vec3b>(i,j)[0]);
+            int green_temp = int(rgb_img.at<Vec3b>(i,j)[1]);
+            int red_temp = int(rgb_img.at<Vec3b>(i,j)[2]);
+            if(blue_temp == 0 && green_temp == 0 && red_temp == 0) {
+                image_3c.at<Vec3b>(i,j)[0] = 0;
+                image_3c.at<Vec3b>(i,j)[1] = 0;
+                image_3c.at<Vec3b>(i,j)[2] = 0;
             }
         }
-        Mat img_out = get_contours(image_3c);
-        cvtColor(img_out, img_out, COLOR_BGR2GRAY);
+    }
+    Mat img_out = get_contours(image_3c);
+    cvtColor(img_out, img_out, COLOR_BGR2GRAY);
 
 
-        // Morphological Closing
-        int morph_size = 2;
-        Mat element = getStructuringElement(MORPH_CROSS, Size(2 * morph_size + 1, 2 * morph_size + 1), Point(morph_size, morph_size));
-        Mat morph_img;
-        morphologyEx(img_out, morph_img, MORPH_CLOSE, element, Point(-1, -1), 6);
+    // Morphological Closing
+    int morph_size = 2;
+    Mat element = getStructuringElement(MORPH_CROSS, Size(2 * morph_size + 1, 2 * morph_size + 1), Point(morph_size, morph_size));
+    Mat morph_img;
+    morphologyEx(img_out, morph_img, MORPH_CLOSE, element, Point(-1, -1), 6);
 
-        Mat morph_rgb;
-        Mat chan[3] = {morph_img, morph_img, morph_img};
-        merge(chan, 3, morph_rgb);
+    Mat morph_rgb;
+    Mat chan[3] = {morph_img, morph_img, morph_img};
+    merge(chan, 3, morph_rgb);
 
-        Mat final = get_contours(morph_rgb);
-        cvtColor(final, final, COLOR_BGR2GRAY);
-        for (int y = 0; y < rgb_img.rows; ++y) {
-            for (int x = 0; x < rgb_img.cols; ++x) {
-                if(final.at<uchar>(y, x) == 0 ) {
-                    rgb_img.at<Vec3b>(y,x)[0] = 0;
-                    rgb_img.at<Vec3b>(y,x)[1] = 0;
-                    rgb_img.at<Vec3b>(y,x)[2] = 0;
-                }
+    Mat final = get_contours(morph_rgb);
+    cvtColor(final, final, COLOR_BGR2GRAY);
+    for (int y = 0; y < rgb_img.rows; ++y) {
+        for (int x = 0; x < rgb_img.cols; ++x) {
+            if(final.at<uchar>(y, x) == 0 ) {
+                rgb_img.at<Vec3b>(y,x)[0] = 0;
+                rgb_img.at<Vec3b>(y,x)[1] = 0;
+                rgb_img.at<Vec3b>(y,x)[2] = 0;
             }
         }
-        //dishes.push_back(rgb_img);
-        //imshow("mask", rgb_img);
-        //waitKey();
-         */
+    }
+    //dishes.push_back(rgb_img);
+    //imshow("mask", rgb_img);
+    //waitKey();
+     */
 
-        Mat rgb_img = box.img.clone();
-        Mat final_image = rgb_img.clone();
+    Mat rgb_img = plate_box.img.clone();
+    Mat final_image = rgb_img.clone();
 
-        Mat bi_img_new, gray_new;
+    Mat bi_img_new, gray_new;
 
-        //Let's segment the mask that we've got
-
-
-        cvtColor(rgb_img, gray_new, COLOR_BGR2GRAY);
-        Canny(gray_new, bi_img_new, 20, 60);
+    //Let's segment the mask that we've got
 
 
-        int morph_size_new = 2;
-        Mat element_new = getStructuringElement(MORPH_ELLIPSE, Size(2 * morph_size_new + 1, 2 * morph_size_new + 1), Point(morph_size_new, morph_size_new));
-        Mat morph_img_new;
-        morphologyEx(bi_img_new, morph_img_new, MORPH_CLOSE, element_new, Point(-1, -1), 3);
-        morphologyEx(morph_img_new, morph_img_new, MORPH_OPEN, element_new, Point(-1, -1), 2);
+    cvtColor(rgb_img, gray_new, COLOR_BGR2GRAY);
+    Canny(gray_new, bi_img_new, 20, 60);
 
 
-        Mat morph_3c;
-        Mat in_morph[3] = {morph_img_new, morph_img_new, morph_img_new};
-        merge(in_morph, 3, morph_3c);
-
-        Mat img_contour = get_contours(morph_3c);
-
-        cvtColor(img_contour, img_contour, COLOR_BGR2GRAY);
+    int morph_size_new = 2;
+    Mat element_new = getStructuringElement(MORPH_ELLIPSE, Size(2 * morph_size_new + 1, 2 * morph_size_new + 1), Point(morph_size_new, morph_size_new));
+    Mat morph_img_new;
+    morphologyEx(bi_img_new, morph_img_new, MORPH_CLOSE, element_new, Point(-1, -1), 3);
+    morphologyEx(morph_img_new, morph_img_new, MORPH_OPEN, element_new, Point(-1, -1), 2);
 
 
+    Mat morph_3c;
+    Mat in_morph[3] = {morph_img_new, morph_img_new, morph_img_new};
+    merge(in_morph, 3, morph_3c);
 
-        for (int y = 0; y < final_image.rows; ++y) {
-            for (int x = 0; x < final_image.cols; ++x) {
-                if(img_contour.at<uchar>(y, x) == 0 ) {
-                    final_image.at<Vec3b>(y,x)[0] = 0;
-                    final_image.at<Vec3b>(y,x)[1] = 0;
-                    final_image.at<Vec3b>(y,x)[2] = 0;
-                }
+    Mat img_contour = get_contours(morph_3c);
+
+    cvtColor(img_contour, img_contour, COLOR_BGR2GRAY);
+
+    for (int y = 0; y < final_image.rows; ++y) {
+        for (int x = 0; x < final_image.cols; ++x) {
+            if(img_contour.at<uchar>(y, x) == 0 ) {
+                final_image.at<Vec3b>(y,x)[0] = 0;
+                final_image.at<Vec3b>(y,x)[1] = 0;
+                final_image.at<Vec3b>(y,x)[2] = 0;
             }
         }
+    }
 
-
-
-        //Crop only food
-        int row0_y=0, rowf_y=0, col0_x=0, colf_x=0;
-        Mat gray_result;
-        cvtColor(final_image, gray_result, COLOR_BGR2GRAY);
-        //vector<int> rows, columns;
-        for (int y = 0; y < gray_result.rows; ++y) {
-            bool done = false;
-            for (int x = 0; x < gray_result.cols; ++x){
-                if(gray_result.at<uchar>(y, x) != 0) {
-                    row0_y = y;
-                    done = true;
-                    break;}
-            }
-            if(done) break;
-        }
+    //Crop only food
+    int row0_y=0, rowf_y=0, col0_x=0, colf_x=0;
+    Mat gray_result;
+    cvtColor(final_image, gray_result, COLOR_BGR2GRAY);
+    //vector<int> rows, columns;
+    for (int y = 0; y < gray_result.rows; ++y) {
+        bool done = false;
         for (int x = 0; x < gray_result.cols; ++x){
-            bool done = false;
-            for (int y = 0; y < gray_result.rows; ++y) {
-                if(gray_result.at<uchar>(y, x) != 0) {
-                    col0_x = x;
-                    done = true;
-                    break;}
-            }
-            if(done) break;
+            if(gray_result.at<uchar>(y, x) != 0) {
+                row0_y = y;
+                done = true;
+                break;}
         }
-        for (int y = gray_result.rows-1; y > 0; --y) {
-            int done = false;
-            for (int x = 0; x < gray_result.cols; ++x){
-                if(gray_result.at<uchar>(y, x) != 0) {
-                    rowf_y = y;
-                    done = true;
-                    break;}
-            }
-            if(done) break;
+        if(done) break;
+    }
+    for (int x = 0; x < gray_result.cols; ++x){
+        bool done = false;
+        for (int y = 0; y < gray_result.rows; ++y) {
+            if(gray_result.at<uchar>(y, x) != 0) {
+                col0_x = x;
+                done = true;
+                break;}
         }
-        for (int x = gray_result.cols-1; x > 0; --x){
-            int done = false;
-            for (int y = 0; y < gray_result.rows; ++y) {
-                if(gray_result.at<uchar>(y, x) != 0) {
-                    colf_x = x;
-                    done = true;
-                    break;}
-            }
-            if(done) break;
+        if(done) break;
+    }
+    for (int y = gray_result.rows-1; y > 0; --y) {
+        int done = false;
+        for (int x = 0; x < gray_result.cols; ++x){
+            if(gray_result.at<uchar>(y, x) != 0) {
+                rowf_y = y;
+                done = true;
+                break;}
         }
-        Mat cropped_img = final_image(Range(row0_y, rowf_y), Range(col0_x, colf_x));
-        food_box = {-1, plate_box.p0x+col0_x, plate_box.p0y+row0_y, colf_x-col0_x, rowf_y-row0_y, -1, g}; //ID: -1 indicates that the box is not yet identified
-        food_box.img = cropped_img.clone();
+        if(done) break;
+    }
+    for (int x = gray_result.cols-1; x > 0; --x){
+        int done = false;
+        for (int y = 0; y < gray_result.rows; ++y) {
+            if(gray_result.at<uchar>(y, x) != 0) {
+                colf_x = x;
+                done = true;
+                break;}
+        }
+        if(done) break;
+    }
+    Mat cropped_img = final_image(Range(row0_y, rowf_y), Range(col0_x, colf_x));
+    food_box = {-1, plate_box.p0x+col0_x, plate_box.p0y+row0_y, colf_x-col0_x, rowf_y-row0_y, -1, g}; //ID: -1 indicates that the box is not yet identified
+    food_box.img = cropped_img.clone();
     return food_box;
 }
 

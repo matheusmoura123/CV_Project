@@ -12,9 +12,13 @@ int main(int argc, char **argv) {
 
     //Separate dishes
     vector<Mat> foods;
-    vector<box> food_box;
+    vector<box> plates_boxes = segment_plates(img, foods);
+    for (const auto& plate_box: plates_boxes) {
+        box food_box = segment_food(plate_box);
+        imshow("food", food_box.img);
+        waitKey();
+    }
 
-    food_box = segment_food(img, foods);
 
 
 
