@@ -22,7 +22,7 @@ int main(int argc, char **argv) {
     }
 
     //Calculate pasta histogram
-    vector <Mat> pasta_hist;
+    vector <Mat> pasta_sauce_hist;
     for (auto &food: pastaCategories) {
         vector <Mat> imgs;
         for (int i = 1; i <= food.imageNumbers; ++i) {
@@ -30,12 +30,28 @@ int main(int argc, char **argv) {
             //find_histogram(img);
             imgs.push_back(img);
         }
-        pasta_hist.push_back(mean_histogram2(imgs));
+        pasta_sauce_hist.push_back(mean_histogram2(imgs));
     }
+
+    //Calculate pasta histogram
+    vector <Mat> pasta_hist;
+    vector <Mat> imgs_pasta;
+    //Find the index of ID
+    int ID = 19;
+    int index1=0;
+    for (index1; index1 < foodCategories.size(); ++index1) {
+        if (ID == foodCategories[index1].classLable) break;
+    }
+    for (int i = 1; i <= foodCategories[index1].imageNumbers; ++i) {
+        Mat img = imread(CATEGORIES_PATH + foodCategories[index1].className + "/" + foodCategories[index1].className + to_string(i) + IMAGE_EXT);
+        //find_histogram(img);
+        imgs_pasta.push_back(img);
+    }
+    pasta_hist.push_back(mean_histogram2(imgs_pasta));
 
     //Go through all trays and imgs
     //for (int i = 0; i < NUMBER_TRAYS; ++i) {
-    for (int i = 1; i < 2; ++i) {
+    for (int i = 0; i < NUMBER_TRAYS; ++i) {
         //for (int j = 0; j < 4; ++j) {
         for (int j = 0; j < 1; ++j) {
             int key;
@@ -65,12 +81,14 @@ int main(int argc, char **argv) {
             //Extract each box from img
             boxes = segment_plates(img, dishes);
 
+            /*
             //Show the plates
             for (int k = 0; k < boxes.size(); ++k) {
                 string window_name_img = "Tray" + to_string(i + 1) + " " + file_name + " Food" + to_string(k + 1);
                 namedWindow(window_name_img);
                 imshow(window_name_img, boxes[k].img);
             }
+            */
 
             //Print the boxes
             cout << "from segment plates" << endl;
@@ -79,13 +97,39 @@ int main(int argc, char **argv) {
             }
 
             //Cascade Classification
-            //1. Identifying Salad
+            //1. Which one is salad
             sort(boxes.begin(), boxes.end(), sort_bigger_area);
             if (boxes.size() > 2) {
                 boxes[2].ID = 12;
                 boxes[2].conf = 1;
             }
 
+            //Show the plates
+            for (int k = 0; k < 1; ++k) {
+                string window_name_img = "Tray" + to_string(i + 1) + " " + file_name + " Food" + to_string(k + 1);
+                namedWindow(window_name_img);
+                imshow(window_name_img, boxes[k].img);
+            }
+
+
+            // 2. Which one is pasta
+            for (int k = 0; k < boxes.size(); ++k) {
+                if (boxes[k].ID == -1) {
+                    //Calculate histogram for box img
+                    vector<Mat> box_hist_img = {boxes[k].img};
+                    Mat box_hist = mean_histogram2(box_hist_img);
+
+                    //Compare with the categories hist
+                    array<double, 3> values{};
+                    values = compare_histogram(box_hist, pasta_hist);
+
+                    //Save to boxes
+                    boxes[k].ID = foodCategories[int(values[1])].classLable;
+                    boxes[k].conf = values[2];
+                }
+            }
+
+            /*
             //2. Histogram Comparison
             for (int k = 0; k < boxes.size(); ++k) {
                 if (boxes[k].ID == -1) {
@@ -107,6 +151,7 @@ int main(int argc, char **argv) {
                     boxes[k].conf = values[2];
                 }
             }
+             */
 
 
 

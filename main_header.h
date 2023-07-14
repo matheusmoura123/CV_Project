@@ -67,6 +67,7 @@ const vector<food> pastaCategories{
 const vector<food> foodCategories{
         //{className, numberOfImgs, ID},
         //{"plate", 9, 0},
+        {"pasta", 13, 19},
         {"rice", 7, 5},
         {"pork", 9, 6},
         {"fish", 10, 7},
@@ -74,7 +75,6 @@ const vector<food> foodCategories{
         {"seafood", 5, 9},
         {"beans", 13, 10},
         {"potato", 13, 11},
-        {"pasta", 20, 19},
         //{"salad", 15, 12},
         //{"bread", 18, 13},
         //{"carrot", 6, 14},

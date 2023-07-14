@@ -1,36 +1,6 @@
 #include "../main_header.h"
 
-const string TRAY_PATH = "../Food_leftover_dataset/tray";
-const string IMAGE_EXT = ".jpg";
 bool EXIT = false;
-const int NUMBER_TRAYS = 8;
-
-
-vector<food> categories_left;
-const vector<food> pastaCategories{
-        {"pesto", 4, 1},
-        {"pomodoro", 5, 2},
-        {"ragu", 2, 3},
-        {"pasta_clams", 8, 4},
-};
-const vector<food> foodCategories{
-        //{"plate", 9, 0},
-        {"rice", 7, 5},
-        {"pork", 9, 6},
-        {"fish", 10, 7},
-        {"rabbit", 12, 8},
-        {"seafood", 5, 9},
-        {"beans", 13, 10},
-        {"potato", 13, 11},
-        //{"lettuce", 15, 12},
-        {"bread", 18, 13},
-        //{"carrot", 6, 14},
-        //{"pepper", 2, 15},
-        //{"tomato", 10, 16},
-        {"pasta", 31, 17},
-        {"salad", 15, 18},
-        //{"plate_salad", 3, 19},
-};
 
 int main(int argc, char **argv)
 {

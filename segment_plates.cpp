@@ -282,8 +282,6 @@ Mat otsu_segmentation(Mat gray_img, int num_grid){
 
 
 
-
-
 //---------------GRAVE OF DEAD IDEAS--------------------
 // hahahahahahahahha
 
