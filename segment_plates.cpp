@@ -350,31 +350,45 @@ vector<box> segment_food(const Mat& img, vector<Mat>& dst){
             }
         }
 
-        dishes.push_back(rgb_img);
+        dst.push_back(rgb_img);
 
         imshow("mask", rgb_img);
         waitKey();
+
+        cvtColor(rgb_img, rgb_img, COLOR_BGR2GRAY);
 
         int row0_y, rowf_y, col0_x, colf_x;
         //vector<int> rows, columns;
         for (int y = 0; y < rgb_img.rows; ++y) {
             for (int x = 0; x < rgb_img.cols; ++x){
-                if(rgb_img.at<uchar>(y, x) != 0) row0_y=y;
+                if(rgb_img.at<uchar>(y, x) != 0){
+                    row0_y=y;
+                    break;
+                }
             }
         }
         for (int x = 0; x < rgb_img.cols; ++x){
             for (int y = 0; y < rgb_img.rows; ++y) {
-                if(rgb_img.at<uchar>(y, x) != 0) col0_x=x;
+                if(rgb_img.at<uchar>(y, x) != 0) {
+                    col0_x=x;
+                    break;
+                }
             }
         }
         for (int y = rgb_img.rows; y > 0; --y) {
             for (int x = 0; x < rgb_img.cols; ++x){
-                if(rgb_img.at<uchar>(y, x) != 0) rowf_y=y;
+                if(rgb_img.at<uchar>(y, x) != 0){
+                    rowf_y=y;
+                    break;
+                }
             }
         }
         for (int x = rgb_img.cols; x > 0; --x){
             for (int y = 0; y < rgb_img.rows; ++y) {
-                if(rgb_img.at<uchar>(y, x) != 0) colf_x=x;
+                if(rgb_img.at<uchar>(y, x) != 0) {
+                    colf_x=x;
+                    break;
+                }
             }
         }
         Mat cropped_img = rgb_img(Range(row0_y, rowf_y), Range(col0_x, colf_x));
