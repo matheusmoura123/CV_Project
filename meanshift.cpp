@@ -37,16 +37,13 @@ int main(int argc, char **argv) {
     //array<int, 3> hue_val = find_histogram(mean_img);
     //
     // cvtColor(mean_img,mean_img,COLOR_BGR2HSV);
-    Mat hsv_segment = segment_hsv(mean_img, 160, 160, 160, 80, 80, 80);
+    Mat hsv_segment = segment_rgb_hsv(mean_img, 160, 160, 160, 80, 80, 80);
 
     // here was otsu
-
-
 
     Mat hsv_image;
     Mat in[3] = {hsv_segment, hsv_segment, hsv_segment};
     merge(in, 3, hsv_image);
-
 
 
     for (int i = 0; i < hsv_segment.rows; ++i)
