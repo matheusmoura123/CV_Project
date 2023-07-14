@@ -110,7 +110,7 @@ Mat get_contours(const Mat& img) {
 }
 
 
-Mat segment_hsv(const Mat& src, int hue, int sat, int val, int T_hue, int T_sat, int T_value) {
+Mat segment_rgb_hsv(const Mat& src, int hue, int sat, int val, int T_hue, int T_sat, int T_value) {
     Mat img_hsv, dst;
 
     dst = src.clone();
@@ -278,6 +278,110 @@ Mat otsu_segmentation(Mat gray_img, int num_grid){
     otsu_img = 255- otsu_img;
 
     return otsu_img;
+}
+
+
+vector<box> segment_food(const Mat& img, vector<Mat>& dst){
+    vector<Mat> dishes;
+    vector<box> box_plates = segment_plates(img, dishes);
+    vector<box> box_food;
+
+    for (const auto &box: box_plates){
+        //Bilateral filter to try to create sharper edges
+        Mat bi_img, mean_img;
+        bilateralFilter(box.img, bi_img, 5, 150, 50);
+
+        //First separating the darker foods
+        mean_img = meanshift(bi_img, 50, 70);
+        cvtColor(mean_img, mean_img, COLOR_BGR2HSV);
+
+        Mat hsv_segment = segment_rgb_hsv(mean_img, 10, 150, 100, 30, 150, 150);
+
+
+        Mat image_3c;
+        Mat in[3] = {hsv_segment, hsv_segment, hsv_segment};
+        merge(in, 3, image_3c);
+
+        Mat rgb_img = box.img.clone();
+
+
+        for (int i = 0; i < hsv_segment.rows; ++i)
+        {
+            for (int j = 0; j < hsv_segment.cols; ++j)
+            {
+                int blue_temp = int(rgb_img.at<Vec3b>(i,j)[0]);
+                int green_temp = int(rgb_img.at<Vec3b>(i,j)[1]);
+                int red_temp = int(rgb_img.at<Vec3b>(i,j)[2]);
+
+                if(blue_temp == 0 && green_temp == 0 && red_temp == 0) {
+                    image_3c.at<Vec3b>(i,j)[0] = 0;
+                    image_3c.at<Vec3b>(i,j)[1] = 0;
+                    image_3c.at<Vec3b>(i,j)[2] = 0;
+                }
+            }
+        }
+
+        Mat img_out = get_contours(image_3c);
+
+        cvtColor(img_out, img_out, COLOR_BGR2GRAY);
+
+
+        // Morphological Closing
+        int morph_size = 2;
+        Mat element = getStructuringElement(MORPH_CROSS, Size(2 * morph_size + 1, 2 * morph_size + 1), Point(morph_size, morph_size));
+        Mat morph_img;
+        morphologyEx(img_out, morph_img, MORPH_CLOSE, element, Point(-1, -1), 6);
+
+        Mat morph_rgb;
+        Mat chan[3] = {morph_img, morph_img, morph_img};
+        merge(chan, 3, morph_rgb);
+
+        Mat final = get_contours(morph_rgb);
+        cvtColor(final, final, COLOR_BGR2GRAY);
+
+
+        for (int y = 0; y < rgb_img.rows; ++y) {
+            for (int x = 0; x < rgb_img.cols; ++x) {
+                if(final.at<uchar>(y, x) == 0 ) {
+                    rgb_img.at<Vec3b>(y,x)[0] = 0;
+                    rgb_img.at<Vec3b>(y,x)[1] = 0;
+                    rgb_img.at<Vec3b>(y,x)[2] = 0;
+                }
+            }
+        }
+
+        dishes.push_back(rgb_img);
+
+        imshow("mask", rgb_img);
+        waitKey();
+
+        int row0_y, rowf_y, col0_x, colf_x;
+        //vector<int> rows, columns;
+        for (int y = 0; y < rgb_img.rows; ++y) {
+            for (int x = 0; x < rgb_img.cols; ++x){
+                if(rgb_img.at<uchar>(y, x) != 0) row0_y=y;
+            }
+        }
+        for (int x = 0; x < rgb_img.cols; ++x){
+            for (int y = 0; y < rgb_img.rows; ++y) {
+                if(rgb_img.at<uchar>(y, x) != 0) col0_x=x;
+            }
+        }
+        for (int y = rgb_img.rows; y > 0; --y) {
+            for (int x = 0; x < rgb_img.cols; ++x){
+                if(rgb_img.at<uchar>(y, x) != 0) rowf_y=y;
+            }
+        }
+        for (int x = rgb_img.cols; x > 0; --x){
+            for (int y = 0; y < rgb_img.rows; ++y) {
+                if(rgb_img.at<uchar>(y, x) != 0) colf_x=x;
+            }
+        }
+        Mat cropped_img = rgb_img(Range(row0_y, rowf_y), Range(col0_x, colf_x));
+
+        box_food.emplace_back(-1, col0_x, row0_y, colf_x-col0_x, rowf_y-row0_y, -1, cropped_img); //ID: -1 indicates that the box is not yet identified
+    }
+    return box_food;
 }
 
 
