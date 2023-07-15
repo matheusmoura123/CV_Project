@@ -109,15 +109,6 @@ int main(int argc, char **argv) {
             }
              */
 
-
-            // 4.Contorno
-            for (int k = 0; k < boxes.size(); ++k) {
-                if (boxes[k].ID == -1) {
-                    imwrite("../FoodCategories/secondos/secondos" + to_string(i+1) + IMAGE_EXT, boxes[k].img);
-                }
-            }
-
-
             //Show the plates
             for (int k = 0; k < boxes.size(); ++k) {
                 string window_name_img = "Tray" + to_string(i + 1) + " " + file_name + " Food" + to_string(k+1) + " ID:" + to_string(boxes[k].ID);
@@ -163,3 +154,12 @@ int main(int argc, char **argv) {
     }
     return 0;
 }
+
+/*
+// SAVING SECONDOS IMGS
+for (int k = 0; k < boxes.size(); ++k) {
+    if (boxes[k].ID == -1) {
+        imwrite("../FoodCategories/secondos/secondos" + to_string(i+1) + IMAGE_EXT, boxes[k].img);
+    }
+}
+ */
