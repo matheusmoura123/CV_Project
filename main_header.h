@@ -71,18 +71,23 @@ const vector<food> pastaCategories{
         {"pomodoro", 5, 2},
         {"ragu", 2, 3},
         {"pasta_clams", 8, 4},
+        {"rice", 5, 5}
 };
 const vector<food> foodCategories{
         //{className, numberOfImgs, ID},
         //{"plate", 9, 0},
-        {"pasta", 13, 19},
-        {"rice", 7, 5},
+        {"pasta", 8, 19},
+        {"pesto", 4, 1},
+        {"pomodoro", 5, 2},
+        {"ragu", 2, 3},
+        {"pasta_clams", 8, 4},
+        {"rice", 5, 5},
         {"pork", 9, 6},
         {"fish", 10, 7},
         {"rabbit", 12, 8},
         {"seafood", 5, 9},
-        {"beans", 13, 10},
-        {"potato", 13, 11},
+        {"beans", 14, 10},
+        {"potato", 7, 11},
         //{"salad", 15, 12},
         //{"bread", 18, 13},
         //{"carrot", 6, 14},
@@ -102,7 +107,6 @@ const int NUMBER_TRAYS = 8;
 //find_histogram.cpp
 array<int,3> find_histogram(const cv::Mat& src);
 Mat mean_histogram2(const vector<cv::Mat>& src);
-Mat mean_histogram(const vector<cv::Mat>& src);
 array<double, 3> compare_histogram(const Mat& src_hist, const vector<Mat>& categories_hist);
 void plot_histogram(Mat histogram);
 

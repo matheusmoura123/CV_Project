@@ -6,17 +6,13 @@ vector<box> segment_plates(const Mat& img, vector<Mat>& dst) {
     vector<Mat> theCircles;
     vector<box> plates_boxes;
     cvtColor(img, gray, COLOR_BGR2GRAY);
-    GaussianBlur(gray, Gaus,Size(3,3), 1.5, 1.5);
+    GaussianBlur(gray, Gaus,Size(3,3), 1.5, 1.5); //original
+
 
     // DETECTING CIRCLES (PLATES)
-    /*
-    these parameters are good for every image except food_image tray 4, 6 and 7
-    HoughCircles(Gaus, circles, HOUGH_GRADIENT, 1, Gaus.cols/3, 200, 50, 160, 500); cvtColor(img, gray, COLOR_BGR2GRAY);
-    GaussianBlur(gray, Gaus,Size(3,3), 1.5, 1.5);
-     */
-
     vector<Vec3f> circles;
-    HoughCircles(Gaus, circles, HOUGH_GRADIENT, 1, Gaus.cols/3, 200, 50, 160, 500);
+    //HoughCircles(Gaus, circles, HOUGH_GRADIENT, 1, Gaus.cols/3, 200, 50, 160, 500); //original
+    HoughCircles(Gaus, circles, HOUGH_GRADIENT, 1, Gaus.cols/3, 100, 80, 160, 500); //get all the plates right and nothing else. PERFECT!
     vector<Mat> plates;
 
     for(size_t i = 0; i < circles.size(); i++)

@@ -23,22 +23,20 @@ array<double, 3> compare_histogram(const Mat& src_hist, const vector<Mat>& categ
 
 Mat mean_histogram2(const vector<Mat>& vector_src) {
 
-    int h_bins = 180, s_bins = 256, v_bins = 256;
-    int histSize[] = { h_bins, s_bins, v_bins };
+    int h_bins = 180, s_bins = 256, v_bins = 246;
+    int histSize[] = { h_bins, s_bins, v_bins};
     // hue varies from 0 to 179, saturation and value from 0 to 255
     float h_ranges[] = { 0, 180 };
     float s_ranges[] = { 0, 256 };
-    float v_ranges[] = { 0, 256 };
-    const float* ranges[] = { h_ranges, s_ranges, v_ranges };
+    float v_ranges[] = { 10, 256 };
+    const float* ranges[] = { h_ranges, s_ranges, v_ranges};
     // Use all channels
-    int channels[] = { 0, 1, 2 };
+    int channels[] = { 0, 1, 2};
 
     bool uniform = true;
     bool accumulate = false;
 
-    int sz[] = {180, 256, 256};
-    //Mat mean_hist = Mat::zeros(3, sz, CV_8UC1);
-    Mat mean_hist(3, sz, CV_8UC1);
+    Mat mean_hist = Mat::zeros(3, histSize, CV_8UC1);
     Mat img_hist;
 
     int k = 0;
@@ -47,101 +45,12 @@ Mat mean_histogram2(const vector<Mat>& vector_src) {
 
         calcHist(&src, 1, channels, Mat(), img_hist, 3, histSize, ranges, uniform, accumulate);
         normalize(img_hist, img_hist, 0, 1, NORM_MINMAX, -1, Mat());
+        //cout << "img_hist" << img_hist.size << " " << img_hist.channels() << " " << img_hist.type() << endl;
         add(mean_hist, img_hist, mean_hist, noArray(), 5);
         k++;
     }
     mean_hist = mean_hist/k;
     return mean_hist;
-}
-
-Mat mean_histogram(const vector<Mat>& vector_src) {
-    int histSize = 255;
-
-    float range[] = {1, 255};
-    const float *histRange = {range};
-
-    bool uniform = true;
-    bool accumulate = false;
-
-    // Draw the histograms for B, G and R
-    int hist_w = 256;
-    int hist_h = 100;
-    int bin_w = cvRound((double) hist_w / histSize);
-
-    Mat histImage(hist_h, hist_w, CV_8UC3, Scalar(0, 0, 0));
-    Mat new_img;
-    vector<Mat> hsv_planes;
-
-    if (vector_src[0].channels() == 1) {
-        Mat mean_hist = Mat::zeros(histSize, 1, CV_8UC1);
-        Mat gray_hist;
-
-        int k = 0;
-        for (auto &src: vector_src) {
-            calcHist(&src, 1, 0, Mat(), gray_hist, 1, &histSize, &histRange, uniform, accumulate);
-            add(mean_hist, gray_hist, mean_hist, noArray(), 5);
-            k++;
-        }
-        mean_hist = mean_hist/k;
-        normalize(mean_hist, mean_hist, 0, histImage.rows, NORM_MINMAX, -1, Mat());
-        for (int i = 1; i < histSize; i++) {
-            line(histImage, Point(bin_w * (i - 1), hist_h - cvRound(mean_hist.at<float>(i - 1))),
-                 Point(bin_w * (i), hist_h - cvRound(mean_hist.at<float>(i))),
-                 Scalar(255, 0, 0), 2, 8, 0);
-        }
-        namedWindow("Mean_hist");
-        imshow("Mean_hist", histImage);
-
-        return mean_hist;
-
-    } else {
-        Mat zero = Mat::zeros(histSize, 1, CV_8UC1);
-        Mat mean_hist[3] = {zero, zero, zero};
-        Mat b_hist, g_hist, r_hist;
-
-        int k = 0;
-        for (auto &src: vector_src) {
-            cvtColor(src, new_img, COLOR_BGR2HSV);
-
-            split(new_img, hsv_planes);
-
-            calcHist(&hsv_planes[0], 1, 0, Mat(), b_hist, 1, &histSize, &histRange, uniform, accumulate);
-            calcHist(&hsv_planes[1], 1, 0, Mat(), g_hist, 1, &histSize, &histRange, uniform, accumulate);
-            calcHist(&hsv_planes[2], 1, 0, Mat(), r_hist, 1, &histSize, &histRange, uniform, accumulate);
-
-            add(mean_hist[0], b_hist, mean_hist[0], noArray(), 5);
-            add(mean_hist[1], g_hist, mean_hist[1], noArray(), 5);
-            add(mean_hist[2], r_hist, mean_hist[2], noArray(), 5);
-
-            k++;
-        }
-        mean_hist[0] = mean_hist[0]/k;
-        mean_hist[1] = mean_hist[1]/k;
-        mean_hist[2] = mean_hist[2]/k;
-
-        normalize(mean_hist[0], mean_hist[0], 0, histImage.rows, NORM_MINMAX, -1, Mat());
-        normalize(mean_hist[1], mean_hist[1], 0, histImage.rows, NORM_MINMAX, -1, Mat());
-        normalize(mean_hist[2], mean_hist[2], 0, histImage.rows, NORM_MINMAX, -1, Mat());
-
-        for (int i = 1; i < histSize; i++) {
-            line(histImage, Point(bin_w * (i - 1), hist_h - cvRound(mean_hist[0].at<float>(i - 1))),
-                 Point(bin_w * (i), hist_h - cvRound(mean_hist[0].at<float>(i))),
-                 Scalar(255, 0, 0), 2, 8, 0);
-
-            line(histImage, Point(bin_w * (i - 1), hist_h - cvRound(mean_hist[1].at<float>(i - 1))),
-                 Point(bin_w * (i), hist_h - cvRound(mean_hist[1].at<float>(i))),
-                 Scalar(0, 255, 0), 2, 8, 0);
-            line(histImage, Point(bin_w * (i - 1), hist_h - cvRound(mean_hist[2].at<float>(i - 1))),
-                 Point(bin_w * (i), hist_h - cvRound(mean_hist[2].at<float>(i))),
-                 Scalar(0, 0, 255), 2, 8, 0);
-        }
-        namedWindow("Mean_hist");
-        imshow("Mean_hist", histImage);
-
-        Mat m;
-        merge(mean_hist, 3, m);
-        return m;
-    }
 }
 
 array<int,3> find_histogram(const Mat& src) {
