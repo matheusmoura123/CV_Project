@@ -23,12 +23,12 @@ array<double, 3> compare_histogram(const Mat& src_hist, const vector<Mat>& categ
 
 Mat mean_histogram2(const vector<Mat>& vector_src) {
 
-    int h_bins = 180, s_bins = 256, v_bins = 255;
+    int h_bins = 180, s_bins = 256, v_bins = 246;
     int histSize[] = { h_bins, s_bins, v_bins};
     // hue varies from 0 to 179, saturation and value from 0 to 255
     float h_ranges[] = { 0, 180 };
     float s_ranges[] = { 0, 256 };
-    float v_ranges[] = { 1, 256 };
+    float v_ranges[] = { 10, 256 };
     const float* ranges[] = { h_ranges, s_ranges, v_ranges};
     // Use all channels
     int channels[] = { 0, 1, 2};

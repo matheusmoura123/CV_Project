@@ -4,10 +4,11 @@ bool sort_bigger_area (const box& i,const box& j) {
     return(i.width*i.height>j.width*j.height);
 }
 
-vector<Mat> categories_histogram (int begin, int final) {
+vector<Mat> categories_histogram (vector<int> categories) {
     vector <Mat> categories_hist;
-    for (int j = begin; j <= final ; ++j) {
+    for (const int& j: categories) {
         vector <Mat> imgs;
+        cout << foodCategories[j].className << endl;
         for (int i = 1; i <= foodCategories[j].imageNumbers; ++i) {
             Mat img = imread(CATEGORIES_PATH + foodCategories[j].className + "/" + foodCategories[j].className + to_string(i) + IMAGE_EXT);
             //find_histogram(img);
@@ -24,8 +25,8 @@ int main(int argc, char **argv) {
     vector <box> boxes;
 
     //Calculate pasta histogram
-    vector <Mat> pasta_hist = categories_histogram(0, 0);
-    vector<Mat> rice_hist = categories_histogram(5, 5);
+    vector <Mat> pasta_hist = categories_histogram({0, 5});
+    vector<Mat> rice_hist = categories_histogram({5});
 
     //Go through all trays and imgs
     for (int i = 0; i < NUMBER_TRAYS; ++i) {
@@ -112,23 +113,7 @@ int main(int argc, char **argv) {
             // 4.Contorno
             for (int k = 0; k < boxes.size(); ++k) {
                 if (boxes[k].ID == -1) {
-                    boxes[k] = segment_food(copy[k]);
-                    //Calculate histogram for box img
-                    vector<Mat> box_hist_img = {boxes[k].img.clone()};
-                    Mat box_hist = mean_histogram2(box_hist_img);
-                    //Compare with the pasta_hist
-                    array<double, 3> values{};
-                    cout << "pasta: ";
-                    values = compare_histogram(box_hist, pasta_hist);
-                    cout << "rice: ";
-                    compare_histogram(box_hist, rice_hist);
-                    if (values[0] >= max_value) {
-                        max_value = values[0];
-                        values_max[0] = values[0];
-                        values_max[1] = values[1];
-                        values_max[2] = values[2];
-                        max_index = k;
-                    }
+
                 }
             }
 
