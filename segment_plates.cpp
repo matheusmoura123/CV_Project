@@ -216,7 +216,7 @@ Mat meanshift(Mat img, int spatial, int color){
     for (auto &sp_i: sp) {
         for (auto &sr_i: sr) {
             cout << "Calculating meanshift..." << endl;
-            pyrMeanShiftFiltering(img, mean_img, sp_i, sr_i, 0, termcrit);
+            pyrMeanShiftFiltering(img, mean_img, sp_i, sr_i, 1, termcrit);
             string w_name = to_string(sp_i) + "-" + to_string(sr_i) + " Level 3";
             //cout << w_name << endl;
             //namedWindow(w_name, WINDOW_NORMAL);
@@ -414,16 +414,89 @@ box segment_food(const box& plate_box) {
     return food_box;
 }
 
+int K_means(Mat src, int num_of_clusters) {
+
+    Mat p = Mat::zeros(src.cols*src.rows, 5, CV_32F);
+    Mat bestLabels, centers, clustered;
+    vector<Mat> bgr;
+    cv::split(src, bgr);
+    // i think there is a better way to split pixel bgr color
+    for(int i=0; i<src.cols*src.rows; i++) {
+        p.at<float>(i,0) = (i/src.cols) / src.rows;
+        p.at<float>(i,1) = (i%src.cols) / src.cols;
+        p.at<float>(i,2) = bgr[0].data[i] / 255.0;
+        p.at<float>(i,3) = bgr[1].data[i] / 255.0;
+        p.at<float>(i,4) = bgr[2].data[i] / 255.0;
+    }
+
+    int K = num_of_clusters;
+    cv::kmeans(p, K, bestLabels,
+               TermCriteria(TermCriteria::MAX_ITER|TermCriteria::EPS, 10, 1.0),
+               7, KMEANS_PP_CENTERS, centers);
+
+    int colors[K];
+    for(int i=0; i<K; i++) {
+        colors[i] = 255/(i+1);
+    }
+    // i think there is a better way to do this mayebe some Mat::reshape?
+    clustered = Mat(src.rows, src.cols, CV_32F);
+    for(int i=0; i<src.cols*src.rows; i++) {
+        clustered.at<float>(i/src.cols, i%src.cols) = (float)(colors[bestLabels.at<int>(0,i)]);
+//      cout << bestLabels.at<int>(0,i) << " " <<
+//              colors[bestLabels.at<int>(0,i)] << " " <<
+//              clustered.at<float>(i/src.cols, i%src.cols) << " " <<
+//              endl;
+    }
+
+    clustered.convertTo(clustered, CV_8U);
+    imshow("clustered", clustered);
+
+    waitKey();
+    return 0;
+}
+
 
 vector<box> separate_food(const box food_box) {
+    imshow("foodbox", food_box.img);
+
     Mat gray_img, otsu_img;
+
+    cvtColor(food_box.img, gray_img, COLOR_BGR2GRAY);
     Mat mean_img = meanshift(food_box.img ,50, 70);
 
-    cvtColor(mean_img, otsu_img, COLOR_BGR2GRAY);
-    otsu_img = otsu_segmentation(gray_img, 1);
 
-    imshow("otsu", otsu_img);
+    for (int y = 0; y < mean_img.rows; ++y) {
+        for (int x = 0; x < mean_img.cols; ++x) {
+            if(gray_img.at<uchar>(y, x) == 0 ) {
+                mean_img.at<Vec3b>(y,x)[0] = 0;
+                mean_img.at<Vec3b>(y,x)[1] = 0;
+                mean_img.at<Vec3b>(y,x)[2] = 0;
+            }
+        }
+    }
+
+
+    imshow("mean", mean_img);
+    //K_means(mean_img, 3);
+
+    cvtColor(mean_img, mean_img, COLOR_BGR2HSV);
+
+
+    array<int,3> histogram = find_histogram(mean_img);
+
+    sort(histogram.begin(), histogram.end());
+
+    Mat hsv_segment = segment_rgb_hsv(mean_img, histogram[0], 150, 100, 5, 150, 150, true);
+
+    imshow("hsv", hsv_segment);
+
+   // cvtColor(mean_img, gray_img, COLOR_BGR2GRAY);
+
+  //  otsu_img = otsu_segmentation(gray_img, 1);
+
+//    imshow("otsu", otsu_img);
     waitKey();
+
 
     vector<box> dishes;
 

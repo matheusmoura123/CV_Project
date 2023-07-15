@@ -108,7 +108,7 @@ const int NUMBER_TRAYS = 8;
 array<int,3> find_histogram(const cv::Mat& src);
 Mat mean_histogram2(const vector<cv::Mat>& src);
 array<double, 3> compare_histogram(const Mat& src_hist, const vector<Mat>& categories_hist);
-void plot_histogram(const Mat& src);
+void plot_histogram(Mat histogram);
 
 //segment_plates.cpp
 vector<box> segment_plates(const Mat& img, vector<Mat>& dst);
@@ -118,6 +118,7 @@ Mat contour_hsv(const Mat& img);
 Mat meanshift(Mat img, int spatial, int color);
 Mat otsu_segmentation(Mat gray_img, int num_grid);
 box segment_food(const box& plate_box);
+int K_means(Mat img, int num_of_clusters);
 vector<box> separate_food(const box food_box);
 
 
