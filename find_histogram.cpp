@@ -247,78 +247,50 @@ array<int,3> find_histogram(const Mat& src) {
     return max_values;
 }
 
-void plot_histogram(const Mat& src){
+void plot_histogram(Mat histogram){
 
     int h_bins = 180, s_bins = 256, v_bins = 256, gray_bins = 256;
     int histSize[] = { h_bins, s_bins, v_bins };
     // hue varies from 0 to 179, saturation and value from 0 to 255
-    float h_ranges[] = { 0, 180};
-    float s_ranges[] = { 0, 256};
-    float v_ranges[] = { 0, 256};
-    float g_ranges[] = {0, 256};
-
-    const float* rgb_ranges[] = { h_ranges, s_ranges, v_ranges };
-    const float* gray_ranges = { g_ranges };
-
-    bool uniform = true;
-    bool accumulate = false;
-
 
     int hist_w = 512, hist_h = 400;
     int bin_w = cvRound((double) hist_w/gray_bins);
     int bin_rgb = cvRound((double) hist_w/h_bins);
 
-    Mat gray_hist;
-    Mat grayscale_hist(hist_h, hist_w, CV_8UC3, Scalar(0,0,0));
 
-    if (src.channels() == 1){
-        calcHist( &src, 1, 0, Mat(), gray_hist, 1, &gray_bins, &gray_ranges, uniform, accumulate);
-        normalize(gray_hist, gray_hist, 0, gray_hist.rows, NORM_MINMAX, -1, Mat() );
+    Mat grayscale_hist(hist_h, hist_w, CV_8UC3, Scalar(0,0,0));
+    Mat rgb_hist(hist_h, hist_w, CV_8UC3, Scalar( 0,0,0) );
+
+
+    if (histogram.channels() == 1){
 
         for( int i = 1; i < gray_bins; i++ ) {
-            line( grayscale_hist, Point( bin_w*(i-1), hist_h - cvRound(gray_hist.at<float>(i-1)) ),
-                  Point( bin_w*(i), hist_h - cvRound(gray_hist.at<float>(i)) ),
+            line( grayscale_hist, Point( bin_w*(i-1), hist_h - cvRound(histogram.at<float>(i-1)) ),
+                  Point( bin_w*(i), hist_h - cvRound(histogram.at<float>(i)) ),
                   Scalar( 255, 255, 255), 1, 8, 0  );
         }
 
-        // there is an error - shows only white image
         namedWindow("Grayscale image histogram");
-        imshow("Grayscale image histogram", gray_hist);
+        imshow("Grayscale image histogram", grayscale_hist);
         waitKey();
         }
 
     else{
-
-        Mat new_img;
-        vector<Mat> hsv_planes;
-        Mat b_hist, g_hist, r_hist;
-        Mat rgb_hist(hist_h, hist_w, CV_8UC3, Scalar( 0,0,0) );
-        cvtColor(src, new_img, COLOR_BGR2HSV);
-
-        split(new_img, hsv_planes);
-
-        calcHist( &hsv_planes[0], 1, 0, Mat(), b_hist, 1, &histSize[0], &rgb_ranges[0], uniform, accumulate );
-        calcHist( &hsv_planes[1], 1, 0, Mat(), g_hist, 1, &histSize[1], &rgb_ranges[1], uniform, accumulate );
-        calcHist( &hsv_planes[2], 1, 0, Mat(), r_hist, 1, &histSize[2], &rgb_ranges[2], uniform, accumulate );
-
-
-        normalize(b_hist, b_hist, 0, b_hist.rows, NORM_MINMAX, -1, Mat() );
-        normalize(g_hist, g_hist, 0, g_hist.rows, NORM_MINMAX, -1, Mat() );
-        normalize(r_hist, r_hist, 0, r_hist.rows, NORM_MINMAX, -1, Mat() );
-
         for (int i = 1; i < h_bins; i++) {
-
-            line( rgb_hist, Point( bin_rgb*(i-1), hist_h - cvRound(b_hist.at<float>(i-1)) ),
-                  Point( bin_rgb*(i), hist_h - cvRound(b_hist.at<float>(i)) ),
+/*
+            line( rgb_hist, Point( bin_rgb*(i-1), hist_h - cvRound(histogram.at<float>(i-1, 0, 0)) ),
+                  Point( bin_rgb*(i), hist_h - cvRound(histogram.at<float>(i-1, 0, 0)) ),
                   Scalar( 255, 0, 0), 1, 8, 0  );
-            line( rgb_hist, Point( bin_rgb*(i-1), hist_h - cvRound(g_hist.at<float>(i-1)) ),
-                  Point( bin_rgb*(i), hist_h - cvRound(g_hist.at<float>(i)) ),
+            line( rgb_hist, Point( bin_rgb*(i-1), hist_h - cvRound(histogram.at<float>(0, i-1, 0))),
+                  Point( bin_rgb*(i), hist_h - cvRound(histogram.at<float>(0, i-1, 0)) ),
                   Scalar( 0, 255, 0), 1, 8, 0  );
 
-            line( rgb_hist, Point( bin_rgb*(i-1), hist_h - cvRound(r_hist.at<float>(i-1)) ),
-                  Point( bin_rgb*(i), hist_h - cvRound(r_hist.at<float>(i)) ),
+            line( rgb_hist, Point( bin_rgb*(i-1), hist_h - cvRound(histogram.at<float>(0, 0, i-1))),
+                  Point( bin_rgb*(i), hist_h - cvRound(histogram.at<float>(0, 0, i-1))),
                   Scalar( 0, 0, 255), 1, 8, 0  );
 
+
+ */
         }
         namedWindow("Image histogram");
         imshow("Image histogram", rgb_hist);
