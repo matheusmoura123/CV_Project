@@ -261,6 +261,7 @@ Mat otsu_segmentation(Mat gray_img, int num_grid) {
     otsu_img = 255- otsu_img;
 
     return otsu_img;
+
 }
 
 box segment_food(const box& plate_box) {
@@ -411,6 +412,22 @@ box segment_food(const box& plate_box) {
     food_box = {-1, plate_box.p0x+col0_x, plate_box.p0y+row0_y, colf_x-col0_x, rowf_y-row0_y, -1, g}; //ID: -1 indicates that the box is not yet identified
     food_box.img = cropped_img.clone();
     return food_box;
+}
+
+
+vector<box> separate_food(const box food_box) {
+    Mat gray_img, otsu_img;
+    Mat mean_img = meanshift(food_box.img ,50, 70);
+
+    cvtColor(mean_img, otsu_img, COLOR_BGR2GRAY);
+    otsu_img = otsu_segmentation(gray_img, 1);
+
+    imshow("otsu", otsu_img);
+    waitKey();
+
+    vector<box> dishes;
+
+    return dishes;
 }
 
 
