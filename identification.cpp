@@ -113,7 +113,7 @@ int main(int argc, char **argv) {
             // 4.Contorno
             for (int k = 0; k < boxes.size(); ++k) {
                 if (boxes[k].ID == -1) {
-
+                    imwrite("../FoodCategories/secondos/secondos" + to_string(i+1) + IMAGE_EXT, boxes[k].img);
                 }
             }
 
