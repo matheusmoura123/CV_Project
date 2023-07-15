@@ -91,22 +91,12 @@ int main(int argc, char** argv) {
             predict_categories(box_hist_img, cats, predicted_class);
             */
 
-            for (int k = 0; k < boxes.size(); ++k) {
-                if (boxes[k].ID == -1) {
-                    vector<box> foods;
-                    foods = separate_food(boxes[k]);
-                    for (int l = 0; l < foods.size(); ++l) {
-                        imshow("food:" + to_string(l + 1), foods[l].img);
-                        waitKey();
-                    }
-                }
-            }
-
             /*
             if (compare_histogram(box_hist, rice_hist) > compare_histogram(box_hist, pasta_hist)) {
                 boxes[max_index].ID = 5;
             }
             */
+
 
             //Show the plates
             for (int k = 0; k < boxes.size(); ++k) {
@@ -115,7 +105,15 @@ int main(int argc, char** argv) {
                         to_string(boxes[k].ID);
                 namedWindow(window_name_img);
                 imshow(window_name_img, boxes[k].img);
+                if (boxes[k].ID == 19) {
+                    vector<box> foods;
+                    foods = separate_food(boxes[k]);
+                    for (int l = 0; l < foods.size(); ++l) {
+                        imshow("food:" + to_string(l + 1) + "ID:" + to_string(foods[l].ID), foods[l].img);
+                    }
+                }
             }
+
 
             /*
             //2. Histogram Comparison

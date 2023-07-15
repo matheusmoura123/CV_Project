@@ -36,7 +36,7 @@ Mat getDataVector(Mat descriptors) {
     vector<vector<DMatch>> matches;
     matcher.knnMatch(descriptors, kCenters, matches, 2);
 
-    const float ratio_thresh = 0.7f;
+    const float ratio_thresh = 0.8f;
     vector<DMatch> good_matches;
 
     for (auto & matche : matches) {
