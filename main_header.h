@@ -117,8 +117,9 @@ Mat segment_rgb_hsv(const Mat& src, int hue, int sat, int val, int T_hue, int T_
 Mat contour_hsv(const Mat& img);
 Mat meanshift(Mat img, int spatial, int color);
 Mat otsu_segmentation(Mat gray_img, int num_grid);
+box crop_image(const Mat& img, const box& plate_box);
 box segment_food(const box& plate_box);
-int K_means(Mat img, int num_of_clusters);
+Mat K_means(Mat img, int num_of_clusters);
 vector<box> separate_food(Mat food_box);
 
 
