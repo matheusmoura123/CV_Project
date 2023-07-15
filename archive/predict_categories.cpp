@@ -2,7 +2,6 @@
 
 using namespace cv::ml;
 
-
 int NUMBER_CLASSES = 0;
 int DICT_SIZE = 0;
 Mat allDescriptors;
@@ -31,6 +30,7 @@ void readDetectComputeimage(const string& className, int imageNumbers, int class
         allDescPerImgNum++;
     }
 }
+
 Mat getDataVector(Mat descriptors) {
     BFMatcher matcher(NORM_L2);
     vector<vector<DMatch>> matches;
@@ -39,10 +39,8 @@ Mat getDataVector(Mat descriptors) {
     const float ratio_thresh = 0.7f;
     vector<DMatch> good_matches;
 
-    for (auto & matche : matches)
-    {
-        if (matche[0].distance < ratio_thresh * matche[1].distance)
-        {
+    for (auto & matche : matches) {
+        if (matche[0].distance < ratio_thresh * matche[1].distance) {
             good_matches.push_back(matche[0]);
         }
     }
@@ -54,6 +52,7 @@ Mat getDataVector(Mat descriptors) {
     }
     return datai;
 }
+
 void getHistogramFast() {
     for (int i = 0; i < allDescPerImgNum; i++) {
         Mat dvec = getDataVector(allDescPerImg[i]);
@@ -62,6 +61,7 @@ void getHistogramFast() {
         inputDataLables.push_back(Mat(1, 1, CV_32SC1, allClassPerImg[i]));
     }
 }
+
 void predictImg(const Mat& img, Mat& img_keypoints, string& className, vector<food> categories, Ptr<SVM> svm) {
     Mat grayimg;
     Ptr<SIFT> siftptr = SIFT::create();
@@ -74,7 +74,7 @@ void predictImg(const Mat& img, Mat& img_keypoints, string& className, vector<fo
 
     Mat dvector = getDataVector(descriptors);
     Mat results;
-    svm->predict(dvector, results, StatModel::RAW_OUTPUT);
+    svm->predict(dvector, results);
     for (const auto & category : categories) {
         if (int(results.at<float>(0)) == category.classLable){
             className = category.className;
@@ -83,7 +83,7 @@ void predictImg(const Mat& img, Mat& img_keypoints, string& className, vector<fo
     drawKeypoints(img, keypoints, img_keypoints);
 }
 
-void predict_categories(vector<Mat> images_to_predict,
+void predict_categories(const vector<Mat>& images_to_predict,
                         vector<food> categories,
                         vector<string>& predicted_classNames) {
 
@@ -150,7 +150,6 @@ void predict_categories(vector<Mat> images_to_predict,
     svm->train(td);
 
     int k=0;
-    int key;
     for (const auto & img : images_to_predict) {
         k++;
         Mat dst;
@@ -163,6 +162,5 @@ void predict_categories(vector<Mat> images_to_predict,
         //Add predictions to output of function
         predicted_classNames.push_back(predicted);
     }
-    key = waitKeyEx(0);
-    if (key == 1048603) return;
+    waitKey();
 }

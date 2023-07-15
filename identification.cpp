@@ -4,11 +4,11 @@ bool sort_bigger_area (const box& i,const box& j) {
     return(i.width*i.height>j.width*j.height);
 }
 
-vector<Mat> categories_histogram (vector<int> categories) {
+vector<Mat> categories_histogram (const vector<int>& categories) {
     vector <Mat> categories_hist;
     for (const int& j: categories) {
         vector <Mat> imgs;
-        cout << foodCategories[j].className << endl;
+        //cout << foodCategories[j].className << endl;
         for (int i = 1; i <= foodCategories[j].imageNumbers; ++i) {
             Mat img = imread(CATEGORIES_PATH + foodCategories[j].className + "/" + foodCategories[j].className + to_string(i) + IMAGE_EXT);
             //find_histogram(img);
@@ -99,15 +99,21 @@ int main(int argc, char **argv) {
             boxes[max_index].ID = 19;
             boxes[max_index].conf = values_max[2];
 
-            /*
             // 3.Rice or pasta?
             vector<Mat> box_hist_img = {boxes[max_index].img.clone()};
-            Mat box_hist = mean_histogram2(box_hist_img);
-            cout << box_hist.size << endl;
+            //Mat box_hist = mean_histogram2(box_hist_img);
+            vector<string> predicted_class;
+            vector<food> cats;
+            cats.push_back(foodCategories[0]);
+            cats.push_back(foodCategories[5]);
+            predict_categories(box_hist_img, cats, predicted_class);
+
+
+            /*
             if (compare_histogram(box_hist, rice_hist) > compare_histogram(box_hist, pasta_hist)) {
                 boxes[max_index].ID = 5;
             }
-             */
+            */
 
             //Show the plates
             for (int k = 0; k < boxes.size(); ++k) {

@@ -7,16 +7,16 @@ include_directories( ${OpenCV_INCLUDE_DIRS} )
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(${PROJECT_NAME} ../main.cpp ../main_header.h ../segment_plates.cpp ../find_histogram.cpp ../files_manager.cpp ../metrics.cpp ../results.cpp)
+add_executable(${PROJECT_NAME} ../main.cpp ../main_header.h segment_plates.cpp find_histogram.cpp files_manager.cpp metrics.cpp results.cpp archive/sift_matching.cpp archive/predict_categories.cpp)
 target_link_libraries( ${PROJECT_NAME} ${OpenCV_LIBS} )
 
-add_executable(meanshift ../meanshift.cpp ../main_header.h ../segment_plates.cpp ../find_histogram.cpp ../files_manager.cpp ../metrics.cpp ../results.cpp)
+add_executable(meanshift ../meanshift.cpp ../main_header.h segment_plates.cpp find_histogram.cpp files_manager.cpp metrics.cpp results.cpp archive/sift_matching.cpp archive/predict_categories.cpp)
 target_link_libraries(meanshift ${OpenCV_LIBS} )
 
-add_executable(identification ../identification.cpp ../main_header.h ../segment_plates.cpp ../find_histogram.cpp ../files_manager.cpp ../metrics.cpp ../results.cpp)
+add_executable(identification ../identification.cpp main_header.h segment_plates.cpp find_histogram.cpp files_manager.cpp metrics.cpp results.cpp archive/sift_matching.cpp archive/predict_categories.cpp)
 target_link_libraries(identification ${OpenCV_LIBS} )
 
-add_executable(final_segmentation ../final_segmentation.cpp ../main_header.h ../segment_plates.cpp ../find_histogram.cpp ../files_manager.cpp ../metrics.cpp ../results.cpp)
+add_executable(final_segmentation ../final_segmentation.cpp ../main_header.h segment_plates.cpp find_histogram.cpp files_manager.cpp metrics.cpp results.cpp archive/sift_matching.cpp archive/predict_categories.cpp)
 target_link_libraries(final_segmentation ${OpenCV_LIBS} )
 
 

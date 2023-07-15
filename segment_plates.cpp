@@ -209,18 +209,21 @@ Mat meanshift(Mat img, int spatial, int color){
     Mat mean_img;
     mean_img = img.clone();
     //MeanShift
-    TermCriteria termcrit = TermCriteria(TermCriteria::MAX_ITER + TermCriteria::EPS, 20, 1);
-    vector<int> sp{spatial}; //Spatial window radius
-    vector<int> sr{color}; //Color window radius
+    TermCriteria termcrit = TermCriteria(TermCriteria::MAX_ITER + TermCriteria::EPS, 10, 1);
+    //vector<int> sp{spatial}; //Spatial window radius
+    //vector<int> sr{color}; //Color window radius
+    vector<int> sp{70}; //Spatial window radius
+    vector<int> sr{110}; //Color window radius
     vector<int> p{0, 1, 2, 3};
     for (auto &sp_i: sp) {
         for (auto &sr_i: sr) {
             cout << "Calculating meanshift..." << endl;
             pyrMeanShiftFiltering(img, mean_img, sp_i, sr_i, 1, termcrit);
-            string w_name = to_string(sp_i) + "-" + to_string(sr_i) + " Level 3";
-            //cout << w_name << endl;
+            string w_name = to_string(sp_i) + "-" + to_string(sr_i) + " Level 1";
+            cout << w_name << endl;
             //namedWindow(w_name, WINDOW_NORMAL);
             //imshow(w_name, mean_img);
+            imshow(w_name + " KMEAN", K_means(mean_img, 3));
         }
     }
     return mean_img;
@@ -414,7 +417,7 @@ box segment_food(const box& plate_box) {
     return food_box;
 }
 
-int K_means(Mat src, int num_of_clusters) {
+Mat K_means(Mat src, int num_of_clusters) {
 
     Mat p = Mat::zeros(src.cols*src.rows, 5, CV_32F);
     Mat bestLabels, centers, clustered;
@@ -449,20 +452,34 @@ int K_means(Mat src, int num_of_clusters) {
     }
 
     clustered.convertTo(clustered, CV_8U);
-    imshow("clustered", clustered);
+    //imshow("clustered", clustered);
 
-    waitKey();
-    return 0;
+    return clustered;
 }
 
 
 vector<box> separate_food(Mat food_box) {
     imshow("foodbox", food_box);
 
+
     Mat gray_img, otsu_img;
+    /*
+    for (int y = 0; y < food_box.rows; ++y) {
+        for (int x = 0; x < food_box.cols; ++x) {
+            if (food_box.at<Vec3b>(y, x)[0] == 0 &&
+                food_box.at<Vec3b>(y, x)[1] == 0 &&
+                food_box.at<Vec3b>(y, x)[2] == 0) {
+                food_box.at<Vec3b>(y, x)[0] = nan;
+                food_box.at<Vec3b>(y, x)[1] = nan;
+                food_box.at<Vec3b>(y, x)[2] = nan;
+            }
+        }
+
+    }
+    */
 
    // cvtColor(food_box, gray_img, COLOR_BGR2GRAY);
-   Mat mean_img = meanshift(food_box ,150, 100);
+   Mat mean_img = meanshift(food_box ,20, 10);
 
 /*
     for (int y = 0; y < mean_img.rows; ++y) {
@@ -516,6 +533,47 @@ vector<box> separate_food(Mat food_box) {
 
 //---------------GRAVEYARD OF DEAD IDEAS--------------------
 // hahahahahahahahha
+
+/*
+    // Setup SimpleBlobDetector parameters.
+    SimpleBlobDetector::Params params;
+
+    // Change thresholds
+    params.minThreshold = 50;
+    params.maxThreshold = 200;
+
+    // Filter by Area.
+    params.filterByArea = true;
+    params.minArea = 100;
+
+    // Filter by Circularity
+    params.filterByCircularity = false;
+    params.minCircularity = 0.1;
+
+    // Filter by Convexity
+    params.filterByConvexity = true;
+    params.minConvexity = 0.87;
+
+    // Filter by Inertia
+    params.filterByInertia = true;
+    params.minInertiaRatio = 0.5;
+
+    // Set up detector with params
+    Ptr<SimpleBlobDetector> detector = SimpleBlobDetector::create(params);
+
+    // Detect blobs.
+    std::vector<KeyPoint> keypoints;
+    detector->detect( food_box, keypoints);
+
+    // Draw detected blobs as red circles.
+    // DrawMatchesFlags::DRAW_RICH_KEYPOINTS flag ensures the size of the circle corresponds to the size of blob
+    Mat im_with_keypoints;
+    drawKeypoints( food_box, keypoints, im_with_keypoints, Scalar(0,0,255), DrawMatchesFlags::DRAW_RICH_KEYPOINTS );
+
+    // Show blobs
+    imshow("keypoints", im_with_keypoints );
+    waitKey();
+    */
 
 //find_histogram(mask);
 

@@ -76,12 +76,12 @@ const vector<food> pastaCategories{
 const vector<food> foodCategories{
         //{className, numberOfImgs, ID},
         //{"plate", 9, 0},
-        {"pasta", 8, 19},
+        {"pasta", 13, 19},
         {"pesto", 4, 1},
         {"pomodoro", 5, 2},
         {"ragu", 2, 3},
         {"pasta_clams", 8, 4},
-        {"rice", 5, 5},
+        {"rice", 6, 5},
         {"pork", 9, 6},
         {"fish", 10, 7},
         {"rabbit", 12, 8},
@@ -118,7 +118,7 @@ Mat contour_hsv(const Mat& img);
 Mat meanshift(Mat img, int spatial, int color);
 Mat otsu_segmentation(Mat gray_img, int num_grid);
 box segment_food(const box& plate_box);
-int K_means(Mat img, int num_of_clusters);
+Mat K_means(Mat img, int num_of_clusters);
 vector<box> separate_food(Mat food_box);
 
 
@@ -142,6 +142,6 @@ int food_leftover();
 
 //archive
 int sift_matching(const cv::Mat& img1, const cv::Mat& img2);
-void predict_categories(vector<Mat> images_to_predict, vector<food> categories, vector<string>& predicted_classNames);
+void predict_categories(const vector<Mat>& images_to_predict, vector<food> categories, vector<string>& predicted_classNames);
 
 #endif //CV_PROJECT_MAIN_HEADER_H

@@ -9,11 +9,9 @@ int main(int argc, char **argv) {
     //Read image
     Mat rgb_img_original, hsv_img, gray_img, mean_img;
 
-
     for (int k = 0; k < 8; ++k) {
         Mat img = imread("../FoodCategories/secondos/secondos" + to_string(k+1) + IMAGE_EXT);
         separate_food(img);
-
     }
 
 
@@ -87,6 +85,6 @@ int main(int argc, char **argv) {
 
 
 
-
+    return 0;
 }
 

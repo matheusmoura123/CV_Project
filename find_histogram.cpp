@@ -133,9 +133,7 @@ array<int,3> find_histogram(const Mat& src) {
             for(int i = position - neighborhood; i < position + neighborhood; i++){
                 b_hist.at<float>(i) = 0;
             }
-
         }
-
     }
     cout << max_values[0] << endl << max_values[1] << endl << max_values[2] << endl;
 
