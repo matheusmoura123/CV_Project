@@ -1,5 +1,20 @@
 #include "main_header.h"
 
+vector<Mat> categories_histogram (const vector<int>& categories) {
+    vector <Mat> categories_hist;
+    for (const int& j: categories) {
+        vector <Mat> imgs;
+        //cout << foodCategories[j].className << endl;
+        for (int i = 1; i <= foodCategories[j].imageNumbers; ++i) {
+            Mat img = imread(CATEGORIES_PATH + foodCategories[j].className + "/" + foodCategories[j].className + to_string(i) + IMAGE_EXT);
+            //find_histogram(img);
+            imgs.push_back(img);
+        }
+        categories_hist.push_back(mean_histogram2(imgs));
+    }
+    return categories_hist;
+}
+
 array<double, 3> compare_histogram(const Mat& src_hist, const vector<Mat>& categories_hist) {
 
     double comp_values = 0;
@@ -203,4 +218,8 @@ void plot_histogram(Mat histogram){
         imshow("Image histogram", rgb_hist);
         waitKey();
     }
+}
+
+bool sort_bigger_area (const box& i,const box& j) {
+    return(i.width*i.height>j.width*j.height);
 }

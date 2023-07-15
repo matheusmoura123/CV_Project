@@ -8,10 +8,8 @@ vector<box> segment_plates(const Mat& img, vector<Mat>& dst) {
     cvtColor(img, gray, COLOR_BGR2GRAY);
     GaussianBlur(gray, Gaus,Size(3,3), 1.5, 1.5); //original
 
-
     // DETECTING CIRCLES (PLATES)
     vector<Vec3f> circles;
-    //HoughCircles(Gaus, circles, HOUGH_GRADIENT, 1, Gaus.cols/3, 200, 50, 160, 500); //original
     HoughCircles(Gaus, circles, HOUGH_GRADIENT, 1, Gaus.cols/3, 100, 80, 160, 500); //get all the plates right and nothing else. PERFECT!
     vector<Mat> plates;
 
@@ -19,7 +17,6 @@ vector<box> segment_plates(const Mat& img, vector<Mat>& dst) {
     {
         Mat mask(img.rows, img.cols,CV_8UC3, Scalar(0,0,0));
         Vec3i c = circles[i];
-        //Point center = Point(c[0], c[1]);
         int radius = c[2];
 
         for (int j = 0; j < mask.rows; ++j) {
@@ -70,53 +67,33 @@ Mat get_contours(const Mat& img) {
     vector<int> area;
 
     for (int i = 0; i < contours.size(); i++) {
-
         int area_tmp = contourArea(contours[i]);
-
         area.push_back(area_tmp);
-
-//        drawContours(img_out, contours, i, Scalar(255, 0, 255), 2);
-
-
+        //drawContours(img_out, contours, i, Scalar(255, 0, 255), 2);
     }
 
     sort(area.begin(), area.end(), greater<int>());
 
     for (int j = 0; j < contours.size(); j++) {
-
         int area_tmp = contourArea(contours[j]);
-
-
         if(area_tmp == area[0]){
             fillPoly(img_out, contours[j], Scalar(255, 255, 255));
         }
         else{
             fillPoly(img_out, contours[j], Scalar(0, 0, 0));
         }
-
     }
-
-
     return img_out;
-
 }
-
 
 Mat segment_rgb_hsv(const Mat& src, int hue, int sat, int val, int T_hue, int T_sat, int T_value, bool is_hsv) {
     Mat img_hsv, dst;
-
     dst = src.clone();
-
     int neighborhood = 0;
 
     // subtract one from the rows and cols
     for (int i = neighborhood; i < dst.rows-neighborhood; ++i) {
         for (int j = neighborhood; j < dst.cols-neighborhood; ++j) {
-
-            /*
-            Rect roi(i-neighborhood, j-neighborhood, 2*neighborhood+1, 2*neighborhood+1);
-            Scalar mean = cv:: mean(src(roi));
-             */
 
             int huee = int(src.at<Vec3b>(i,j)[0]);
             int saturation = int(src.at<Vec3b>(i,j)[1]);
@@ -143,66 +120,7 @@ Mat segment_rgb_hsv(const Mat& src, int hue, int sat, int val, int T_hue, int T_
     if (is_hsv) cvtColor(dst, dst, COLOR_HSV2BGR);
 
     cvtColor(dst, final, COLOR_BGR2GRAY);
-
-    //imshow("hsv img", final);
-    //waitKey();
     return final;
-
-}
-
-Mat contour_hsv(const Mat& input) {
-
-    Mat hsv;
-    cvtColor(input,hsv,COLOR_BGR2HSV);
-
-    vector<Mat> channels;
-    split(hsv, channels);
-
-    Mat H = channels[0];
-    Mat S = channels[1];
-    Mat V = channels[2];
-
-    Mat shiftedH = H.clone();
-    int shift = 25; // in openCV hue values go from 0 to 180 (so have to be doubled to get to 0 .. 360) because of byte range from 0 to 255
-    for(int j=0; j<shiftedH.rows; ++j)
-        for(int i=0; i<shiftedH.cols; ++i)
-        {
-            shiftedH.at<unsigned char>(j,i) = (shiftedH.at<unsigned char>(j,i) + shift)%180;
-        }
-
-    Mat cannyH, cannyS;
-
-    Canny(shiftedH, cannyH, 100, 50);
-    Canny(S, cannyS, 200, 100);
-
-
-    // extract contours of the canny image:
-    vector<std::vector<cv::Point> > contoursH;
-    vector<cv::Vec4i> hierarchyH;
-    findContours(cannyH,contoursH, hierarchyH, RETR_TREE , CHAIN_APPROX_SIMPLE);
-
-// draw the contours to a copy of the input image:
-    Mat outputH = input.clone();
-    for( int i = 0; i< contoursH.size(); i++ )
-    {
-        drawContours( outputH, contoursH, i, cv::Scalar(0,0,255), 2, 8, hierarchyH, 0);
-    }
-
-    dilate(cannyH, cannyH, Mat());
-    dilate(cannyH, cannyH, Mat());
-    dilate(cannyH, cannyH, Mat());
-
-    Mat final = input.clone();
-    for( int i = 0; i< contoursH.size(); i++ )
-    {
-        if(cv::contourArea(contoursH[i]) < 20) continue; // ignore contours that are too small to be a patty
-        if(hierarchyH[i][3] < 0) continue;  // ignore "outer" contours
-
-        cv::drawContours( final, contoursH, i, cv::Scalar(0,0,255), 2, 8, hierarchyH, 0);
-    }
-
-
-    return outputH;
 }
 
 Mat meanshift(Mat img, int spatial, int color){
@@ -265,7 +183,6 @@ Mat otsu_segmentation(Mat gray_img, int num_grid) {
 }
 
 box crop_image(const Mat& img, const box& plate_box){
-
     //Crop only food
     Mat final_image = img.clone();
     int row0_y=0, rowf_y=0, col0_x=0, colf_x=0;
@@ -323,14 +240,9 @@ box crop_image(const Mat& img, const box& plate_box){
     return food_box;
 }
 
-
-
-
 box segment_food(const box& plate_box) {
     Mat g = Mat::zeros(Size(0,0), CV_8UC1);
     box food_box = {-1, 0, 0, 0, 0, 0, g};
-
-
 
     Mat rgb_img = plate_box.img.clone();
     Mat final_image = rgb_img.clone();
@@ -379,7 +291,7 @@ Mat K_means(Mat src, int num_of_clusters) {
     Mat bestLabels, centers, clustered;
     vector<Mat> bgr;
     cv::split(src, bgr);
-    // i think there is a better way to split pixel bgr color
+
     for(int i=0; i<src.cols*src.rows; i++) {
         p.at<float>(i,0) = (i/src.cols) / src.rows;
         p.at<float>(i,1) = (i%src.cols) / src.cols;
@@ -397,21 +309,15 @@ Mat K_means(Mat src, int num_of_clusters) {
     for(int i=0; i<K; i++) {
         colors[i] = 255/(i+1);
     }
-    // i think there is a better way to do this mayebe some Mat::reshape?
+
     clustered = Mat(src.rows, src.cols, CV_32F);
     for(int i=0; i<src.cols*src.rows; i++) {
         clustered.at<float>(i/src.cols, i%src.cols) = (float)(colors[bestLabels.at<int>(0,i)]);
-//      cout << bestLabels.at<int>(0,i) << " " <<
-//              colors[bestLabels.at<int>(0,i)] << " " <<
-//              clustered.at<float>(i/src.cols, i%src.cols) << " " <<
-//              endl;
     }
 
     clustered.convertTo(clustered, CV_8UC1);
-
     return clustered;
 }
-
 
 vector<box> separate_food(const box& food_box) {
     Mat gray_img, dst;
@@ -436,16 +342,15 @@ vector<box> separate_food(const box& food_box) {
         for (int y = 0; y < kmeans_img.rows; ++y) {
             for (int x = 0; x < kmeans_img.cols; ++x) {
                 int intensity = int(kmeans_img.at<uchar>(y,x));
-                if(intensity == background_int){
+                if(intensity == background_int) {
                     final.at<uchar>(y,x) = 0;
                 }
-                else if(intensity == intensities[k]){
+                else if(intensity == intensities[k]) {
                     final.at<uchar>(y,x) = 255;
                 }
                 else if(intensity == intensities[1-k]){
                     final.at<uchar>(y,x) = 0;
                 }
-
             }
         }
 
@@ -453,7 +358,6 @@ vector<box> separate_food(const box& food_box) {
             for (int x = 0; x < kmeans_img.cols; ++x) {
                 if(gray_img.at<uchar>(y, x) == 0 ) {
                     final.at<uchar>(y,x) = 0;
-
                 }
             }
         }
@@ -480,7 +384,6 @@ vector<box> separate_food(const box& food_box) {
 
         if(area_tmp < 10000) break;
 
-
         Mat food_tmp = food_box.img.clone();
 
         for (int y = 0; y < contour.rows; ++y) {
@@ -500,7 +403,6 @@ vector<box> separate_food(const box& food_box) {
 
     return dishes;
 }
-
 
 
 //---------------GRAVEYARD OF DEAD IDEAS--------------------

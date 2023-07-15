@@ -105,24 +105,23 @@ const string MASK_EXT = ".png";
 const int NUMBER_TRAYS = 8;
 
 //find_histogram.cpp
-array<int,3> find_histogram(const cv::Mat& src);
-Mat mean_histogram2(const vector<cv::Mat>& src);
+vector<Mat> categories_histogram (const vector<int>& categories);
 array<double, 3> compare_histogram(const Mat& src_hist, const vector<Mat>& categories_hist);
+Mat mean_histogram2(const vector<cv::Mat>& src);
+array<int,3> find_histogram(const cv::Mat& src);
 void plot_histogram(Mat histogram);
+bool sort_bigger_area (const box& i,const box& j);
 
 //segment_plates.cpp
 vector<box> segment_plates(const Mat& img, vector<Mat>& dst);
 Mat get_contours(const Mat& img);
 Mat segment_rgb_hsv(const Mat& src, int hue, int sat, int val, int T_hue, int T_sat, int T_value, bool is_hsv=false);
-Mat contour_hsv(const Mat& img);
 Mat meanshift(Mat img, int spatial, int color);
 Mat otsu_segmentation(Mat gray_img, int num_grid);
 box crop_image(const Mat& img, const box& plate_box);
 box segment_food(const box& plate_box);
 Mat K_means(Mat img, int num_of_clusters);
-vector<box> separate_food(Mat food_box);
-
-
+vector<box> separate_food(const box& food_box) ;
 
 //files_manager.cpp
 int box_file_writer (const vector<box>& boxes, const string& path);
