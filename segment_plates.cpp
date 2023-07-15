@@ -456,15 +456,15 @@ int K_means(Mat src, int num_of_clusters) {
 }
 
 
-vector<box> separate_food(const box food_box) {
-    imshow("foodbox", food_box.img);
+vector<box> separate_food(Mat food_box) {
+    imshow("foodbox", food_box);
 
     Mat gray_img, otsu_img;
 
-    cvtColor(food_box.img, gray_img, COLOR_BGR2GRAY);
-    Mat mean_img = meanshift(food_box.img ,50, 70);
+   // cvtColor(food_box, gray_img, COLOR_BGR2GRAY);
+   Mat mean_img = meanshift(food_box ,150, 100);
 
-
+/*
     for (int y = 0; y < mean_img.rows; ++y) {
         for (int x = 0; x < mean_img.cols; ++x) {
             if(gray_img.at<uchar>(y, x) == 0 ) {
@@ -474,11 +474,18 @@ vector<box> separate_food(const box food_box) {
             }
         }
     }
+    */
 
 
-    imshow("mean", mean_img);
-    //K_means(mean_img, 3);
+    //imshow("mean", mean_img);
 
+    Mat dst;
+
+    //bilateralFilter(food_box, dst, 5, 150, 50);
+    //GaussianBlur(food_box, dst, Size(7,7), 3, 3);
+    K_means(mean_img, 3);
+
+/*
     cvtColor(mean_img, mean_img, COLOR_BGR2HSV);
 
 
@@ -486,18 +493,20 @@ vector<box> separate_food(const box food_box) {
 
     sort(histogram.begin(), histogram.end());
 
-    Mat hsv_segment = segment_rgb_hsv(mean_img, histogram[0], 150, 100, 5, 150, 150, true);
+    //Mat hsv_segment = segment_rgb_hsv(mean_img, histogram[0], 150, 100, 5, 150, 150, true);
 
-    imshow("hsv", hsv_segment);
+    //imshow("hsv", hsv_segment);
 
    // cvtColor(mean_img, gray_img, COLOR_BGR2GRAY);
 
   //  otsu_img = otsu_segmentation(gray_img, 1);
 
 //    imshow("otsu", otsu_img);
+
+
+*/
+
     waitKey();
-
-
     vector<box> dishes;
 
     return dishes;

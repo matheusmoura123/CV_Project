@@ -119,7 +119,7 @@ Mat meanshift(Mat img, int spatial, int color);
 Mat otsu_segmentation(Mat gray_img, int num_grid);
 box segment_food(const box& plate_box);
 int K_means(Mat img, int num_of_clusters);
-vector<box> separate_food(const box food_box);
+vector<box> separate_food(Mat food_box);
 
 
 

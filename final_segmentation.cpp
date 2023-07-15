@@ -8,18 +8,23 @@ int main(int argc, char **argv) {
 
     //Read image
     Mat rgb_img_original, hsv_img, gray_img, mean_img;
-    Mat img = imread(path);
 
-    //Separate dishes
-    vector<Mat> foods;
-    vector<box> dishes;
-    vector<box> plates_boxes = segment_plates(img, foods);
-    for (const auto& plate_box: plates_boxes) {
-        box food_box = segment_food(plate_box);
-        //imshow("food", food_box.img);
-        dishes = separate_food(food_box);
-        //waitKey();
+
+    for (int k = 0; k < 8; ++k) {
+        Mat img = imread("../FoodCategories/secondos/secondos" + to_string(k+1) + IMAGE_EXT);
+        separate_food(img);
+
     }
+
+
+
+
+
+
+        //imshow("food", food_box.img);
+
+        //waitKey();
+
 
 
 
