@@ -145,18 +145,50 @@ int main(int argc, char** argv) {
 
             //Show the plates
             for (int k = 0; k < boxes.size(); ++k) {
-                string window_name_img = "Tray" + to_string(i + 1) + " " + file_name + " Food" + to_string(k + 1) + " ID:" + to_string(boxes[k].ID);
-                namedWindow(window_name_img);
-                imshow(window_name_img, boxes[k].img);
-                /*
+                int neighborhood = 10;
                 if (boxes[k].ID == 19) {
-                    vector<box> foods;
-                    foods = separate_food(boxes[k]);
-                    for (int l = 0; l < foods.size(); ++l) {
-                        imshow("food:" + to_string(l + 1) + "ID:" + to_string(foods[l].ID), foods[l].img);
+                    float mean_hue = 0.0;
+                    for(int n = 0; n < 3; ++n){
+                        Rect roi(boxes[k].img.rows/2-10+n*neighborhood, boxes[k].img.cols/2-10+n*neighborhood, 100, 100);
+                        Mat img_crop = boxes[k].img(roi);
+
+                        array<int,3> max_hue_values = find_histogram(img_crop);
+
+                        //cout << max_hue_values[0] << endl << max_hue_values[1] << endl << max_hue_values[2] << endl;
+
+                        float mean_hue_tmp;
+                        for(int a = 0; a < 3; ++a){
+                            mean_hue_tmp = mean_hue_tmp + (float)max_hue_values[a];
+                        }
+                        mean_hue_tmp = mean_hue_tmp/3;
+
+                        //cout << mean_hue_tmp << endl;
+
+                        mean_hue = mean_hue + mean_hue_tmp;
+                    }
+                    mean_hue = mean_hue/3;
+
+                    //cout << mean_hue << endl;
+
+                    if(mean_hue <= 16){
+                        boxes[k].ID = 4;
+                    }
+                    else if(mean_hue > 16 && mean_hue <= 19){
+                        boxes[k].ID = 2;
+                    }
+                    else if(mean_hue > 19 && mean_hue <= 23){
+                        boxes[k].ID = 3;
+                    }
+                    else{
+                        boxes[k].ID = 1;
                     }
                 }
-                 */
+                string window_name_img =
+                        "Tray" + to_string(i + 1) + " " + file_name + " Food" + to_string(k + 1) + " ID:" +
+                        to_string(boxes[k].ID);
+                namedWindow(window_name_img);
+                imshow(window_name_img, boxes[k].img);
+                waitKey();
             }
 
 

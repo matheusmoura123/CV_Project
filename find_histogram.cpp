@@ -104,7 +104,6 @@ array<int,3> find_histogram(const Mat& src) {
                   Point( bin_w*(i), hist_h - cvRound(gray_hist.at<float>(i)) ),
                   Scalar( 255, 0, 0), 2, 8, 0  );
 
-
             if (gray_hist.at<float>(i) > max) {
                 max = gray_hist.at<float>(i);
                 position = i;
@@ -134,7 +133,7 @@ array<int,3> find_histogram(const Mat& src) {
         for(int j = 0; j < 3; j++){
             float max = 0.0;
 
-            for(int i = 1; i < histSize; i++){
+            for(int i = 1; i < 180; i++){
                 if (b_hist.at<float>(i) > max) {
                     max = b_hist.at<float>(i);
                     position = i;
@@ -150,8 +149,6 @@ array<int,3> find_histogram(const Mat& src) {
             }
         }
     }
-    cout << max_values[0] << endl << max_values[1] << endl << max_values[2] << endl;
-
 
     /*
     cout << "---------------------------" << endl;
