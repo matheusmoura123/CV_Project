@@ -58,16 +58,8 @@ public:
     }
 };
 
-const vector<food> pastaCategories{
-        {"pesto", 4, 1},
-        {"pomodoro", 5, 2},
-        {"ragu", 2, 3},
-        {"pasta_clams", 8, 4},
-        {"rice", 5, 5}
-};
 const vector<food> foodCategories{
         //{className, numberOfImgs, ID},
-        //{"plate", 9, 0},
         {"pasta", 13, 19},
         {"pesto", 11, 1},
         {"pomodoro", 5, 2},
@@ -79,14 +71,7 @@ const vector<food> foodCategories{
         {"rabbit", 11, 8},
         {"seafood", 8, 9},
         {"beans", 13, 10},
-        {"potato", 10, 11},
-        //{"salad", 15, 12},
-        //{"bread", 18, 13},
-        //{"carrot", 6, 14},
-        //{"pepper", 2, 15},
-        //{"tomato", 10, 16},
-        //{"lettuce", 15, 17},
-        //{"plate_salad", 3, 18},
+        {"potato", 10, 11}
 };
 
 const string TRAY_PATH = "../Food_leftover_dataset/tray";

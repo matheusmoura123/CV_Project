@@ -185,7 +185,6 @@ int main(int argc, char** argv) {
         }
         vector<vector<box>> all_boxes_at_tray = {boxes, boxes1, boxes2, boxes3};
         save_all_boxes_masks_at_tray(all_boxes_at_tray, i);
-
     }
     waitKey();
     //destroyAllWindows();
