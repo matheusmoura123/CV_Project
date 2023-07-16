@@ -19,9 +19,14 @@
 #include <opencv2/features2d.hpp>
 #include <opencv2/xfeatures2d.hpp>
 #include <opencv2/ml/ml.hpp>
+#include "opencv2/core.hpp"
+#include "opencv2/highgui.hpp"
+#include "opencv2/features2d.hpp"
+#include "opencv2/xfeatures2d.hpp"
 
 using namespace cv;
 using namespace std;
+using namespace cv::xfeatures2d;
 
 class food {
 public:
@@ -104,6 +109,7 @@ array<int,3> find_histogram(const cv::Mat& src);
 void plot_histogram(Mat histogram);
 bool sort_bigger_area (const box& i,const box& j);
 bool sort_ID (const box& i,const box& j);
+bool sort_num_match (const vector<int>& i,const vector<int>& j);
 
 
 //segment_plates.cpp
@@ -138,7 +144,9 @@ int food_localization();
 int food_segmentation ();
 int food_leftover();
 
-//archive
-int sift_matching(const cv::Mat& img1, const cv::Mat& img2);
+//archive - sift_matching.cpp
+int sift_matching(const Mat& img1, const Mat& img2);
+int surf_matching(const Mat& img1, const Mat& img2);
+void compare_plates(const vector<box> food_plate, vector<box>& leftover_plate);
 
 #endif //CV_PROJECT_MAIN_HEADER_H

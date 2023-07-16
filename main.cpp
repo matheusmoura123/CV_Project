@@ -1,7 +1,38 @@
 #include "main_header.h"
 
 int main(int argc, char** argv) {
+    vector<string> file_name = {"leftover1", "leftover2", "leftover3"};
+    vector<Mat> dishes1, dishes2;
+    for(int k = 0; k < 8; ++k){
+        Mat img1 = imread(TRAY_PATH + to_string(k+1) + "/" + "food_image" + IMAGE_EXT);
+        vector<box> boxes1, plates1, plates2;
+        boxes1 = segment_plates(img1, dishes1);
+        for (int i = 0; i < boxes1.size(); ++i) {
+            boxes1[i].ID = i + 2;
+        }
+        Mat img2 = imread(TRAY_PATH + to_string(k+1) + "/" + "leftover2" + IMAGE_EXT);
+        vector<box> boxes2 = segment_plates(img2, dishes2);
 
+        compare_plates(boxes1, boxes2);
+        for (int i = 0; i < boxes2.size(); ++i) {
+            cout << boxes2[i].ID << endl;
+
+        }
+    }
+
+
+    /*
+    imshow("food_image" + to_string(boxes1[0].ID), boxes1[0].img);
+    waitKey();
+     */
+
+
+   // cout << boxes2[2].ID << endl;
+
+
+
+
+    /*
     //Calculate pasta histogram
     vector<Mat> pasta_hist = categories_histogram({0, 5});
     vector<Mat> rice_hist = categories_histogram({5});
@@ -200,7 +231,7 @@ int main(int argc, char** argv) {
                 }
             }
             boxes[stronger_index].ID = predicted_IDs5[stronger_index];
-             */
+
             sort(boxes.begin(), boxes.end(), sort_ID);
 
 
@@ -248,13 +279,15 @@ int main(int argc, char** argv) {
                     boxes[k].conf = values[2];
                 }
             }
-             */
+
 
         }
 
         //destroyAllWindows();
     }
+
     waitKey();
+             */
     return 0;
 }
 
