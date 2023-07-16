@@ -62,7 +62,7 @@ void getHistogramFast() {
     }
 }
 
-void predictImg(const Mat& img, Mat& img_keypoints, string& className, vector<food> categories, Ptr<SVM> svm) {
+void predictImg(const Mat& img, Mat& img_keypoints, int& pred_ID, Ptr<SVM> svm) {
     Mat grayimg;
     Ptr<SIFT> siftptr = SIFT::create();
     cvtColor(img, grayimg, COLOR_BGR2GRAY);
@@ -74,18 +74,13 @@ void predictImg(const Mat& img, Mat& img_keypoints, string& className, vector<fo
 
     Mat dvector = getDataVector(descriptors);
     Mat results;
-    svm->predict(dvector, results);
-    for (const auto & category : categories) {
-        if (int(results.at<float>(0)) == category.classLable){
-            className = category.className;
-        }
-    }
+    svm->predict(dvector, results, 1);
+    cout << results << endl;
+    pred_ID = int(results.at<float>(0));
     drawKeypoints(img, keypoints, img_keypoints);
 }
 
-void predict_categories(const vector<Mat>& images_to_predict,
-                        vector<food> categories,
-                        vector<string>& predicted_classNames) {
+void predict_categories(const vector<Mat>& images_to_predict, vector<food> categories, vector<int>& pred_IDs) {
 
     NUMBER_CLASSES = 0;
     DICT_SIZE = 0;
@@ -154,13 +149,16 @@ void predict_categories(const vector<Mat>& images_to_predict,
         k++;
         Mat dst;
         string predicted;
-        predictImg(img, dst,  predicted, categories, svm);
-        string crp_img_name = to_string(k) + ":" + predicted;
+        int pred_ID;
+        predictImg(img, dst,  pred_ID, svm);
+        /*
+        string crp_img_name = to_string(k) + "- ID:" + to_string(pred_ID);
         namedWindow(crp_img_name, WINDOW_NORMAL);
         resizeWindow(crp_img_name, 400, 400);
         imshow(crp_img_name, dst);
+         */
         //Add predictions to output of function
-        predicted_classNames.push_back(predicted);
+        pred_IDs.push_back(pred_ID);
     }
     waitKey();
 }

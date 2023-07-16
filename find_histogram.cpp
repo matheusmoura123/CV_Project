@@ -23,7 +23,7 @@ array<double, 3> compare_histogram(const Mat& src_hist, const vector<Mat>& categ
     int k = 0;
     for(auto &type_hist: categories_hist) {
         comp_values = compareHist(src_hist, type_hist, 0);
-        cout << comp_values << endl;
+        //cout << comp_values << endl;
         if (comp_values >= max_value) {
             sec_max = max_value;
             max_value = comp_values;

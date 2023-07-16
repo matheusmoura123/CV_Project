@@ -142,6 +142,6 @@ int food_leftover();
 
 //archive
 int sift_matching(const cv::Mat& img1, const cv::Mat& img2);
-void predict_categories(const vector<Mat>& images_to_predict, vector<food> categories, vector<string>& predicted_classNames);
+void predict_categories(const vector<Mat>& images_to_predict, vector<food> categories, vector<int>& pred_IDs);
 
 #endif //CV_PROJECT_MAIN_HEADER_H
