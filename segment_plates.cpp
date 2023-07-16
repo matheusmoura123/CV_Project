@@ -144,7 +144,7 @@ Mat meanshift(const Mat& img, int spatial, int color){
     return mean_img;
 }
 
-Mat otsu_segmentation(Mat gray_img, int num_grid) {
+Mat otsu_segmentation(const Mat& gray_img, int num_grid) {
     Mat otsu_img = gray_img.clone();
 
     //Divide Img in multiple sections num_grid X num_grid and perform Otu separately in each one
@@ -318,6 +318,11 @@ Mat K_means(const Mat& src, int num_of_clusters) {
     }
     Mat output;
     clustered.convertTo(output, CV_8UC1);
+
+    centers.release();
+    labels.release();
+    samples.release();
+
     return output;
 }
 

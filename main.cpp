@@ -6,14 +6,11 @@ int main(int argc, char** argv) {
     vector<Mat> pasta_hist = categories_histogram({0, 5});
     vector<Mat> rice_hist = categories_histogram({5});
 
-
-
     //Go through all trays and imgs
-    for (int i = 0; i < NUMBER_TRAYS; ++i) {
-        //for (int i = 4; i < 5; ++i) {
+    //for (int i = 0; i < NUMBER_TRAYS; ++i) {
+    for (int i = 4; i < 5; ++i) {
         //if (i==4) continue;
         cout << "----- TRAY " << to_string(i + 1) << " -----" << endl;
-        //for (int j = 0; j < 4; ++j) {
         for (int j = 0; j < 1; ++j) {
             int key;
             string file_name;
@@ -44,18 +41,36 @@ int main(int argc, char** argv) {
             cat_19_5.push_back(foodCategories[5]);
             //write_kmeans(cat_19_5);
 
+            /*
             //kmeans for beans or potato
             vector<food> cat_10_11;
             cat_10_11.push_back(foodCategories[10]);
             cat_10_11.push_back(foodCategories[11]);
             //write_kmeans(cat_10_11);
 
+            //kmeans for meats
+            vector<food> cat_6_9;
+            cat_6_9.push_back(foodCategories[6]);
+            cat_6_9.push_back(foodCategories[7]);
+            cat_6_9.push_back(foodCategories[8]);
+            cat_6_9.push_back(foodCategories[9]);
+            //write_kmeans(cat_6_9);
+             */
+
+            //kmeans for meats
+            vector<food> cat_6_9;
+            cat_6_9.push_back(foodCategories[6]);
+            cat_6_9.push_back(foodCategories[7]);
+            cat_6_9.push_back(foodCategories[8]);
+            cat_6_9.push_back(foodCategories[9]);
+            //write_kmeans(cat_6_9);
+
             //Load img
             Mat img;
             img = imread(TRAY_PATH + to_string(i + 1) + "/" + file_name + IMAGE_EXT);
             //imshow("img", img);
 
-            //Extract each box from img
+            //Extract each  plate box from img
             boxes = segment_plates(img, dishes);
 
             // Cascade Classification
@@ -135,7 +150,7 @@ int main(int argc, char** argv) {
                 }
             }
 
-            // 5.Is contorno? Which contorno?
+            // 5. Is contorno? Which one?
             vector<box> foods;
             for (int k = 0; k < boxes.size(); ++k) {
                 if (boxes[k].ID == -1) {
@@ -167,8 +182,15 @@ int main(int argc, char** argv) {
             boxes[stronger_index].ID = predicted_IDs5[stronger_index];
             sort(boxes.begin(), boxes.end(), sort_ID);
 
-            // 6.Which meat?
 
+            // 6.Which meat?
+            if (boxes[0].ID == -1) {
+                vector<int> predicted_IDs6;
+                vector<double> predicted_strengths6;
+                vector<Mat> box_img6 = {boxes[0].img};
+                predict_categories(box_img6, cat_6_9, predicted_IDs6, predicted_strengths6);
+                boxes[0].ID = predicted_IDs6[0];
+            }
 
 
             //Show the plates

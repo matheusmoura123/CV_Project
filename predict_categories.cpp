@@ -43,7 +43,6 @@ void write_kmeans(vector<food> categories) {
     cout << "---------------------------------------------------" << endl;
 }
 
-
 Mat get_data_vector(const Mat& descriptors, const Mat& k_centers, int dict_size) {
     BFMatcher matcher(NORM_L2);
     vector<vector<DMatch>> matches;
@@ -148,7 +147,7 @@ void predict_categories(const vector<Mat>& images_to_predict, vector<food> categ
     svm = SVM::create();
     svm->setType(SVM::C_SVC);
     svm->setKernel(SVM::LINEAR);
-    svm->setTermCriteria(TermCriteria(TermCriteria::MAX_ITER, 1e4, 1e-6));
+    svm->setTermCriteria(TermCriteria(TermCriteria::MAX_ITER|TermCriteria::EPS, 1e4, 0.0001));
     Ptr<TrainData> trained = TrainData::create(input_data, ROW_SAMPLE, input_data_labels);
     svm->train(trained);
 
@@ -166,8 +165,6 @@ void predict_categories(const vector<Mat>& images_to_predict, vector<food> categ
         pred_IDs.push_back(pred_ID);
         pred_strengths.push_back(pred_strength);
     }
-    num_class = 0;
-    d_size = 0;
     all_desc.release();
     kmeans_centers.release();
     kmeans_labels.release();
@@ -175,5 +172,4 @@ void predict_categories(const vector<Mat>& images_to_predict, vector<food> categ
     input_data_labels.release();
     all_desc_per_img.clear();
     all_class_per_img.clear();
-    all_desc_per_img_num = 0;
 }

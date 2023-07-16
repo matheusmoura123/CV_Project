@@ -76,17 +76,17 @@ const vector<food> foodCategories{
         //{className, numberOfImgs, ID},
         //{"plate", 9, 0},
         {"pasta", 13, 19},
-        {"pesto", 4, 1},
+        {"pesto", 11, 1},
         {"pomodoro", 5, 2},
         {"ragu", 2, 3},
         {"pasta_clams", 8, 4},
         {"rice", 6, 5},
-        {"pork", 9, 6},
-        {"fish", 10, 7},
-        {"rabbit", 12, 8},
-        {"seafood", 5, 9},
+        {"pork", 8, 6},
+        {"fish", 7, 7},
+        {"rabbit", 6, 8},
+        {"seafood", 8, 9},
         {"beans", 9, 10},
-        {"potato", 5, 11},
+        {"potato", 9, 11},
         //{"salad", 15, 12},
         //{"bread", 18, 13},
         //{"carrot", 6, 14},
@@ -118,7 +118,7 @@ vector<box> segment_plates(const Mat& img, vector<Mat>& dst);
 Mat get_contours(const Mat& img);
 Mat segment_rgb_hsv(const Mat& src, int hue, int sat, int val, int T_hue, int T_sat, int T_value, bool is_hsv=false);
 Mat meanshift(const Mat& img, int spatial, int color);
-Mat otsu_segmentation(Mat gray_img, int num_grid);
+Mat otsu_segmentation(const Mat& gray_img, int num_grid);
 box crop_image(const Mat& img, const box& plate_box);
 box segment_food(const box& plate_box);
 Mat K_means(const Mat& img, int num_of_clusters);
