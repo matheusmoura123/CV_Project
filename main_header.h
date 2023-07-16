@@ -42,7 +42,7 @@ public:
     }
 };
 
-class box: public Interface {
+class box {
 public:
     int ID;
     int p0x;
@@ -63,7 +63,6 @@ public:
     [[nodiscard]] bool is_inside(const int& y, const int& x) const {
         return((y >= p0y && y <= p0y+height) && (x >= p0x && x <= p0x+width));
     }
-    [[nodiscard]] Interface* clone() const override { return new box(*this); }
 };
 
 const vector<food> pastaCategories{

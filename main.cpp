@@ -130,12 +130,6 @@ int main(int argc, char** argv) {
             for (int k = 0; k < boxes.size(); ++k) {
                 if (boxes[k].ID == -1) {
                     foods = separate_food(boxes[k]);
-                    /*
-                    for (int l = 0; l < foods.size(); ++l) {
-                        imshow("food:" + to_string(l + 1) + "ID:" + to_string(foods[l].ID), foods[l].img);
-                    }
-                    */
-                    //cout << foods.size() << endl;
                     boxes[k] = foods[0];
                 }
             }

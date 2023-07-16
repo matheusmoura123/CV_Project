@@ -1,6 +1,6 @@
 %YAML:1.0
 ---
-kLabels: !!opencv-matrix
+k_labels: !!opencv-matrix
    rows: 27801
    cols: 1
    dt: i
@@ -1647,7 +1647,7 @@ kLabels: !!opencv-matrix
        30, 45, 25, 21, 26, 45, 45, 17, 22, 74, 1, 50, 19, 9, 74, 61, 12,
        78, 42, 74, 53, 70, 67, 24, 77, 12, 59, 20, 68, 43, 29, 12, 60,
        67, 23, 4, 42, 40, 33, 15, 17, 67, 0, 32, 67, 30, 20, 52, 78, 67 ]
-kCenters: !!opencv-matrix
+k_centers: !!opencv-matrix
    rows: 80
    cols: 128
    dt: f

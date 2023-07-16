@@ -16,7 +16,7 @@ add_executable(${PROJECT_NAME}
         ../metrics.cpp
         ../results.cpp
         ../archive/sift_matching.cpp
-        ../archive/predict_categories.cpp)
+        ../predict_categories.cpp)
 target_link_libraries( ${PROJECT_NAME} ${OpenCV_LIBS} )
 
 
