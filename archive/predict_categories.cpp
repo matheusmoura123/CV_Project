@@ -16,7 +16,7 @@ int allDescPerImgNum = 0;
 void readDetectComputeimage(const string& className, int imageNumbers, int classLable) {
     for (int i = 1; i <= imageNumbers; i++) {
         Mat grayimg;
-        Ptr<SIFT> siftptr = SIFT::create( 0, 3, 0.04, 10, 1.6);
+        Ptr<SIFT> siftptr = SIFT::create( 0, 3, 0.04, 20, 1.6);
         //cvtColor(imread(CATEGORIES_PATH + className + "/" + className + to_string(i) + IMAGE_EXT), grayimg, COLOR_BGR2GRAY);
         grayimg = imread(CATEGORIES_PATH + className + "/" + className + to_string(i) + IMAGE_EXT);
 
@@ -65,7 +65,7 @@ void getHistogramFast() {
 
 void predictImg(const Mat& img, Mat& img_keypoints, int& pred_ID, double& pred_strength, Ptr<SVM> svm) {
     Mat grayimg;
-    Ptr<SIFT> siftptr = SIFT::create(0, 3, 0.04, 10, 1.6);
+    Ptr<SIFT> siftptr = SIFT::create(0, 3, 0.04, 20, 1.6);
     //cvtColor(img, grayimg, COLOR_BGR2GRAY);
     grayimg = img.clone();
     vector<KeyPoint> keypoints;
@@ -75,10 +75,10 @@ void predictImg(const Mat& img, Mat& img_keypoints, int& pred_ID, double& pred_s
 
     Mat dvector = getDataVector(descriptors);
     Mat results;
-    svm->predict(dvector, results);
-    pred_ID = int(results.at<float>(0));
     svm->predict(dvector, results, 1);
     pred_strength = results.at<float>(0);
+    svm->predict(dvector, results);
+    pred_ID = int(results.at<float>(0));
     drawKeypoints(img, keypoints, img_keypoints);
 }
 

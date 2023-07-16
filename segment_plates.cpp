@@ -285,7 +285,7 @@ box segment_food(const box& plate_box) {
     return food_box;
 }
 
-Mat K_means(Mat src, int num_of_clusters) {
+Mat K_means(const Mat& src, int num_of_clusters) {
 
     Mat p = Mat::zeros(src.cols*src.rows, 5, CV_32F);
     Mat bestLabels, centers, clustered;
@@ -299,6 +299,9 @@ Mat K_means(Mat src, int num_of_clusters) {
         p.at<float>(i,3) = bgr[1].data[i] / 255.0;
         p.at<float>(i,4) = bgr[2].data[i] / 255.0;
     }
+
+    cout << bgr[0].data[100] << endl;
+    cout << bgr[0].data[100] / 255.0 << endl;
 
     int K = num_of_clusters;
     TermCriteria criteria = TermCriteria(TermCriteria::MAX_ITER|TermCriteria::EPS, 100, 0.01);
@@ -314,8 +317,9 @@ Mat K_means(Mat src, int num_of_clusters) {
         clustered.at<float>(i/src.cols, i%src.cols) = (float)(colors[bestLabels.at<int>(0,i)]);
     }
 
-    clustered.convertTo(clustered, CV_8UC1);
-    return clustered;
+    Mat output;
+    output.convertTo(clustered, CV_8UC1);
+    return output;
 }
 
 vector<box> separate_food(const box& food_box) {
@@ -327,12 +331,11 @@ vector<box> separate_food(const box& food_box) {
     Mat kmeans_img = K_means(mean_img, 3);
 
     int num_of_foods = 2;
+    int background_int = int(kmeans_img.at<uchar>(0,0));
+    vector<int> intensities = {255, 255/2, 255/3};
+    intensities.erase(std::remove(intensities.begin(), intensities.end(), background_int), intensities.end());
     for(int k = 0; k < num_of_foods; ++k){
-        int background_int = kmeans_img.at<uchar>(1,1);
-        vector<int> intensities = {255, 255/2, 255/3};
-        intensities.erase(std::remove(intensities.begin(), intensities.end(), background_int), intensities.end());
         Mat final = kmeans_img.clone();
-
         for (int y = 0; y < kmeans_img.rows; ++y) {
             for (int x = 0; x < kmeans_img.cols; ++x) {
                 int intensity = int(kmeans_img.at<uchar>(y,x));
