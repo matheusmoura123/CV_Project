@@ -97,3 +97,23 @@ int mask_file_writer (const vector<box>& boxes, const string& path) {
     cout << "Done!" << endl;
     return 0;
 }
+
+int save_all_boxes_masks_at_tray (vector<vector<box>>& all_boxes, int tray_num) {
+        for (int j = 0; j < all_boxes.size(); ++j) {
+            string file_name;
+            switch (j) {
+                case 0: file_name = "food_image"; break;
+                case 1: file_name = "leftover1"; break;
+                case 2: file_name = "leftover2"; break;
+                case 3: file_name = "leftover3"; break;
+                default: file_name = "food_image";
+            }
+            string box_result_path = RESULTS_PATH + to_string(tray_num + 1) + "/bounding_boxes/" + file_name + "_result_box.txt";
+            string mask_result_path;
+            if (j == 0) mask_result_path = RESULTS_PATH + to_string(tray_num + 1) + "/masks/food_image_mask_result.png";
+            else mask_result_path = RESULTS_PATH + to_string(tray_num + 1) + "/masks/" + file_name + "_result.png";
+            box_file_writer(all_boxes[j], box_result_path);
+            mask_file_writer(all_boxes[j], mask_result_path);
+        }
+    return 0;
+}
