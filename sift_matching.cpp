@@ -1,7 +1,8 @@
 #include "main_header.h"
 
-int sift_matching(const Mat& img1, const Mat& img2){
+using namespace cv::xfeatures2d;
 
+int sift_matching(const Mat& img1, const Mat& img2){
     Mat out1, out2, desc1, desc2;
 
     Ptr<SIFT> sift = SIFT::create(0, 5, 0.01, 10, 1.6);
