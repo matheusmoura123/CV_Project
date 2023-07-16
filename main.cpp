@@ -6,6 +6,8 @@ int main(int argc, char** argv) {
     vector<Mat> pasta_hist = categories_histogram({0, 5});
     vector<Mat> rice_hist = categories_histogram({5});
 
+
+
     //Go through all trays and imgs
     for (int i = 0; i < NUMBER_TRAYS; ++i) {
         //for (int i = 4; i < 5; ++i) {
@@ -35,6 +37,19 @@ int main(int argc, char** argv) {
             vector<box> boxes;
             vector<Mat> dishes;
 
+
+            //kmeans for pasta or rice
+            vector<food> cat_19_5;
+            cat_19_5.push_back(foodCategories[0]);
+            cat_19_5.push_back(foodCategories[5]);
+            //write_kmeans(cat_19_5);
+
+            //kmeans for beans or potato
+            vector<food> cat_10_11;
+            cat_10_11.push_back(foodCategories[10]);
+            cat_10_11.push_back(foodCategories[11]);
+            //write_kmeans(cat_10_11);
+
             //Load img
             Mat img;
             img = imread(TRAY_PATH + to_string(i + 1) + "/" + file_name + IMAGE_EXT);
@@ -51,7 +66,7 @@ int main(int argc, char** argv) {
                 boxes[2].conf = 1;
             }
 
-            // 2. Which one is pasta
+            // 2.Which one is pasta
             array<double, 3> values_max{};
             vector<box> copy(boxes);
             double max_value = 0;
@@ -77,19 +92,13 @@ int main(int argc, char** argv) {
                     }
                 }
             }
-            //Save to box that is pasta
             boxes[max_index].ID = 19;
             boxes[max_index].conf = values_max[2];
 
             // 3.Rice or pasta?
             vector<Mat> box_img3 = {boxes[max_index].img.clone()};
-            //Mat box_hist = mean_histogram2(box_hist_img);
             vector<int> predicted_IDs3;
             vector<double> predicted_strengths3;
-            vector<food> cat_19_5;
-            cat_19_5.push_back(foodCategories[0]);
-            cat_19_5.push_back(foodCategories[5]);
-            write_kmeans(cat_19_5);
             predict_categories(box_img3, cat_19_5, predicted_IDs3, predicted_strengths3);
             boxes[max_index].ID = predicted_IDs3[0];
 
@@ -126,7 +135,7 @@ int main(int argc, char** argv) {
                 }
             }
 
-            // 5. Is contorno? Which contorno?
+            // 5.Is contorno? Which contorno?
             vector<box> foods;
             for (int k = 0; k < boxes.size(); ++k) {
                 if (boxes[k].ID == -1) {
@@ -142,14 +151,10 @@ int main(int argc, char** argv) {
             sort(boxes.begin(), boxes.end(), sort_ID);
             vector<int> predicted_IDs5;
             vector<double> predicted_strengths5;
-            vector<food> cat_10_11;
             vector<Mat> box_img5;
-            cat_10_11.push_back(foodCategories[10]);
-            cat_10_11.push_back(foodCategories[11]);
             for (int k = 0; k < foods.size(); ++k) {
                     box_img5.push_back(boxes[k].img);
             }
-            write_kmeans(cat_10_11);
             predict_categories(box_img5, cat_10_11, predicted_IDs5, predicted_strengths5);
             double stronger_pred = 0;
             int stronger_index;
@@ -160,15 +165,21 @@ int main(int argc, char** argv) {
                 }
             }
             boxes[stronger_index].ID = predicted_IDs5[stronger_index];
-
-
-
             sort(boxes.begin(), boxes.end(), sort_ID);
+
+            // 6.Which meat?
+
+
+
             //Show the plates
             for (int k = 0; k < boxes.size(); ++k) {
                 string window_name_img = "Tray" + to_string(i + 1) + " " + file_name + " Food" + to_string(k + 1) + " ID:" + to_string(boxes[k].ID);
                 namedWindow(window_name_img);
                 imshow(window_name_img, boxes[k].img);
+            }
+            //Print the boxes
+            for (const auto box: boxes) {
+                cout << box.ID << " " << box.p0x << " " << box.p0y << " " << box.width << " " << box.height << " " << box.conf << endl;
             }
 
 
@@ -195,13 +206,6 @@ int main(int argc, char** argv) {
                 }
             }
              */
-
-
-
-            //Print the boxes
-            for (const auto box: boxes) {
-                cout << box.ID << " " << box.p0x << " " << box.p0y << " " << box.width << " " << box.height << " " << box.conf << endl;
-            }
 
         }
         waitKey();

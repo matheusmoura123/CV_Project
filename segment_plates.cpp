@@ -250,18 +250,14 @@ box segment_food(const box& plate_box) {
     Mat bi_img_new, gray_new;
 
     //Let's segment the mask that we've got
-
-
     cvtColor(rgb_img, gray_new, COLOR_BGR2GRAY);
     Canny(gray_new, bi_img_new, 20, 60);
-
 
     int morph_size_new = 2;
     Mat element_new = getStructuringElement(MORPH_ELLIPSE, Size(2 * morph_size_new + 1, 2 * morph_size_new + 1), Point(morph_size_new, morph_size_new));
     Mat morph_img_new;
     morphologyEx(bi_img_new, morph_img_new, MORPH_CLOSE, element_new, Point(-1, -1), 3);
     morphologyEx(morph_img_new, morph_img_new, MORPH_OPEN, element_new, Point(-1, -1), 2);
-
 
     Mat morph_3c;
     Mat in_morph[3] = {morph_img_new, morph_img_new, morph_img_new};
@@ -304,8 +300,8 @@ Mat K_means(const Mat& src, int num_of_clusters) {
     TermCriteria criteria = TermCriteria(TermCriteria::MAX_ITER|TermCriteria::EPS, 100, 0.01);
     kmeans(samples, K, labels, criteria, attempts, KMEANS_PP_CENTERS, centers);
 
-    cout << labels.size << endl;
-    cout << src.rows*src.cols << endl;
+    //cout << labels.size << endl;
+    //cout << src.rows*src.cols << endl;
 
     int colors[K];
     for(int i=0; i<K; i++) {
@@ -323,53 +319,6 @@ Mat K_means(const Mat& src, int num_of_clusters) {
     Mat output;
     clustered.convertTo(output, CV_8UC1);
     return output;
-    /*
-    Mat new_image(src.size(), src.type());
-    for (int y = 0; y < src.rows; y++) {
-        for (int x = 0; x < src.cols; x++) {
-            int cluster_idx = labels.at<int>(y + x * src.rows, 0);
-            for (int i = 0; i < src.channels(); i++) {
-                new_image.at<Vec3b>(y, x)[i] = (uchar)centers.at<float>(cluster_idx, i);
-            }
-        }
-    }
-    //imshow("clustered image", new_image);
-    return new_image;
-     */
-
-    /*
-    Mat p = Mat::zeros(src.cols*src.rows, 5, CV_32F);
-    Mat bestLabels, centers, clustered;
-    vector<Mat> bgr;
-    cv::split(src, bgr);
-
-    for(int i=0; i<src.cols*src.rows; i++) {
-        p.at<float>(i,0) = (i/src.cols) / src.rows;
-        p.at<float>(i,1) = (i%src.cols) / src.cols;
-        p.at<float>(i,2) = bgr[0].data[i] / 255.0;
-        p.at<float>(i,3) = bgr[1].data[i] / 255.0;
-        p.at<float>(i,4) = bgr[2].data[i] / 255.0;
-    }
-
-    int K = num_of_clusters;
-    TermCriteria criteria = TermCriteria(TermCriteria::MAX_ITER|TermCriteria::EPS, 100, 0.01);
-    cv::kmeans(p, K, bestLabels, criteria, 7, KMEANS_PP_CENTERS, centers);
-
-    int colors[K];
-    for(int i=0; i<K; i++) {
-        colors[i] = 255/(i+1);
-    }
-
-    clustered = Mat(src.rows, src.cols, CV_32F);
-    for(int i=0; i<src.cols*src.rows; i++) {
-        clustered.at<float>(i/src.cols, i%src.cols) = (float)(colors[bestLabels.at<int>(0,i)]);
-    }
-
-    Mat output;
-    output.convertTo(clustered, CV_8UC1);
-    return output;
-     */
-
 }
 
 vector<box> separate_food(const box& food_box) {
@@ -619,5 +568,52 @@ for (int y = 0; y < rgb_img.rows; ++y) {
 //dishes.push_back(rgb_img);
 //imshow("mask", rgb_img);
 //waitKey();
+ */
+
+/*
+   Mat new_image(src.size(), src.type());
+   for (int y = 0; y < src.rows; y++) {
+       for (int x = 0; x < src.cols; x++) {
+           int cluster_idx = labels.at<int>(y + x * src.rows, 0);
+           for (int i = 0; i < src.channels(); i++) {
+               new_image.at<Vec3b>(y, x)[i] = (uchar)centers.at<float>(cluster_idx, i);
+           }
+       }
+   }
+   //imshow("clustered image", new_image);
+   return new_image;
+    */
+
+/*
+Mat p = Mat::zeros(src.cols*src.rows, 5, CV_32F);
+Mat bestLabels, centers, clustered;
+vector<Mat> bgr;
+cv::split(src, bgr);
+
+for(int i=0; i<src.cols*src.rows; i++) {
+    p.at<float>(i,0) = (i/src.cols) / src.rows;
+    p.at<float>(i,1) = (i%src.cols) / src.cols;
+    p.at<float>(i,2) = bgr[0].data[i] / 255.0;
+    p.at<float>(i,3) = bgr[1].data[i] / 255.0;
+    p.at<float>(i,4) = bgr[2].data[i] / 255.0;
+}
+
+int K = num_of_clusters;
+TermCriteria criteria = TermCriteria(TermCriteria::MAX_ITER|TermCriteria::EPS, 100, 0.01);
+cv::kmeans(p, K, bestLabels, criteria, 7, KMEANS_PP_CENTERS, centers);
+
+int colors[K];
+for(int i=0; i<K; i++) {
+    colors[i] = 255/(i+1);
+}
+
+clustered = Mat(src.rows, src.cols, CV_32F);
+for(int i=0; i<src.cols*src.rows; i++) {
+    clustered.at<float>(i/src.cols, i%src.cols) = (float)(colors[bestLabels.at<int>(0,i)]);
+}
+
+Mat output;
+output.convertTo(clustered, CV_8UC1);
+return output;
  */
 
