@@ -89,6 +89,7 @@ array<int,3> find_histogram(const cv::Mat& src);
 void plot_histogram(Mat histogram);
 bool sort_bigger_area (const box& i,const box& j);
 bool sort_ID (const box& i,const box& j);
+bool sort_num_match (const vector<int>& i,const vector<int>& j);
 
 
 //segment_plates.cpp
@@ -108,6 +109,8 @@ void write_kmeans(vector<food> categories);
 
 //sift_matching.cpp
 int sift_matching(const cv::Mat& img1, const cv::Mat& img2);
+int surf_matching(const Mat& img1, const Mat& img2);
+void compare_plates(const vector<box> food_plate, vector<box>& leftover_plate);
 
 //files_manager.cpp
 int box_file_writer (const vector<box>& boxes, const string& path);
