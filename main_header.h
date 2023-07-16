@@ -86,8 +86,8 @@ const vector<food> foodCategories{
         {"fish", 10, 7},
         {"rabbit", 12, 8},
         {"seafood", 5, 9},
-        {"beans", 14, 10},
-        {"potato", 7, 11},
+        {"beans", 9, 10},
+        {"potato", 5, 11},
         //{"salad", 15, 12},
         //{"bread", 18, 13},
         //{"carrot", 6, 14},
@@ -111,12 +111,14 @@ Mat mean_histogram2(const vector<cv::Mat>& src);
 array<int,3> find_histogram(const cv::Mat& src);
 void plot_histogram(Mat histogram);
 bool sort_bigger_area (const box& i,const box& j);
+bool sort_ID (const box& i,const box& j);
+
 
 //segment_plates.cpp
 vector<box> segment_plates(const Mat& img, vector<Mat>& dst);
 Mat get_contours(const Mat& img);
 Mat segment_rgb_hsv(const Mat& src, int hue, int sat, int val, int T_hue, int T_sat, int T_value, bool is_hsv=false);
-Mat meanshift(Mat img, int spatial, int color);
+Mat meanshift(const Mat& img, int spatial, int color);
 Mat otsu_segmentation(Mat gray_img, int num_grid);
 box crop_image(const Mat& img, const box& plate_box);
 box segment_food(const box& plate_box);
@@ -142,6 +144,6 @@ int food_leftover();
 
 //archive
 int sift_matching(const cv::Mat& img1, const cv::Mat& img2);
-void predict_categories(const vector<Mat>& images_to_predict, vector<food> categories, vector<int>& pred_IDs);
+void predict_categories(const vector<Mat>& images_to_predict, vector<food> categories, vector<int>& pred_IDs, vector<double>& pred_strengths);
 
 #endif //CV_PROJECT_MAIN_HEADER_H

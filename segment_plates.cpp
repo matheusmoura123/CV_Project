@@ -123,7 +123,7 @@ Mat segment_rgb_hsv(const Mat& src, int hue, int sat, int val, int T_hue, int T_
     return final;
 }
 
-Mat meanshift(Mat img, int spatial, int color){
+Mat meanshift(const Mat& img, int spatial, int color){
     Mat mean_img;
     mean_img = img.clone();
     //MeanShift
@@ -301,9 +301,8 @@ Mat K_means(Mat src, int num_of_clusters) {
     }
 
     int K = num_of_clusters;
-    cv::kmeans(p, K, bestLabels,
-               TermCriteria(TermCriteria::MAX_ITER|TermCriteria::EPS, 10, 1.0),
-               7, KMEANS_PP_CENTERS, centers);
+    TermCriteria criteria = TermCriteria(TermCriteria::MAX_ITER|TermCriteria::EPS, 100, 0.01);
+    cv::kmeans(p, K, bestLabels, criteria, 7, KMEANS_PP_CENTERS, centers);
 
     int colors[K];
     for(int i=0; i<K; i++) {

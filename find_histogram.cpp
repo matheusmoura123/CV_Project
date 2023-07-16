@@ -223,3 +223,7 @@ void plot_histogram(Mat histogram){
 bool sort_bigger_area (const box& i,const box& j) {
     return(i.width*i.height>j.width*j.height);
 }
+
+bool sort_ID (const box& i,const box& j) {
+    return(i.ID < j.ID);
+}
