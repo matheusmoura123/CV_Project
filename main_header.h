@@ -121,6 +121,9 @@ vector<box> separate_food(const box& food_box) ;
 void predict_categories(const vector<Mat>& images_to_predict, vector<food> categories, vector<int>& pred_IDs, vector<double>& pred_strengths);
 void write_kmeans(vector<food> categories);
 
+//sift_matching.cpp
+int sift_matching(const cv::Mat& img1, const cv::Mat& img2);
+
 //files_manager.cpp
 int box_file_writer (const vector<box>& boxes, const string& path);
 int box_file_reader (vector<box>& boxes, const string& path);
@@ -137,8 +140,5 @@ vector<vector<double>> leftover_ratio (const Mat& mask_before, const Mat& mask_a
 int food_localization();
 int food_segmentation ();
 int food_leftover();
-
-//archive
-int sift_matching(const cv::Mat& img1, const cv::Mat& img2);
 
 #endif //CV_PROJECT_MAIN_HEADER_H
