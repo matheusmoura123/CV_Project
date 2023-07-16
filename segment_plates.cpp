@@ -10,8 +10,6 @@ vector<box> segment_plates(const Mat& img, vector<Mat>& dst) {
 
     // DETECTING CIRCLES (PLATES)
     vector<Vec3f> circles;
-
-    //1, Gaus.cols/3, 100, 80, 160, 500)
     HoughCircles(Gaus, circles, HOUGH_GRADIENT, 1, Gaus.cols/3, 100, 80, 160, 500); //get all the plates right and nothing else. PERFECT!
     vector<Mat> plates;
 
@@ -135,7 +133,7 @@ Mat meanshift(const Mat& img, int spatial, int color){
     vector<int> p{0, 1, 2, 3};
     for (auto &sp_i: sp) {
         for (auto &sr_i: sr) {
-            cout << "Calculating meanshift..." << endl;
+            //cout << "Calculating meanshift..." << endl;
             pyrMeanShiftFiltering(img, mean_img, sp_i, sr_i, 1, termcrit);
             string w_name = to_string(sp_i) + "-" + to_string(sr_i) + " Level 3";
             //cout << w_name << endl;
@@ -146,7 +144,7 @@ Mat meanshift(const Mat& img, int spatial, int color){
     return mean_img;
 }
 
-Mat otsu_segmentation(Mat gray_img, int num_grid) {
+Mat otsu_segmentation(const Mat& gray_img, int num_grid) {
     Mat otsu_img = gray_img.clone();
 
     //Divide Img in multiple sections num_grid X num_grid and perform Otu separately in each one
@@ -252,18 +250,14 @@ box segment_food(const box& plate_box) {
     Mat bi_img_new, gray_new;
 
     //Let's segment the mask that we've got
-
-
     cvtColor(rgb_img, gray_new, COLOR_BGR2GRAY);
     Canny(gray_new, bi_img_new, 20, 60);
-
 
     int morph_size_new = 2;
     Mat element_new = getStructuringElement(MORPH_ELLIPSE, Size(2 * morph_size_new + 1, 2 * morph_size_new + 1), Point(morph_size_new, morph_size_new));
     Mat morph_img_new;
     morphologyEx(bi_img_new, morph_img_new, MORPH_CLOSE, element_new, Point(-1, -1), 3);
     morphologyEx(morph_img_new, morph_img_new, MORPH_OPEN, element_new, Point(-1, -1), 2);
-
 
     Mat morph_3c;
     Mat in_morph[3] = {morph_img_new, morph_img_new, morph_img_new};
@@ -306,8 +300,8 @@ Mat K_means(const Mat& src, int num_of_clusters) {
     TermCriteria criteria = TermCriteria(TermCriteria::MAX_ITER|TermCriteria::EPS, 100, 0.01);
     kmeans(samples, K, labels, criteria, attempts, KMEANS_PP_CENTERS, centers);
 
-    cout << labels.size << endl;
-    cout << src.rows*src.cols << endl;
+    //cout << labels.size << endl;
+    //cout << src.rows*src.cols << endl;
 
     int colors[K];
     for(int i=0; i<K; i++) {
@@ -324,6 +318,11 @@ Mat K_means(const Mat& src, int num_of_clusters) {
     }
     Mat output;
     clustered.convertTo(output, CV_8UC1);
+
+    centers.release();
+    labels.release();
+    samples.release();
+
     return output;
 }
 
@@ -576,20 +575,19 @@ for (int y = 0; y < rgb_img.rows; ++y) {
 //waitKey();
  */
 
-
 /*
-Mat new_image(src.size(), src.type());
-for (int y = 0; y < src.rows; y++) {
-    for (int x = 0; x < src.cols; x++) {
-        int cluster_idx = labels.at<int>(y + x * src.rows, 0);
-        for (int i = 0; i < src.channels(); i++) {
-            new_image.at<Vec3b>(y, x)[i] = (uchar)centers.at<float>(cluster_idx, i);
-        }
-    }
-}
-//imshow("clustered image", new_image);
-return new_image;
- */
+   Mat new_image(src.size(), src.type());
+   for (int y = 0; y < src.rows; y++) {
+       for (int x = 0; x < src.cols; x++) {
+           int cluster_idx = labels.at<int>(y + x * src.rows, 0);
+           for (int i = 0; i < src.channels(); i++) {
+               new_image.at<Vec3b>(y, x)[i] = (uchar)centers.at<float>(cluster_idx, i);
+           }
+       }
+   }
+   //imshow("clustered image", new_image);
+   return new_image;
+    */
 
 /*
 Mat p = Mat::zeros(src.cols*src.rows, 5, CV_32F);
@@ -623,3 +621,4 @@ Mat output;
 output.convertTo(clustered, CV_8UC1);
 return output;
  */
+

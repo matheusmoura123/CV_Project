@@ -23,13 +23,6 @@
 using namespace cv;
 using namespace std;
 
-class Interface
-{
-public:
-    [[nodiscard]] virtual Interface* clone() const = 0;
-};
-
-
 class food {
 public:
     string className;
@@ -76,17 +69,17 @@ const vector<food> foodCategories{
         //{className, numberOfImgs, ID},
         //{"plate", 9, 0},
         {"pasta", 13, 19},
-        {"pesto", 4, 1},
+        {"pesto", 11, 1},
         {"pomodoro", 5, 2},
         {"ragu", 2, 3},
         {"pasta_clams", 8, 4},
         {"rice", 6, 5},
         {"pork", 15, 6},
-        {"fish", 11, 7},
+        {"fish", 14, 7},
         {"rabbit", 11, 8},
         {"seafood", 8, 9},
-        {"beans", 9, 10},
-        {"potato", 9, 11},
+        {"beans", 13, 10},
+        {"potato", 10, 11},
         //{"salad", 15, 12},
         //{"bread", 18, 13},
         //{"carrot", 6, 14},
@@ -111,7 +104,6 @@ array<int,3> find_histogram(const cv::Mat& src);
 void plot_histogram(Mat histogram);
 bool sort_bigger_area (const box& i,const box& j);
 bool sort_ID (const box& i,const box& j);
-bool sort_num_match (const vector<int>& i,const vector<int>& j);
 
 
 //segment_plates.cpp
@@ -119,10 +111,10 @@ vector<box> segment_plates(const Mat& img, vector<Mat>& dst);
 Mat get_contours(const Mat& img);
 Mat segment_rgb_hsv(const Mat& src, int hue, int sat, int val, int T_hue, int T_sat, int T_value, bool is_hsv=false);
 Mat meanshift(const Mat& img, int spatial, int color);
-Mat otsu_segmentation(Mat gray_img, int num_grid);
+Mat otsu_segmentation(const Mat& gray_img, int num_grid);
 box crop_image(const Mat& img, const box& plate_box);
 box segment_food(const box& plate_box);
-Mat K_Means(const Mat& src, int num_of_clusters);
+Mat K_means(const Mat& img, int num_of_clusters);
 vector<box> separate_food(const box& food_box) ;
 
 //predict_categories.cpp
