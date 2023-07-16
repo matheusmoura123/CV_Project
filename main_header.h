@@ -129,6 +129,7 @@ int box_file_writer (const vector<box>& boxes, const string& path);
 int box_file_reader (vector<box>& boxes, const string& path);
 Mat mask_img_builder (const vector<box>& boxes);
 int mask_file_writer (const vector<box>& boxes, const string& path);
+int save_all_boxes_masks_at_tray (vector<vector<box>>& all_boxes, int tray_num);
 
 //metrics.cpp
 double boxes_IoU (const box& box1, const box& box2);
