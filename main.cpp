@@ -5,10 +5,41 @@ int main(int argc, char** argv) {
     //Calculate pasta histogram
     vector<Mat> pasta_hist = categories_histogram({0, 5});
     vector<Mat> rice_hist = categories_histogram({5});
+    vector<Mat> contorno_hist = categories_histogram({10, 11});
+
+    //kmeans for pasta or rice
+    vector<food> cat_19_5;
+    cat_19_5.push_back(foodCategories[0]);
+    cat_19_5.push_back(foodCategories[5]);
+    //write_kmeans(cat_19_5);
+
+    //kmeans for beans or potato
+    vector<food> cat_10_11;
+    cat_10_11.push_back(foodCategories[10]);
+    cat_10_11.push_back(foodCategories[11]);
+    //write_kmeans(cat_10_11);
+
+    //kmeans for meats
+    vector<food> cat_6_9;
+    cat_6_9.push_back(foodCategories[6]);
+    cat_6_9.push_back(foodCategories[7]);
+    cat_6_9.push_back(foodCategories[8]);
+    cat_6_9.push_back(foodCategories[9]);
+    //write_kmeans(cat_6_9);
+
+    //kmeans for meats
+    vector<food> cat_6_11;
+    cat_6_11.push_back(foodCategories[6]);
+    cat_6_11.push_back(foodCategories[7]);
+    cat_6_11.push_back(foodCategories[8]);
+    cat_6_11.push_back(foodCategories[9]);
+    cat_6_11.push_back(foodCategories[10]);
+    cat_6_11.push_back(foodCategories[11]);
+    //write_kmeans(cat_6_11);
 
     //Go through all trays and imgs
-    //for (int i = 0; i < NUMBER_TRAYS; ++i) {
-    for (int i = 4; i < 5; ++i) {
+    for (int i = 0; i < NUMBER_TRAYS; ++i) {
+    //for (int i = 4; i < 5; ++i) {
         //if (i==4) continue;
         cout << "----- TRAY " << to_string(i + 1) << " -----" << endl;
         for (int j = 0; j < 1; ++j) {
@@ -33,37 +64,6 @@ int main(int argc, char** argv) {
 
             vector<box> boxes;
             vector<Mat> dishes;
-
-
-            //kmeans for pasta or rice
-            vector<food> cat_19_5;
-            cat_19_5.push_back(foodCategories[0]);
-            cat_19_5.push_back(foodCategories[5]);
-            //write_kmeans(cat_19_5);
-
-            /*
-            //kmeans for beans or potato
-            vector<food> cat_10_11;
-            cat_10_11.push_back(foodCategories[10]);
-            cat_10_11.push_back(foodCategories[11]);
-            //write_kmeans(cat_10_11);
-
-            //kmeans for meats
-            vector<food> cat_6_9;
-            cat_6_9.push_back(foodCategories[6]);
-            cat_6_9.push_back(foodCategories[7]);
-            cat_6_9.push_back(foodCategories[8]);
-            cat_6_9.push_back(foodCategories[9]);
-            //write_kmeans(cat_6_9);
-             */
-
-            //kmeans for meats
-            vector<food> cat_6_9;
-            cat_6_9.push_back(foodCategories[6]);
-            cat_6_9.push_back(foodCategories[7]);
-            cat_6_9.push_back(foodCategories[8]);
-            cat_6_9.push_back(foodCategories[9]);
-            //write_kmeans(cat_6_9);
 
             //Load img
             Mat img;
@@ -97,7 +97,7 @@ int main(int argc, char** argv) {
                     //cout << "pasta: ";
                     values = compare_histogram(box_hist, pasta_hist);
                     //cout << "rice: ";
-                    compare_histogram(box_hist, rice_hist);
+                    //compare_histogram(box_hist, rice_hist);
                     if (values[0] >= max_value) {
                         max_value = values[0];
                         values_max[0] = values[0];
@@ -151,7 +151,7 @@ int main(int argc, char** argv) {
             }
 
             // 5. Is contorno? Which one?
-            vector<box> foods;
+            vector<box> foods = {};
             for (int k = 0; k < boxes.size(); ++k) {
                 if (boxes[k].ID == -1) {
                     foods = separate_food(boxes[k]);
@@ -162,8 +162,28 @@ int main(int argc, char** argv) {
                 for (int l = 1; l < foods.size(); ++l) {
                     boxes.push_back(foods[l]);
                 }
+                sort(boxes.begin(), boxes.end(), sort_ID);
+                array<double, 3> values_max2{};
+                double max_value2 = 0;
+                int max_index2;
+                for (int k = 0; k < foods.size(); ++k) {
+                    vector<Mat> box_hist_img = {boxes[k].img.clone()};
+                    Mat box_hist = mean_histogram2(box_hist_img);
+                    array<double, 3> values{};
+                    values = compare_histogram(box_hist, contorno_hist);
+                    if (values[0] >= max_value2) {
+                        max_value2 = values[0];
+                        values_max2[0] = values[0];
+                        values_max2[1] = values[1];
+                        values_max2[2] = values[2];
+                        max_index2 = k;
+                    }
+                }
+                boxes[max_index2].ID = foodCategories[int(10+values_max2[1])].classLabel;
             }
-            sort(boxes.begin(), boxes.end(), sort_ID);
+
+
+            /*
             vector<int> predicted_IDs5;
             vector<double> predicted_strengths5;
             vector<Mat> box_img5;
@@ -180,6 +200,7 @@ int main(int argc, char** argv) {
                 }
             }
             boxes[stronger_index].ID = predicted_IDs5[stronger_index];
+             */
             sort(boxes.begin(), boxes.end(), sort_ID);
 
 
@@ -192,8 +213,8 @@ int main(int argc, char** argv) {
                 boxes[0].ID = predicted_IDs6[0];
             }
 
-
             //Show the plates
+            sort(boxes.begin(), boxes.end(), sort_ID);
             for (int k = 0; k < boxes.size(); ++k) {
                 string window_name_img = "Tray" + to_string(i + 1) + " " + file_name + " Food" + to_string(k + 1) + " ID:" + to_string(boxes[k].ID);
                 namedWindow(window_name_img);
@@ -230,9 +251,10 @@ int main(int argc, char** argv) {
              */
 
         }
-        waitKey();
-        destroyAllWindows();
+
+        //destroyAllWindows();
     }
+    waitKey();
     return 0;
 }
 

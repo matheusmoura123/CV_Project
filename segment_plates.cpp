@@ -133,7 +133,7 @@ Mat meanshift(const Mat& img, int spatial, int color){
     vector<int> p{0, 1, 2, 3};
     for (auto &sp_i: sp) {
         for (auto &sr_i: sr) {
-            cout << "Calculating meanshift..." << endl;
+            //cout << "Calculating meanshift..." << endl;
             pyrMeanShiftFiltering(img, mean_img, sp_i, sr_i, 1, termcrit);
             string w_name = to_string(sp_i) + "-" + to_string(sr_i) + " Level 3";
             //cout << w_name << endl;

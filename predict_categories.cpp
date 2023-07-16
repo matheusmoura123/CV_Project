@@ -117,7 +117,7 @@ void predict_categories(const vector<Mat>& images_to_predict, vector<food> categ
     }
 
     int clusterCount = d_size, attempts = 5, iterationNumber = 1000;
-    cout << "Running kmeans..." << endl;
+    //cout << "Running kmeans..." << endl;
     TermCriteria crit = TermCriteria(TermCriteria::MAX_ITER|TermCriteria::EPS, iterationNumber, 0.001);
     kmeans(all_desc, clusterCount, kmeans_labels, crit, attempts, KMEANS_PP_CENTERS, kmeans_centers);
 
@@ -147,7 +147,7 @@ void predict_categories(const vector<Mat>& images_to_predict, vector<food> categ
     svm = SVM::create();
     svm->setType(SVM::C_SVC);
     svm->setKernel(SVM::LINEAR);
-    svm->setTermCriteria(TermCriteria(TermCriteria::MAX_ITER|TermCriteria::EPS, 1e4, 0.0001));
+    svm->setTermCriteria(TermCriteria(TermCriteria::MAX_ITER, 1e4, 1e-6));
     Ptr<TrainData> trained = TrainData::create(input_data, ROW_SAMPLE, input_data_labels);
     svm->train(trained);
 
@@ -161,7 +161,7 @@ void predict_categories(const vector<Mat>& images_to_predict, vector<food> categ
         predict_img(img, dst, pred_ID, pred_strength, svm, kmeans_centers, d_size);
 
         //Add predictions to output of function
-        cout << pred_ID << " " << pred_strength << endl;
+        //cout << pred_ID << " " << pred_strength << endl;
         pred_IDs.push_back(pred_ID);
         pred_strengths.push_back(pred_strength);
     }

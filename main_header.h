@@ -23,13 +23,6 @@
 using namespace cv;
 using namespace std;
 
-class Interface
-{
-public:
-    [[nodiscard]] virtual Interface* clone() const = 0;
-};
-
-
 class food {
 public:
     string className;
@@ -81,12 +74,12 @@ const vector<food> foodCategories{
         {"ragu", 2, 3},
         {"pasta_clams", 8, 4},
         {"rice", 6, 5},
-        {"pork", 8, 6},
-        {"fish", 7, 7},
-        {"rabbit", 6, 8},
+        {"pork", 15, 6},
+        {"fish", 14, 7},
+        {"rabbit", 11, 8},
         {"seafood", 8, 9},
-        {"beans", 9, 10},
-        {"potato", 9, 11},
+        {"beans", 13, 10},
+        {"potato", 10, 11},
         //{"salad", 15, 12},
         //{"bread", 18, 13},
         //{"carrot", 6, 14},
