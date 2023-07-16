@@ -10,6 +10,8 @@ vector<box> segment_plates(const Mat& img, vector<Mat>& dst) {
 
     // DETECTING CIRCLES (PLATES)
     vector<Vec3f> circles;
+
+    //1, Gaus.cols/3, 100, 80, 160, 500)
     HoughCircles(Gaus, circles, HOUGH_GRADIENT, 1, Gaus.cols/3, 100, 80, 160, 500); //get all the plates right and nothing else. PERFECT!
     vector<Mat> plates;
 
@@ -323,53 +325,6 @@ Mat K_means(const Mat& src, int num_of_clusters) {
     Mat output;
     clustered.convertTo(output, CV_8UC1);
     return output;
-    /*
-    Mat new_image(src.size(), src.type());
-    for (int y = 0; y < src.rows; y++) {
-        for (int x = 0; x < src.cols; x++) {
-            int cluster_idx = labels.at<int>(y + x * src.rows, 0);
-            for (int i = 0; i < src.channels(); i++) {
-                new_image.at<Vec3b>(y, x)[i] = (uchar)centers.at<float>(cluster_idx, i);
-            }
-        }
-    }
-    //imshow("clustered image", new_image);
-    return new_image;
-     */
-
-    /*
-    Mat p = Mat::zeros(src.cols*src.rows, 5, CV_32F);
-    Mat bestLabels, centers, clustered;
-    vector<Mat> bgr;
-    cv::split(src, bgr);
-
-    for(int i=0; i<src.cols*src.rows; i++) {
-        p.at<float>(i,0) = (i/src.cols) / src.rows;
-        p.at<float>(i,1) = (i%src.cols) / src.cols;
-        p.at<float>(i,2) = bgr[0].data[i] / 255.0;
-        p.at<float>(i,3) = bgr[1].data[i] / 255.0;
-        p.at<float>(i,4) = bgr[2].data[i] / 255.0;
-    }
-
-    int K = num_of_clusters;
-    TermCriteria criteria = TermCriteria(TermCriteria::MAX_ITER|TermCriteria::EPS, 100, 0.01);
-    cv::kmeans(p, K, bestLabels, criteria, 7, KMEANS_PP_CENTERS, centers);
-
-    int colors[K];
-    for(int i=0; i<K; i++) {
-        colors[i] = 255/(i+1);
-    }
-
-    clustered = Mat(src.rows, src.cols, CV_32F);
-    for(int i=0; i<src.cols*src.rows; i++) {
-        clustered.at<float>(i/src.cols, i%src.cols) = (float)(colors[bestLabels.at<int>(0,i)]);
-    }
-
-    Mat output;
-    output.convertTo(clustered, CV_8UC1);
-    return output;
-     */
-
 }
 
 vector<box> separate_food(const box& food_box) {
@@ -621,3 +576,50 @@ for (int y = 0; y < rgb_img.rows; ++y) {
 //waitKey();
  */
 
+
+/*
+Mat new_image(src.size(), src.type());
+for (int y = 0; y < src.rows; y++) {
+    for (int x = 0; x < src.cols; x++) {
+        int cluster_idx = labels.at<int>(y + x * src.rows, 0);
+        for (int i = 0; i < src.channels(); i++) {
+            new_image.at<Vec3b>(y, x)[i] = (uchar)centers.at<float>(cluster_idx, i);
+        }
+    }
+}
+//imshow("clustered image", new_image);
+return new_image;
+ */
+
+/*
+Mat p = Mat::zeros(src.cols*src.rows, 5, CV_32F);
+Mat bestLabels, centers, clustered;
+vector<Mat> bgr;
+cv::split(src, bgr);
+
+for(int i=0; i<src.cols*src.rows; i++) {
+    p.at<float>(i,0) = (i/src.cols) / src.rows;
+    p.at<float>(i,1) = (i%src.cols) / src.cols;
+    p.at<float>(i,2) = bgr[0].data[i] / 255.0;
+    p.at<float>(i,3) = bgr[1].data[i] / 255.0;
+    p.at<float>(i,4) = bgr[2].data[i] / 255.0;
+}
+
+int K = num_of_clusters;
+TermCriteria criteria = TermCriteria(TermCriteria::MAX_ITER|TermCriteria::EPS, 100, 0.01);
+cv::kmeans(p, K, bestLabels, criteria, 7, KMEANS_PP_CENTERS, centers);
+
+int colors[K];
+for(int i=0; i<K; i++) {
+    colors[i] = 255/(i+1);
+}
+
+clustered = Mat(src.rows, src.cols, CV_32F);
+for(int i=0; i<src.cols*src.rows; i++) {
+    clustered.at<float>(i/src.cols, i%src.cols) = (float)(colors[bestLabels.at<int>(0,i)]);
+}
+
+Mat output;
+output.convertTo(clustered, CV_8UC1);
+return output;
+ */

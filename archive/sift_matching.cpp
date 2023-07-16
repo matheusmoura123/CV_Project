@@ -4,7 +4,7 @@ int sift_matching(const Mat& img1, const Mat& img2){
 
     Mat out1, out2, desc1, desc2;
 
-    Ptr<SIFT> sift = SIFT::create(0, 3, 0.04, 10, 1.6);
+    Ptr<SIFT> sift = SIFT::create(0, 5, 0.04, 20, 1.6);
     vector<cv::KeyPoint> keypoints1, keypoints2;
 
     sift->detect(img1, keypoints1);
@@ -48,10 +48,14 @@ int sift_matching(const Mat& img1, const Mat& img2){
                 good_matches, imageMatches, Scalar::all(-1),
                 Scalar::all(-1), std::vector<char>(), DrawMatchesFlags::NOT_DRAW_SINGLE_POINTS );
 
-
+/*
     namedWindow("SIFT features, Brute-Force Matcher");
     imshow("SIFT features, Brute-Force Matcher",imageMatches);
     waitKey(0);
-
+*/
     return good_matches.size();
+}
+
+void compare_plates(vector<box> food_plate, vector<box> leftover_plate){
+
 }

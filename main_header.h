@@ -81,12 +81,12 @@ const vector<food> foodCategories{
         {"ragu", 2, 3},
         {"pasta_clams", 8, 4},
         {"rice", 6, 5},
-        {"pork", 9, 6},
-        {"fish", 10, 7},
-        {"rabbit", 12, 8},
-        {"seafood", 5, 9},
+        {"pork", 15, 6},
+        {"fish", 11, 7},
+        {"rabbit", 11, 8},
+        {"seafood", 8, 9},
         {"beans", 9, 10},
-        {"potato", 5, 11},
+        {"potato", 9, 11},
         //{"salad", 15, 12},
         //{"bread", 18, 13},
         //{"carrot", 6, 14},
@@ -111,6 +111,7 @@ array<int,3> find_histogram(const cv::Mat& src);
 void plot_histogram(Mat histogram);
 bool sort_bigger_area (const box& i,const box& j);
 bool sort_ID (const box& i,const box& j);
+bool sort_num_match (const vector<int>& i,const vector<int>& j);
 
 
 //segment_plates.cpp
@@ -121,7 +122,7 @@ Mat meanshift(const Mat& img, int spatial, int color);
 Mat otsu_segmentation(Mat gray_img, int num_grid);
 box crop_image(const Mat& img, const box& plate_box);
 box segment_food(const box& plate_box);
-Mat K_means(const Mat& img, int num_of_clusters);
+Mat K_Means(const Mat& src, int num_of_clusters);
 vector<box> separate_food(const box& food_box) ;
 
 //predict_categories.cpp

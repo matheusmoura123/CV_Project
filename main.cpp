@@ -1,6 +1,63 @@
 #include "main_header.h"
 
 int main(int argc, char** argv) {
+    vector<string> file_name = {"leftover1", "leftover2", "leftover3"};
+    vector<Mat> dishes1, dishes2;
+    //for(int k = 0; k < 8; ++k){
+        Mat img1 = imread(TRAY_PATH + to_string(0 + 1) + "/" + "food_image" + IMAGE_EXT);
+        vector<box> boxes1;
+        boxes1 = segment_plates(img1, dishes1);
+
+        vector<vector<Mat>> best_matches;
+        for(int i = 0; i < file_name.size(); ++i){
+            Mat img2 = imread(TRAY_PATH + to_string(0 + 1) + "/" + file_name[i] + IMAGE_EXT);
+            vector<box> boxes2;
+            boxes2 = segment_plates(img2, dishes2);
+
+
+            vector<vector<int>> all_matches;
+            for(int j = 0; j < boxes1.size(); ++j){
+                for(int l = 0; l < boxes2.size(); ++l){
+                    vector<int> matches;
+                    int matches_tmp = sift_matching(boxes1[j].img, boxes2[l].img);
+                    matches.push_back(matches_tmp);
+                    matches.push_back(j);
+                    matches.push_back(l);
+                    all_matches.push_back(matches);
+                }
+            }
+            sort(all_matches.begin(), all_matches.end(), sort_num_match);
+
+            vector<Mat> img_matches;
+
+            cout << all_matches.size();
+
+            for(int j = 0; j < 4; ++j){
+                int ind1 = all_matches[j][1];
+                int ind2 = all_matches[j][2];
+
+                img_matches.push_back(boxes1[ind1].img);
+                img_matches.push_back(boxes2[ind2].img);
+                imshow("match1", img_matches[0]);
+                imshow("match2", img_matches[1]);
+                waitKey();
+
+            }
+
+            best_matches.push_back(img_matches);
+
+      //  }
+
+
+    }
+
+
+
+
+
+
+
+    /*
 
     //Calculate pasta histogram
     vector<Mat> pasta_hist = categories_histogram({0, 5});
@@ -95,7 +152,8 @@ int main(int argc, char** argv) {
 
             // 4.Type of Pasta
             int neighborhood = 10;
-            if (boxes[max_index].ID == 19) {
+            if (boxes[max_index].ID == 19){
+                K_Means(boxes[max_index].img, 3);
                 float mean_hue = 0.0;
                 for(int n = 0; n < 3; ++n){
                     Rect roi(boxes[max_index].img.rows/2-10+n*neighborhood, boxes[max_index].img.cols/2-10+n*neighborhood, 100, 100);
@@ -194,7 +252,6 @@ int main(int argc, char** argv) {
                     boxes[k].conf = values[2];
                 }
             }
-             */
 
 
 
@@ -207,6 +264,10 @@ int main(int argc, char** argv) {
         waitKey();
         destroyAllWindows();
     }
+                 */
+
+
+
     return 0;
 }
 
