@@ -234,7 +234,7 @@ box crop_image(const Mat& img, const box& plate_box){
     box food_box = {-1, 0, 0, 0, 0, 0, g};
 
     Mat cropped_img = final_image(Range(row0_y, rowf_y), Range(col0_x, colf_x));
-    food_box = {-1, plate_box.p0x+col0_x, plate_box.p0y+row0_y, colf_x-col0_x, rowf_y-row0_y, -1, g}; //ID: -1 indicates that the box is not yet identified
+    food_box = {plate_box.ID, plate_box.p0x+col0_x, plate_box.p0y+row0_y, colf_x-col0_x, rowf_y-row0_y, -1, g}; //ID: -1 indicates that the box is not yet identified
     food_box.img = cropped_img.clone();
 
     return food_box;
@@ -242,7 +242,7 @@ box crop_image(const Mat& img, const box& plate_box){
 
 box segment_food(const box& plate_box) {
     Mat g = Mat::zeros(Size(0,0), CV_8UC1);
-    box food_box = {-1, 0, 0, 0, 0, 0, g};
+    box food_box = {plate_box.ID, 0, 0, 0, 0, 0, g};
 
     Mat rgb_img = plate_box.img.clone();
     Mat final_image = rgb_img.clone();

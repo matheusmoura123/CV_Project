@@ -2,7 +2,7 @@
 
 int box_file_writer (const vector<box>& boxes, const string& path) {
     try {
-        cout << "Writing box contents to file..." << endl;
+        //cout << "Writing box contents to file..." << endl;
         //open file for writing
         ofstream fw(path, std::ofstream::out);
         //check if file was successfully opened for writing
@@ -19,13 +19,13 @@ int box_file_writer (const vector<box>& boxes, const string& path) {
     catch (const char* msg) {
         cerr << msg << endl;
     }
-    cout << "Done!" << endl;
+    //cout << "Done!" << endl;
     return 0;
 }
 
 int box_file_reader (vector<box>& boxes, const string& path) {
     try {
-        cout << "Reading box contents from file..." << endl;
+        //cout << "Reading box contents from file..." << endl;
         string line;
         //open file for reading
         ifstream fw(path, ifstream::in);
@@ -59,7 +59,7 @@ int box_file_reader (vector<box>& boxes, const string& path) {
     catch (const char* msg) {
         cerr << msg << endl;
     }
-    cout << "Done!" << endl;
+    //cout << "Done!" << endl;
     return 0;
 }
 
@@ -85,7 +85,7 @@ Mat mask_img_builder (const vector<box>& boxes) {
 
 int mask_file_writer (const vector<box>& boxes, const string& path) {
     try {
-        cout << "Creating mask img file..." << endl;
+        //cout << "Creating mask img file..." << endl;
         Mat img = mask_img_builder(boxes);
         bool check = imwrite(path, img);
         if (check) {}
@@ -94,7 +94,7 @@ int mask_file_writer (const vector<box>& boxes, const string& path) {
     catch (const char* msg) {
         cerr << msg << endl;
     }
-    cout << "Done!" << endl;
+    //cout << "Done!" << endl;
     return 0;
 }
 

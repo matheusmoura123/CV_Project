@@ -23,14 +23,14 @@ int main(int argc, char** argv) {
 
     //Go through all trays and imgs
     for (int i = 0; i < NUMBER_TRAYS; ++i) {
-        vector<box> boxes, boxes1, boxes2, boxes3;
+        vector<vector<box>> all_boxes_at_tray;
         cout << "----- TRAY " << to_string(i + 1) << " -----" << endl;
         for (int j = 0; j < 4; ++j) {
             string file_name;
             if (j == 0) {
                 file_name = "food_image";
                 vector<Mat> dishes;
-
+                vector<box> boxes;
                 //Load img
                 Mat img;
                 img = imread(TRAY_PATH + to_string(i + 1) + "/" + file_name + IMAGE_EXT);
@@ -53,8 +53,8 @@ int main(int argc, char** argv) {
                 double max_value = 0;
                 int max_index;
                 for (int k = 0; k < boxes.size(); ++k) {
+                    boxes[k] = segment_food(copy[k]);
                     if (boxes[k].ID == -1) {
-                        boxes[k] = segment_food(copy[k]);
                         //Calculate histogram for box img
                         vector<Mat> box_hist_img = {boxes[k].img.clone()};
                         Mat box_hist = mean_histogram2(box_hist_img);
@@ -116,6 +116,7 @@ int main(int argc, char** argv) {
                     }
                 }
 
+
                 // 5. Is contorno? Which one?
                 vector<box> foods = {};
                 for (int k = 0; k < boxes.size(); ++k) {
@@ -169,21 +170,65 @@ int main(int argc, char** argv) {
                 for (const auto box: boxes) {
                     cout << box.ID << " " << box.p0x << " " << box.p0y << " " << box.width << " " << box.height << " " << box.conf << endl;
                 }
+                all_boxes_at_tray.push_back(boxes);
+            }
+            else {
+                file_name = "leftover" + to_string(j);
+
+                vector<Mat> dishes;
+                vector<box> boxes_left;
+
+                //Load img
+                Mat img;
+                img = imread(TRAY_PATH + to_string(i + 1) + "/" + file_name + IMAGE_EXT);
+                //imshow("img", img);
+
+                //Extract each  plate box from img
+                boxes_left = segment_plates(img, dishes);
+
+                // Cascade Classification
+                // 1. Which one is salad
+                sort(boxes_left.begin(), boxes_left.end(), sort_bigger_area);
+                if (boxes_left.size() > 2) {
+                    boxes_left[2].ID = 12;
+                    boxes_left[2].conf = 1;
+                }
+
+                // 2.Which one is pasta
+                array<double, 3> values_max{};
+                vector<box> copy(boxes_left);
+                double max_value = 0;
+                int max_index;
+                for (int k = 0; k < boxes_left.size(); ++k) {
+                    boxes_left[k] = segment_food(copy[k]);
+                    if (boxes_left[k].ID == -1) {
+                        //Calculate histogram for box img
+                        vector<Mat> box_hist_img = {boxes_left[k].img.clone()};
+                        Mat box_hist = mean_histogram2(box_hist_img);
+                        //Compare with the pasta_hist
+                        array<double, 3> values{};
+                        //cout << "pasta: ";
+                        values = compare_histogram(box_hist, pasta_hist);
+                        //cout << "rice: ";
+                        //compare_histogram(box_hist, rice_hist);
+                        if (values[0] >= max_value) {
+                            max_value = values[0];
+                            values_max[0] = values[0];
+                            values_max[1] = values[1];
+                            values_max[2] = values[2];
+                            max_index = k;
+                        }
+                    }
+                }
+                boxes_left[max_index].ID = 19;
+                boxes_left[max_index].conf = values_max[2];
 
 
+
+
+                all_boxes_at_tray.push_back(boxes_left);
             }
-            else if (j == 1) {
-                file_name = "leftover1";
-            }
-            else if (j == 2) {
-                file_name = "leftover2";
-            }
-            else if (j == 3) {
-                file_name = "leftover3";
-            }
-            else break;
         }
-        vector<vector<box>> all_boxes_at_tray = {boxes, boxes1, boxes2, boxes3};
         save_all_boxes_masks_at_tray(all_boxes_at_tray, i);
     }
     waitKey();
@@ -191,5 +236,6 @@ int main(int argc, char** argv) {
     //food_localization();
     //food_segmentation ();
     //food_leftover();
+
     return 0;
 }
