@@ -64,18 +64,18 @@ Mat get_contours(const Mat& img) {
     //drawContours(img_out, contours, -1, Scalar(0, 0, 255), 1);
 
     vector<vector<Point>> conPoly(contours.size());
-    vector<int> area;
+    vector<double> area;
 
     for (int i = 0; i < contours.size(); i++) {
-        int area_tmp = contourArea(contours[i]);
+        double area_tmp = contourArea(contours[i]);
         area.push_back(area_tmp);
         //drawContours(img_out, contours, i, Scalar(255, 0, 255), 2);
     }
 
-    sort(area.begin(), area.end(), greater<int>());
+    sort(area.begin(), area.end(), greater<>());
 
     for (int j = 0; j < contours.size(); j++) {
-        int area_tmp = contourArea(contours[j]);
+        double area_tmp = contourArea(contours[j]);
         if(area_tmp == area[0]){
             fillPoly(img_out, contours[j], Scalar(255, 255, 255));
         }
@@ -123,7 +123,7 @@ Mat segment_rgb_hsv(const Mat& src, int hue, int sat, int val, int T_hue, int T_
     return final;
 }
 
-Mat meanshift(Mat img, int spatial, int color){
+Mat meanshift(const Mat& img, int spatial, int color){
     Mat mean_img;
     mean_img = img.clone();
     //MeanShift
@@ -285,7 +285,7 @@ box segment_food(const box& plate_box) {
     return food_box;
 }
 
-Mat K_means(Mat src, int num_of_clusters) {
+Mat K_means(const Mat& src, int num_of_clusters) {
 
     //Mat p = Mat::zeros(src.cols*src.rows, 5, CV_32F);
     vector<vector<array<float, 5>>> p;
@@ -303,10 +303,12 @@ Mat K_means(Mat src, int num_of_clusters) {
         cout << (float)bgr[0].data[i] << endl;
     }
 
+    cout << bgr[0].data[100] << endl;
+    cout << bgr[0].data[100] / 255.0 << endl;
+
     int K = num_of_clusters;
-    cv::kmeans(p, K, bestLabels,
-               TermCriteria(TermCriteria::MAX_ITER|TermCriteria::EPS, 10, 1.0),
-               7, KMEANS_PP_CENTERS, centers);
+    TermCriteria criteria = TermCriteria(TermCriteria::MAX_ITER|TermCriteria::EPS, 100, 0.01);
+    cv::kmeans(p, K, bestLabels, criteria, 7, KMEANS_PP_CENTERS, centers);
 
     int colors[K];
     for(int i=0; i<K; i++) {
@@ -318,30 +320,25 @@ Mat K_means(Mat src, int num_of_clusters) {
         clustered.at<float>(i/src.cols, i%src.cols) = (float)(colors[bestLabels.at<int>(0,i)]);
     }
 
-    clustered.convertTo(clustered, CV_8UC1);
-    return clustered;
+    Mat output;
+    output.convertTo(clustered, CV_8UC1);
+    return output;
 }
 
 vector<box> separate_food(const box& food_box) {
     Mat gray_img, dst;
-
     vector<box> dishes;
-
     cvtColor(food_box.img, gray_img, COLOR_BGR2GRAY);
-
     // cvtColor(food_box, gray_img, COLOR_BGR2GRAY);
     Mat mean_img = meanshift(food_box.img ,70, 110);
     Mat kmeans_img = K_means(mean_img, 3);
 
-
     int num_of_foods = 2;
-
+    int background_int = int(kmeans_img.at<uchar>(0,0));
+    vector<int> intensities = {255, 255/2, 255/3};
+    intensities.erase(std::remove(intensities.begin(), intensities.end(), background_int), intensities.end());
     for(int k = 0; k < num_of_foods; ++k){
-        int background_int = kmeans_img.at<uchar>(1,1);
-        vector<int> intensities = {255, 255/2, 255/3};
-        intensities.erase(std::remove(intensities.begin(), intensities.end(), background_int), intensities.end());
         Mat final = kmeans_img.clone();
-
         for (int y = 0; y < kmeans_img.rows; ++y) {
             for (int x = 0; x < kmeans_img.cols; ++x) {
                 int intensity = int(kmeans_img.at<uchar>(y,x));
@@ -383,7 +380,7 @@ vector<box> separate_food(const box& food_box) {
 
         findContours(contour, contours, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE);
 
-        int area_tmp = contourArea(contours[0]);
+        double area_tmp = contourArea(contours[0]);
 
         if(area_tmp < 10000) break;
 

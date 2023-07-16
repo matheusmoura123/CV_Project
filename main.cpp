@@ -2,16 +2,14 @@
 
 int main(int argc, char** argv) {
 
-    vector<Mat> dishes;
-    vector<box> boxes;
-
     //Calculate pasta histogram
     vector<Mat> pasta_hist = categories_histogram({0, 5});
     vector<Mat> rice_hist = categories_histogram({5});
 
     //Go through all trays and imgs
     for (int i = 0; i < NUMBER_TRAYS; ++i) {
-        //for (int i = 0; i < 1; ++i) {
+        //for (int i = 4; i < 5; ++i) {
+        //if (i==4) continue;
         cout << "----- TRAY " << to_string(i + 1) << " -----" << endl;
         //for (int j = 0; j < 4; ++j) {
         for (int j = 0; j < 1; ++j) {
@@ -33,6 +31,9 @@ int main(int argc, char** argv) {
                 default:
                     file_name = "food_image";
             }
+
+            vector<box> boxes;
+            vector<Mat> dishes;
 
             //Load img
             Mat img;
@@ -80,76 +81,99 @@ int main(int argc, char** argv) {
             boxes[max_index].ID = 19;
             boxes[max_index].conf = values_max[2];
 
-            /*
             // 3.Rice or pasta?
-            vector<Mat> box_hist_img = {boxes[max_index].img.clone()};
+            vector<Mat> box_img3 = {boxes[max_index].img.clone()};
             //Mat box_hist = mean_histogram2(box_hist_img);
-            vector<string> predicted_class;
-            vector<food> cats;
-            cats.push_back(foodCategories[0]);
-            cats.push_back(foodCategories[5]);
-            predict_categories(box_hist_img, cats, predicted_class);
-            */
+            vector<int> predicted_IDs3;
+            vector<double> predicted_strengths3;
+            vector<food> cat_19_5;
+            cat_19_5.push_back(foodCategories[0]);
+            cat_19_5.push_back(foodCategories[5]);
+            predict_categories(box_img3, cat_19_5, predicted_IDs3, predicted_strengths3);
+            boxes[max_index].ID = predicted_IDs3[0];
 
-            /*
-            if (compare_histogram(box_hist, rice_hist) > compare_histogram(box_hist, pasta_hist)) {
-                boxes[max_index].ID = 5;
+            // 4.Type of Pasta
+            int neighborhood = 10;
+            if (boxes[max_index].ID == 19) {
+                float mean_hue = 0.0;
+                for(int n = 0; n < 3; ++n){
+                    Rect roi(boxes[max_index].img.rows/2-10+n*neighborhood, boxes[max_index].img.cols/2-10+n*neighborhood, 100, 100);
+                    Mat img_crop = boxes[max_index].img(roi);
+                    array<int,3> max_hue_values = find_histogram(img_crop);
+                    //cout << max_hue_values[0] << endl << max_hue_values[1] << endl << max_hue_values[2] << endl;
+                    float mean_hue_tmp;
+                    for(int a = 0; a < 3; ++a){
+                        mean_hue_tmp = mean_hue_tmp + (float)max_hue_values[a];
+                    }
+                    mean_hue_tmp = mean_hue_tmp/3;
+                    //cout << mean_hue_tmp << endl;
+                    mean_hue = mean_hue + mean_hue_tmp;
+                }
+                mean_hue = mean_hue/3;
+                //cout << mean_hue << endl;
+                if(mean_hue <= 16){
+                    boxes[max_index].ID = 4;
+                }
+                else if(mean_hue > 16 && mean_hue <= 19){
+                    boxes[max_index].ID = 2;
+                }
+                else if(mean_hue > 19 && mean_hue <= 23){
+                    boxes[max_index].ID = 3;
+                }
+                else{
+                    boxes[max_index].ID = 1;
+                }
             }
-            */
+
+            // 5. Is contorno? Which contorno?
+            vector<box> foods;
+            for (int k = 0; k < boxes.size(); ++k) {
+                if (boxes[k].ID == -1) {
+                    foods = separate_food(boxes[k]);
+                    /*
+                    for (int l = 0; l < foods.size(); ++l) {
+                        imshow("food:" + to_string(l + 1) + "ID:" + to_string(foods[l].ID), foods[l].img);
+                    }
+                    */
+                    //cout << foods.size() << endl;
+                    boxes[k] = foods[0];
+                }
+            }
+            if (foods.size() > 1) {
+                for (int l = 1; l < foods.size(); ++l) {
+                    boxes.push_back(foods[l]);
+                }
+            }
+            sort(boxes.begin(), boxes.end(), sort_ID);
+            vector<int> predicted_IDs5;
+            vector<double> predicted_strengths5;
+            vector<food> cat_10_11;
+            vector<Mat> box_img5;
+            cat_10_11.push_back(foodCategories[10]);
+            cat_10_11.push_back(foodCategories[11]);
+            for (int k = 0; k < foods.size(); ++k) {
+                    box_img5.push_back(boxes[k].img);
+            }
+            predict_categories(box_img5, cat_10_11, predicted_IDs5, predicted_strengths5);
+            double stronger_pred = 0;
+            int stronger_index;
+            for (int k = 0; k < box_img5.size(); ++k) {
+                if (fabs(predicted_strengths5[k]) > stronger_pred) {
+                    stronger_pred = fabs(predicted_strengths5[k]);
+                    stronger_index = k;
+                }
+            }
+            boxes[stronger_index].ID = predicted_IDs5[stronger_index];
 
 
+
+            sort(boxes.begin(), boxes.end(), sort_ID);
             //Show the plates
             for (int k = 0; k < boxes.size(); ++k) {
-                int neighborhood = 10;
-                if (boxes[k].ID == 19) {
-
-                    K_means(boxes[k].img, 3);
-                    float mean_hue = 0.0;
-                    for(int n = 0; n < 3; ++n){
-                        Rect roi(boxes[k].img.rows/2-10+n*neighborhood, boxes[k].img.cols/2-10+n*neighborhood, 100, 100);
-                        Mat img_crop = boxes[k].img(roi);
-
-                        array<int,3> max_hue_values = find_histogram(img_crop);
-
-                        //cout << max_hue_values[0] << endl << max_hue_values[1] << endl << max_hue_values[2] << endl;
-
-                        float mean_hue_tmp;
-                        for(int a = 0; a < 3; ++a){
-                            mean_hue_tmp = mean_hue_tmp + (float)max_hue_values[a];
-                        }
-                        mean_hue_tmp = mean_hue_tmp/3;
-
-                        //cout << mean_hue_tmp << endl;
-
-                        mean_hue = mean_hue + mean_hue_tmp;
-                    }
-                    mean_hue = mean_hue/3;
-
-                    //cout << mean_hue << endl;
-
-                    if(mean_hue <= 16){
-                        boxes[k].ID = 4;
-                    }
-                    else if(mean_hue > 16 && mean_hue <= 19){
-                        boxes[k].ID = 2;
-                    }
-                    else if(mean_hue > 19 && mean_hue <= 23){
-                        boxes[k].ID = 3;
-                    }
-                    else{
-                        boxes[k].ID = 1;
-                    }
-                }
-                string window_name_img =
-                        "Tray" + to_string(i + 1) + " " + file_name + " Food" + to_string(k + 1) + " ID:" +
-                        to_string(boxes[k].ID);
+                string window_name_img = "Tray" + to_string(i + 1) + " " + file_name + " Food" + to_string(k + 1) + " ID:" + to_string(boxes[k].ID);
                 namedWindow(window_name_img);
                 imshow(window_name_img, boxes[k].img);
-                waitKey();
             }
-
-
-
 
 
             /*
@@ -180,8 +204,7 @@ int main(int argc, char** argv) {
 
             //Print the boxes
             for (const auto box: boxes) {
-              //  cout << box.ID << " " << box.p0x << " " << box.p0y << " " << box.width << " " << box.height << " "
-               //      << box.conf << endl;
+                cout << box.ID << " " << box.p0x << " " << box.p0y << " " << box.width << " " << box.height << " " << box.conf << endl;
             }
 
         }

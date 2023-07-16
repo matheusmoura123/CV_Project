@@ -16,8 +16,9 @@ int allDescPerImgNum = 0;
 void readDetectComputeimage(const string& className, int imageNumbers, int classLable) {
     for (int i = 1; i <= imageNumbers; i++) {
         Mat grayimg;
-        Ptr<SIFT> siftptr = SIFT::create();
-        cvtColor(imread(CATEGORIES_PATH + className + "/" + className + to_string(i) + IMAGE_EXT), grayimg, COLOR_BGR2GRAY);
+        Ptr<SIFT> siftptr = SIFT::create( 0, 3, 0.04, 20, 1.6);
+        //cvtColor(imread(CATEGORIES_PATH + className + "/" + className + to_string(i) + IMAGE_EXT), grayimg, COLOR_BGR2GRAY);
+        grayimg = imread(CATEGORIES_PATH + className + "/" + className + to_string(i) + IMAGE_EXT);
 
         vector<KeyPoint> keypoints;
         Mat descriptors;
@@ -62,11 +63,11 @@ void getHistogramFast() {
     }
 }
 
-void predictImg(const Mat& img, Mat& img_keypoints, string& className, vector<food> categories, Ptr<SVM> svm) {
+void predictImg(const Mat& img, Mat& img_keypoints, int& pred_ID, double& pred_strength, Ptr<SVM> svm) {
     Mat grayimg;
-    Ptr<SIFT> siftptr = SIFT::create();
-    cvtColor(img, grayimg, COLOR_BGR2GRAY);
-
+    Ptr<SIFT> siftptr = SIFT::create(0, 3, 0.04, 20, 1.6);
+    //cvtColor(img, grayimg, COLOR_BGR2GRAY);
+    grayimg = img.clone();
     vector<KeyPoint> keypoints;
     Mat descriptors;
     siftptr->detect(grayimg, keypoints);
@@ -74,18 +75,14 @@ void predictImg(const Mat& img, Mat& img_keypoints, string& className, vector<fo
 
     Mat dvector = getDataVector(descriptors);
     Mat results;
+    svm->predict(dvector, results, 1);
+    pred_strength = results.at<float>(0);
     svm->predict(dvector, results);
-    for (const auto & category : categories) {
-        if (int(results.at<float>(0)) == category.classLable){
-            className = category.className;
-        }
-    }
+    pred_ID = int(results.at<float>(0));
     drawKeypoints(img, keypoints, img_keypoints);
 }
 
-void predict_categories(const vector<Mat>& images_to_predict,
-                        vector<food> categories,
-                        vector<string>& predicted_classNames) {
+void predict_categories(const vector<Mat>& images_to_predict, vector<food> categories, vector<int>& pred_IDs, vector<double>& pred_strengths) {
 
     NUMBER_CLASSES = 0;
     DICT_SIZE = 0;
@@ -101,7 +98,7 @@ void predict_categories(const vector<Mat>& images_to_predict,
     Ptr<SVM> svm;
 
     NUMBER_CLASSES = int(categories.size());
-    DICT_SIZE = 200*NUMBER_CLASSES;
+    DICT_SIZE = 40*NUMBER_CLASSES;
 
     for (int i = 0; i < NUMBER_CLASSES; ++i) {
         readDetectComputeimage(categories[i].className, categories[i].imageNumbers, categories[i].classLable);
@@ -111,8 +108,7 @@ void predict_categories(const vector<Mat>& images_to_predict,
     for (const auto & category : categories) {
         name_categories += to_string(category.classLable) + "_";
     }
-    string k_path = "./kmeans_" + name_categories + ".yml";
-    string svm_path = "./svm_" + name_categories + ".yml";
+    string k_path = "../kmeans/kmeans_" + name_categories + ".yml";
 
     try {
         const char* dir = k_path.c_str();
@@ -131,7 +127,8 @@ void predict_categories(const vector<Mat>& images_to_predict,
     catch(int err) {
         int clusterCount = DICT_SIZE, attempts = 5, iterationNumber = 1e4;
         cout << "Running kmeans..." << endl;
-        kmeans(allDescriptors, clusterCount, kLabels, TermCriteria(TermCriteria::MAX_ITER|TermCriteria::EPS, iterationNumber, 1e-4), attempts, KMEANS_PP_CENTERS, kCenters);
+        TermCriteria crit = TermCriteria(TermCriteria::MAX_ITER|TermCriteria::EPS, iterationNumber, 1e-4);
+        kmeans(allDescriptors, clusterCount, kLabels, crit, attempts, KMEANS_PP_CENTERS, kCenters);
 
         FileStorage storage(k_path, FileStorage::WRITE);
         storage << "kLabels" << kLabels << "kCenters" << kCenters;
@@ -154,13 +151,17 @@ void predict_categories(const vector<Mat>& images_to_predict,
         k++;
         Mat dst;
         string predicted;
-        predictImg(img, dst,  predicted, categories, svm);
-        string crp_img_name = to_string(k) + ":" + predicted;
+        int pred_ID;
+        double pred_strength;
+        predictImg(img, dst,  pred_ID, pred_strength, svm);
+        /*
+        string crp_img_name = to_string(k) + "- ID:" + to_string(pred_ID);
         namedWindow(crp_img_name, WINDOW_NORMAL);
         resizeWindow(crp_img_name, 400, 400);
         imshow(crp_img_name, dst);
+         */
         //Add predictions to output of function
-        predicted_classNames.push_back(predicted);
+        pred_IDs.push_back(pred_ID);
+        pred_strengths.push_back(pred_strength);
     }
-    waitKey();
 }
