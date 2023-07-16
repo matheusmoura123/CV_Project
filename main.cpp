@@ -102,6 +102,8 @@ int main(int argc, char** argv) {
             for (int k = 0; k < boxes.size(); ++k) {
                 int neighborhood = 10;
                 if (boxes[k].ID == 19) {
+
+                    K_means(boxes[k].img, 3);
                     float mean_hue = 0.0;
                     for(int n = 0; n < 3; ++n){
                         Rect roi(boxes[k].img.rows/2-10+n*neighborhood, boxes[k].img.cols/2-10+n*neighborhood, 100, 100);

@@ -287,17 +287,20 @@ box segment_food(const box& plate_box) {
 
 Mat K_means(Mat src, int num_of_clusters) {
 
-    Mat p = Mat::zeros(src.cols*src.rows, 5, CV_32F);
+    //Mat p = Mat::zeros(src.cols*src.rows, 5, CV_32F);
+    vector<vector<array<float, 5>>> p;
     Mat bestLabels, centers, clustered;
     vector<Mat> bgr;
     cv::split(src, bgr);
 
-    for(int i=0; i<src.cols*src.rows; i++) {
+    for(int i=0; i< src.cols*src.rows; i++) {
         p.at<float>(i,0) = (i/src.cols) / src.rows;
         p.at<float>(i,1) = (i%src.cols) / src.cols;
         p.at<float>(i,2) = bgr[0].data[i] / 255.0;
         p.at<float>(i,3) = bgr[1].data[i] / 255.0;
         p.at<float>(i,4) = bgr[2].data[i] / 255.0;
+
+        cout << (float)bgr[0].data[i] << endl;
     }
 
     int K = num_of_clusters;
