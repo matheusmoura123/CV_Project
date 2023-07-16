@@ -34,15 +34,15 @@ class food {
 public:
     string className;
     int imageNumbers;
-    int classLable;
+    int classLabel;
     food(string x, int y, int z) { // Constructor with parameters
         className = std::move(x);
         imageNumbers = y;
-        classLable = z;
+        classLabel = z;
     }
 };
 
-class box: public Interface {
+class box {
 public:
     int ID;
     int p0x;
@@ -63,7 +63,6 @@ public:
     [[nodiscard]] bool is_inside(const int& y, const int& x) const {
         return((y >= p0y && y <= p0y+height) && (x >= p0x && x <= p0x+width));
     }
-    [[nodiscard]] Interface* clone() const override { return new box(*this); }
 };
 
 const vector<food> pastaCategories{
@@ -125,6 +124,10 @@ box segment_food(const box& plate_box);
 Mat K_means(const Mat& img, int num_of_clusters);
 vector<box> separate_food(const box& food_box) ;
 
+//predict_categories.cpp
+void predict_categories(const vector<Mat>& images_to_predict, vector<food> categories, vector<int>& pred_IDs, vector<double>& pred_strengths);
+void write_kmeans(vector<food> categories);
+
 //files_manager.cpp
 int box_file_writer (const vector<box>& boxes, const string& path);
 int box_file_reader (vector<box>& boxes, const string& path);
@@ -144,6 +147,5 @@ int food_leftover();
 
 //archive
 int sift_matching(const cv::Mat& img1, const cv::Mat& img2);
-void predict_categories(const vector<Mat>& images_to_predict, vector<food> categories, vector<int>& pred_IDs, vector<double>& pred_strengths);
 
 #endif //CV_PROJECT_MAIN_HEADER_H

@@ -89,6 +89,7 @@ int main(int argc, char** argv) {
             vector<food> cat_19_5;
             cat_19_5.push_back(foodCategories[0]);
             cat_19_5.push_back(foodCategories[5]);
+            write_kmeans(cat_19_5);
             predict_categories(box_img3, cat_19_5, predicted_IDs3, predicted_strengths3);
             boxes[max_index].ID = predicted_IDs3[0];
 
@@ -130,12 +131,6 @@ int main(int argc, char** argv) {
             for (int k = 0; k < boxes.size(); ++k) {
                 if (boxes[k].ID == -1) {
                     foods = separate_food(boxes[k]);
-                    /*
-                    for (int l = 0; l < foods.size(); ++l) {
-                        imshow("food:" + to_string(l + 1) + "ID:" + to_string(foods[l].ID), foods[l].img);
-                    }
-                    */
-                    //cout << foods.size() << endl;
                     boxes[k] = foods[0];
                 }
             }
@@ -154,6 +149,7 @@ int main(int argc, char** argv) {
             for (int k = 0; k < foods.size(); ++k) {
                     box_img5.push_back(boxes[k].img);
             }
+            write_kmeans(cat_10_11);
             predict_categories(box_img5, cat_10_11, predicted_IDs5, predicted_strengths5);
             double stronger_pred = 0;
             int stronger_index;
@@ -194,7 +190,7 @@ int main(int argc, char** argv) {
                     }
 
                     //Save to boxes
-                    boxes[k].ID = foodCategories[int(values[1])].classLable;
+                    boxes[k].ID = foodCategories[int(values[1])].classLabel;
                     boxes[k].conf = values[2];
                 }
             }

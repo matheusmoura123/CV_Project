@@ -287,24 +287,69 @@ box segment_food(const box& plate_box) {
 
 Mat K_means(const Mat& src, int num_of_clusters) {
 
-    //Mat p = Mat::zeros(src.cols*src.rows, 5, CV_32F);
-    vector<vector<array<float, 5>>> p;
+    Mat samples(src.rows * src.cols, 5, CV_32F);
+    for (int y = 0; y < src.rows; y++) {
+        for (int x = 0; x < src.cols; x++) {
+            samples.at<float>(y + x * src.rows, 0) = (float)x / (float)src.cols;
+            samples.at<float>(y + x * src.rows, 1) = (float)y / (float)src.rows;
+            for (int z = 0; z < src.channels(); z++) {
+                samples.at<float>(y + x * src.rows, z+2) = (float)src.at<Vec3b>(y, x)[z];
+            }
+        }
+    }
+    Mat labels;
+    int attempts = 7;
+    Mat centers;
+    int K = num_of_clusters;
+    TermCriteria criteria = TermCriteria(TermCriteria::MAX_ITER|TermCriteria::EPS, 100, 0.01);
+    kmeans(samples, K, labels, criteria, attempts, KMEANS_PP_CENTERS, centers);
+
+    cout << labels.size << endl;
+    cout << src.rows*src.cols << endl;
+
+    int colors[K];
+    for(int i=0; i<K; i++) {
+        colors[i] = 252/(i+1);
+    }
+
+    Mat clustered = Mat(src.rows, src.cols, CV_32F);
+    for (int y = 0; y < src.rows; y++) {
+        for (int x = 0; x < src.cols; x++) {
+            int cluster_idx = labels.at<int>(y + x * src.rows, 0);
+            //cout << (float)(colors[cluster_idx]) << endl;
+            clustered.at<float>(y, x) = (float)(colors[cluster_idx]);
+        }
+    }
+    Mat output;
+    clustered.convertTo(output, CV_8UC1);
+    return output;
+    /*
+    Mat new_image(src.size(), src.type());
+    for (int y = 0; y < src.rows; y++) {
+        for (int x = 0; x < src.cols; x++) {
+            int cluster_idx = labels.at<int>(y + x * src.rows, 0);
+            for (int i = 0; i < src.channels(); i++) {
+                new_image.at<Vec3b>(y, x)[i] = (uchar)centers.at<float>(cluster_idx, i);
+            }
+        }
+    }
+    //imshow("clustered image", new_image);
+    return new_image;
+     */
+
+    /*
+    Mat p = Mat::zeros(src.cols*src.rows, 5, CV_32F);
     Mat bestLabels, centers, clustered;
     vector<Mat> bgr;
     cv::split(src, bgr);
 
-    for(int i=0; i< src.cols*src.rows; i++) {
+    for(int i=0; i<src.cols*src.rows; i++) {
         p.at<float>(i,0) = (i/src.cols) / src.rows;
         p.at<float>(i,1) = (i%src.cols) / src.cols;
         p.at<float>(i,2) = bgr[0].data[i] / 255.0;
         p.at<float>(i,3) = bgr[1].data[i] / 255.0;
         p.at<float>(i,4) = bgr[2].data[i] / 255.0;
-
-        cout << (float)bgr[0].data[i] << endl;
     }
-
-    cout << bgr[0].data[100] << endl;
-    cout << bgr[0].data[100] / 255.0 << endl;
 
     int K = num_of_clusters;
     TermCriteria criteria = TermCriteria(TermCriteria::MAX_ITER|TermCriteria::EPS, 100, 0.01);
@@ -323,6 +368,8 @@ Mat K_means(const Mat& src, int num_of_clusters) {
     Mat output;
     output.convertTo(clustered, CV_8UC1);
     return output;
+     */
+
 }
 
 vector<box> separate_food(const box& food_box) {
@@ -332,10 +379,11 @@ vector<box> separate_food(const box& food_box) {
     // cvtColor(food_box, gray_img, COLOR_BGR2GRAY);
     Mat mean_img = meanshift(food_box.img ,70, 110);
     Mat kmeans_img = K_means(mean_img, 3);
+    //cvtColor(kmeans_img, kmeans_img, COLOR_BGR2GRAY);
 
     int num_of_foods = 2;
     int background_int = int(kmeans_img.at<uchar>(0,0));
-    vector<int> intensities = {255, 255/2, 255/3};
+    vector<int> intensities = {252, 252/2, 252/3};
     intensities.erase(std::remove(intensities.begin(), intensities.end(), background_int), intensities.end());
     for(int k = 0; k < num_of_foods; ++k){
         Mat final = kmeans_img.clone();
