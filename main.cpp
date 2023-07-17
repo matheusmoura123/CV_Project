@@ -21,16 +21,23 @@ int main(int argc, char** argv) {
     cat_6_9.push_back(foodCategories[9]);
     //write_kmeans(cat_6_9);
 
+    int tray;
+    cout << "Tray(1-8) or 100 for metrics: ";
+    cin >> tray;
+    int i = tray-1;
     //Go through all trays and imgs
-    for (int i = 0; i < NUMBER_TRAYS; ++i) {
+    //for (int i = 0; i < NUMBER_TRAYS; ++i) {
+    if (0 <= i && i <= 7) {
         vector<vector<box>> all_boxes_at_tray;
-        cout << "----- TRAY " << to_string(i + 1) << " -----" << endl;
+        vector<box> boxes;
+        cout << "\n" << "------- TRAY " << to_string(i + 1) << " -------" << endl;
         for (int j = 0; j < 4; ++j) {
             string file_name;
             if (j == 0) {
                 file_name = "food_image";
+                cout << "--- " << file_name << " ---" << endl;
                 vector<Mat> dishes;
-                vector<box> boxes;
+
                 //Load img
                 Mat img;
                 img = imread(TRAY_PATH + to_string(i + 1) + "/" + file_name + IMAGE_EXT);
@@ -116,7 +123,6 @@ int main(int argc, char** argv) {
                     }
                 }
 
-
                 // 5. Is contorno? Which one?
                 vector<box> foods = {};
                 for (int k = 0; k < boxes.size(); ++k) {
@@ -174,6 +180,7 @@ int main(int argc, char** argv) {
             }
             else {
                 file_name = "leftover" + to_string(j);
+                cout << "--- " << file_name << " ---" << endl;
 
                 vector<Mat> dishes;
                 vector<box> boxes_left;
@@ -194,48 +201,76 @@ int main(int argc, char** argv) {
                     boxes_left[2].conf = 1;
                 }
 
-                // 2.Which one is pasta
-                array<double, 3> values_max{};
+                // 2. Identify pasta from sift matching
+                vector<box> box_pasta;
+                for (const auto& box: boxes) {
+                    if (1 <= box.ID && box.ID <= 5)
+                        box_pasta.push_back(box);
+                }
+                compare_plates(box_pasta, boxes_left);
+
+                // 3. Segment food
                 vector<box> copy(boxes_left);
-                double max_value = 0;
-                int max_index;
                 for (int k = 0; k < boxes_left.size(); ++k) {
                     boxes_left[k] = segment_food(copy[k]);
+                }
+
+                // 4. Separate food
+                vector<box> foods_left = {};
+                vector<box> copy2(boxes_left);
+                for (int k = 0; k < boxes_left.size(); ++k) {
                     if (boxes_left[k].ID == -1) {
-                        //Calculate histogram for box img
-                        vector<Mat> box_hist_img = {boxes_left[k].img.clone()};
-                        Mat box_hist = mean_histogram2(box_hist_img);
-                        //Compare with the pasta_hist
-                        array<double, 3> values{};
-                        //cout << "pasta: ";
-                        values = compare_histogram(box_hist, pasta_hist);
-                        //cout << "rice: ";
-                        //compare_histogram(box_hist, rice_hist);
-                        if (values[0] >= max_value) {
-                            max_value = values[0];
-                            values_max[0] = values[0];
-                            values_max[1] = values[1];
-                            values_max[2] = values[2];
-                            max_index = k;
+                        foods_left = separate_food(copy2[k]);
+                        boxes_left[k] = foods_left[0];
+                    }
+                }
+                if (foods_left.size() > 1) {
+                    for (int l = 1; l < foods_left.size(); ++l) {
+                        boxes_left.push_back(foods_left[l]);
+                    }
+                }
+
+                // 5. Compare last dish
+                vector<box> box_rest;
+                for (const auto& box: boxes) {
+                    if (6 <= box.ID && box.ID <= 11)
+                        box_rest.push_back(box);
+                }
+                compare_plates(box_rest, boxes_left);
+
+                sort(boxes_left.begin(), boxes_left.end(), sort_ID_bigger);
+
+                if (boxes_left.size() > boxes.size()) {
+                    for (int k = 0; k < boxes_left.size(); ++k) {
+                        if (boxes_left[k].ID == -1) {
+                            boxes_left.pop_back();
                         }
                     }
                 }
-                boxes_left[max_index].ID = 19;
-                boxes_left[max_index].conf = values_max[2];
 
-
-
+                //Show the plates
+                sort(boxes_left.begin(), boxes_left.end(), sort_ID);
+                for (int k = 0; k < boxes_left.size(); ++k) {
+                    string window_name_img = "Tray" + to_string(i + 1) + " " + file_name + " Food" + to_string(k + 1) + " ID:" + to_string(boxes_left[k].ID);
+                    namedWindow(window_name_img);
+                    imshow(window_name_img, boxes_left[k].img);
+                }
+                //Print the boxes
+                for (const auto box: boxes_left) {
+                    cout << box.ID << " " << box.p0x << " " << box.p0y << " " << box.width << " " << box.height << " " << box.conf << endl;
+                }
 
                 all_boxes_at_tray.push_back(boxes_left);
             }
         }
+        waitKey();
+        destroyAllWindows();
         save_all_boxes_masks_at_tray(all_boxes_at_tray, i);
-    }
-    waitKey();
-    //destroyAllWindows();
-    //food_localization();
-    //food_segmentation ();
-    //food_leftover();
-
+        cout << "All boxes and masks from this tray saved." << endl;
+    } else if (tray == 100) {
+        food_localization();
+        food_segmentation ();
+        food_leftover();
+    } else cout << "Invalid input." << endl;
     return 0;
 }

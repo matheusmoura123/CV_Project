@@ -89,6 +89,7 @@ array<int,3> find_histogram(const cv::Mat& src);
 void plot_histogram(Mat histogram);
 bool sort_bigger_area (const box& i,const box& j);
 bool sort_ID (const box& i,const box& j);
+bool sort_ID_bigger (const box& i,const box& j);
 bool sort_num_match (const vector<int>& i,const vector<int>& j);
 
 
