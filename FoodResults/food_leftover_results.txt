@@ -67,11 +67,27 @@ ID 2 leftover= 0.344395
 ID 8 leftover= 0.770495
 ID 12 leftover= 0.748498
 Algorithm
-ID 4 leftover= 0.994362
+ID 4 leftover= 0
 ID 8 leftover= 1.89584
 ID 12 leftover= 1.08222
-Tray3.leftover2 NOT WORKING!
-Tray3.leftover3 NOT WORKING!
+Tray3.leftover2
+Truth
+ID 2 leftover= 0.31897
+ID 8 leftover= 0.843748
+ID 12 leftover= 0.795874
+Algorithm
+ID 4 leftover= 0.808489
+ID 8 leftover= 1.84129
+ID 12 leftover= 1.12894
+Tray3.leftover3
+Truth
+ID 2 leftover= 0
+ID 8 leftover= 0.893565
+ID 12 leftover= 0
+Algorithm
+ID 4 leftover= 0.961011
+ID 8 leftover= 2.25519
+ID 12 leftover= 0.856413
 Tray4.leftover1
 Truth
 ID 5 leftover= 1.08734

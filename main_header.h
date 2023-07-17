@@ -86,7 +86,6 @@ vector<Mat> categories_histogram (const vector<int>& categories);
 array<double, 3> compare_histogram(const Mat& src_hist, const vector<Mat>& categories_hist);
 Mat mean_histogram2(const vector<cv::Mat>& src);
 array<int,3> find_histogram(const cv::Mat& src);
-void plot_histogram(Mat histogram);
 bool sort_bigger_area (const box& i,const box& j);
 bool sort_ID (const box& i,const box& j);
 bool sort_ID_bigger (const box& i,const box& j);
@@ -96,9 +95,7 @@ bool sort_num_match (const vector<int>& i,const vector<int>& j);
 //segment_plates.cpp
 vector<box> segment_plates(const Mat& img, vector<Mat>& dst);
 Mat get_contours(const Mat& img);
-Mat segment_rgb_hsv(const Mat& src, int hue, int sat, int val, int T_hue, int T_sat, int T_value, bool is_hsv=false);
 Mat meanshift(const Mat& img, int spatial, int color);
-Mat otsu_segmentation(const Mat& gray_img, int num_grid);
 box crop_image(const Mat& img, const box& plate_box);
 box segment_food(const box& plate_box);
 Mat K_means(const Mat& img, int num_of_clusters);
@@ -110,7 +107,6 @@ void write_kmeans(vector<food> categories);
 
 //sift_matching.cpp
 int sift_matching(const cv::Mat& img1, const cv::Mat& img2);
-int surf_matching(const Mat& img1, const Mat& img2);
 void compare_plates(const vector<box> food_plate, vector<box>& leftover_plate);
 
 //files_manager.cpp

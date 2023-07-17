@@ -9,9 +9,10 @@
             make
             ../CV_Project
 
-        #3 - It will run through all the test images at folder Food_leftover_dataset
+        #3 - It will ask which tray to run, write one tray number (1 to 8). It will run
+            through all the images of the chosen tray at folder /Food_leftover_dataset
             and will save the resulting boxes and masks at the respective folders at
-            FoodResults;
+            /FoodResults;
 
-        #4 - All the necessary metrics are calculated in the end and saved inside
-        FoodResults as well.
+        #4 - After running manually all the trays run once again and chose "100" so the
+            program will calculate all the metrics and save then inside / FoodResults

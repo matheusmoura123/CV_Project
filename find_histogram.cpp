@@ -166,6 +166,27 @@ array<int,3> find_histogram(const Mat& src) {
     return max_values;
 }
 
+bool sort_bigger_area (const box& i,const box& j) {
+    return(i.width*i.height>j.width*j.height);
+}
+
+bool sort_ID (const box& i,const box& j) {
+    return(i.ID < j.ID);
+}
+
+bool sort_ID_bigger (const box& i,const box& j) {
+    return(i.ID > j.ID);
+}
+
+bool sort_num_match (const vector<int>& i,const vector<int>& j) {
+    return(i[0] > j[0]);
+}
+
+
+//-------------------------------------------------------------------------
+
+
+/*
 void plot_histogram(Mat histogram){
 
     int h_bins = 180, s_bins = 256, v_bins = 256, gray_bins = 256;
@@ -196,7 +217,7 @@ void plot_histogram(Mat histogram){
 
     else{
         for (int i = 1; i < h_bins; i++) {
-/*
+
             line( rgb_hist, Point( bin_rgb*(i-1), hist_h - cvRound(histogram.at<float>(i-1, 0, 0)) ),
                   Point( bin_rgb*(i), hist_h - cvRound(histogram.at<float>(i-1, 0, 0)) ),
                   Scalar( 255, 0, 0), 1, 8, 0  );
@@ -209,26 +230,11 @@ void plot_histogram(Mat histogram){
                   Scalar( 0, 0, 255), 1, 8, 0  );
 
 
- */
+
         }
         namedWindow("Image histogram");
         imshow("Image histogram", rgb_hist);
         waitKey();
     }
 }
-
-bool sort_bigger_area (const box& i,const box& j) {
-    return(i.width*i.height>j.width*j.height);
-}
-
-bool sort_ID (const box& i,const box& j) {
-    return(i.ID < j.ID);
-}
-
-bool sort_ID_bigger (const box& i,const box& j) {
-    return(i.ID > j.ID);
-}
-
-bool sort_num_match (const vector<int>& i,const vector<int>& j) {
-    return(i[0] > j[0]);
-}
+*/

@@ -46,6 +46,40 @@ int sift_matching(const Mat& img1, const Mat& img2){
     return good_matches.size();
 }
 
+void compare_plates(vector<box> food_plate, vector<box>& leftover_plate){
+    vector<vector<int>> best_matches;
+    vector<vector<int>> all_matches;
+    for(int i = 0; i < leftover_plate.size(); ++i){
+        for(int j = 0; j < food_plate.size(); ++j){
+            vector<int> matches;
+            int matches_tmp = sift_matching(food_plate[j].img, leftover_plate[i].img);
+            matches.push_back(matches_tmp);
+            matches.push_back(i);
+            matches.push_back(j);
+            all_matches.push_back(matches);
+        }
+        sort(all_matches.begin(), all_matches.end(), sort_num_match);
+
+    }
+    for(int i = 0; i < all_matches.size(); ++i){
+        if(leftover_plate[all_matches[i][1]].ID == -1 && food_plate[all_matches[i][2]].ID != -1){
+            leftover_plate[all_matches[i][1]].ID = food_plate[all_matches[i][2]].ID;
+            food_plate[all_matches[i][2]].ID = -1;
+            /*
+            imshow("leftover", leftover_plate[all_matches[i][1]].img);
+            imshow("food_plate", food_plate[all_matches[i][1]].img);
+            waitKey();
+             */
+        }
+    }
+}
+
+
+
+
+//----------------------------------------------------------------------------------------------------
+
+/*
 int surf_matching(const Mat& img1, const Mat& img2){
 
     Mat out1, out2, desc1, desc2;
@@ -79,7 +113,7 @@ int surf_matching(const Mat& img1, const Mat& img2){
         }
     }
 
-    /*
+
     Mat imageMatches;
 
     drawMatches( img1, keypoints1, img2, keypoints2, good_matches, imageMatches, Scalar::all(-1),
@@ -88,35 +122,8 @@ int surf_matching(const Mat& img1, const Mat& img2){
     namedWindow("SURF features, FLANN Matcher");
     imshow("SURF features, FLANN Matcher",imageMatches);
     waitKey(0);
-     */
+
 
     return good_matches.size();
 }
-
-void compare_plates(vector<box> food_plate, vector<box>& leftover_plate){
-    vector<vector<int>> best_matches;
-    vector<vector<int>> all_matches;
-    for(int i = 0; i < leftover_plate.size(); ++i){
-        for(int j = 0; j < food_plate.size(); ++j){
-            vector<int> matches;
-            int matches_tmp = sift_matching(food_plate[j].img, leftover_plate[i].img);
-            matches.push_back(matches_tmp);
-            matches.push_back(i);
-            matches.push_back(j);
-            all_matches.push_back(matches);
-        }
-        sort(all_matches.begin(), all_matches.end(), sort_num_match);
-
-    }
-    for(int i = 0; i < all_matches.size(); ++i){
-        if(leftover_plate[all_matches[i][1]].ID == -1 && food_plate[all_matches[i][2]].ID != -1){
-            leftover_plate[all_matches[i][1]].ID = food_plate[all_matches[i][2]].ID;
-            food_plate[all_matches[i][2]].ID = -1;
-            /*
-            imshow("leftover", leftover_plate[all_matches[i][1]].img);
-            imshow("food_plate", food_plate[all_matches[i][1]].img);
-            waitKey();
-             */
-        }
-    }
-}
+*/

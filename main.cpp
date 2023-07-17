@@ -30,7 +30,9 @@ int main(int argc, char** argv) {
     if (0 <= i && i <= 7) {
         vector<box> boxes;
         cout << "\n" << "------- TRAY " << to_string(i + 1) << " -------" << endl;
-        for (int j = 0; j < 4; ++j) {
+        vector<int> stages = {0, 1, 2, 3};
+        //for (int j = 0; j < 4; ++j) {
+        for (const auto& j: stages) {
             string file_name;
             if (j == 0) {
                 file_name = "food_image";

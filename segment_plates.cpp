@@ -86,43 +86,6 @@ Mat get_contours(const Mat& img) {
     return img_out;
 }
 
-Mat segment_rgb_hsv(const Mat& src, int hue, int sat, int val, int T_hue, int T_sat, int T_value, bool is_hsv) {
-    Mat img_hsv, dst;
-    dst = src.clone();
-    int neighborhood = 0;
-
-    // subtract one from the rows and cols
-    for (int i = neighborhood; i < dst.rows-neighborhood; ++i) {
-        for (int j = neighborhood; j < dst.cols-neighborhood; ++j) {
-
-            int huee = int(src.at<Vec3b>(i,j)[0]);
-            int saturation = int(src.at<Vec3b>(i,j)[1]);
-            int value = int(src.at<Vec3b>(i,j)[2]);
-
-            if(abs(huee - hue) < T_hue && abs(saturation - sat) < T_sat   && abs(value - val) < T_value) {
-                dst.at<Vec3b>(i,j)[0] = 255;
-                dst.at<Vec3b>(i,j)[1] = 255;
-                dst.at<Vec3b>(i,j)[2] = 255;
-            }
-            else {
-                dst.at<Vec3b>(i,j)[0] = 0;
-                dst.at<Vec3b>(i,j)[1] = 0;
-                dst.at<Vec3b>(i,j)[2] = 0;
-            }
-        }
-    }
-
-    Mat kernel = getStructuringElement(MORPH_ELLIPSE, Size(3,3));
-    erode(dst, dst, kernel);
-    dilate(dst, dst, kernel);
-
-    Mat final;
-    if (is_hsv) cvtColor(dst, dst, COLOR_HSV2BGR);
-
-    cvtColor(dst, final, COLOR_BGR2GRAY);
-    return final;
-}
-
 Mat meanshift(const Mat& img, int spatial, int color){
     Mat mean_img;
     mean_img = img.clone();
@@ -142,44 +105,6 @@ Mat meanshift(const Mat& img, int spatial, int color){
         }
     }
     return mean_img;
-}
-
-Mat otsu_segmentation(const Mat& gray_img, int num_grid) {
-    Mat otsu_img = gray_img.clone();
-
-    //Divide Img in multiple sections num_grid X num_grid and perform Otu separately in each one
-    gray_img.copyTo(otsu_img);
-    int width = otsu_img.cols;
-    int height = otsu_img.rows;
-    int step_SIZE_x = floor(width / num_grid);
-    int step_SIZE_y = floor(height / num_grid);
-    vector<Rect> mCells;
-    for (int y = 0; y < height; y += step_SIZE_y) {
-        for (int x = 0; x < width; x += step_SIZE_x) {
-            int GRID_SIZE_x = floor(width / num_grid);
-            int GRID_SIZE_y = floor(height / num_grid);
-            if (x + GRID_SIZE_x >= width) {
-                GRID_SIZE_x = width - x - 1;
-            }
-            if (y + GRID_SIZE_y >= height) {
-                GRID_SIZE_y = height - y - 1;
-            }
-            Rect grid_rect(x, y, GRID_SIZE_x, GRID_SIZE_y);
-            //cout << grid_rect << endl;
-            mCells.push_back(grid_rect);
-            //rectangle(otu_img, grid_rect, Scalar(0, 255, 0), 1);
-            //imshow("otu_img", otu_img);
-            threshold(otsu_img(grid_rect), otsu_img(grid_rect), 1, 255, THRESH_BINARY | THRESH_OTSU);
-            //imshow(format("grid%d%d",y, x), otu_img(grid_rect));
-            //imshow("otu with grid", otu_img);
-            //waitKey();
-        }
-    }
-    //invert otu
-    otsu_img = 255- otsu_img;
-
-    return otsu_img;
-
 }
 
 box crop_image(const Mat& img, const box& plate_box){
@@ -621,4 +546,84 @@ Mat output;
 output.convertTo(clustered, CV_8UC1);
 return output;
  */
+
+/*
+Mat segment_rgb_hsv(const Mat& src, int hue, int sat, int val, int T_hue, int T_sat, int T_value, bool is_hsv) {
+    Mat img_hsv, dst;
+    dst = src.clone();
+    int neighborhood = 0;
+
+    // subtract one from the rows and cols
+    for (int i = neighborhood; i < dst.rows-neighborhood; ++i) {
+        for (int j = neighborhood; j < dst.cols-neighborhood; ++j) {
+
+            int huee = int(src.at<Vec3b>(i,j)[0]);
+            int saturation = int(src.at<Vec3b>(i,j)[1]);
+            int value = int(src.at<Vec3b>(i,j)[2]);
+
+            if(abs(huee - hue) < T_hue && abs(saturation - sat) < T_sat   && abs(value - val) < T_value) {
+                dst.at<Vec3b>(i,j)[0] = 255;
+                dst.at<Vec3b>(i,j)[1] = 255;
+                dst.at<Vec3b>(i,j)[2] = 255;
+            }
+            else {
+                dst.at<Vec3b>(i,j)[0] = 0;
+                dst.at<Vec3b>(i,j)[1] = 0;
+                dst.at<Vec3b>(i,j)[2] = 0;
+            }
+        }
+    }
+
+    Mat kernel = getStructuringElement(MORPH_ELLIPSE, Size(3,3));
+    erode(dst, dst, kernel);
+    dilate(dst, dst, kernel);
+
+    Mat final;
+    if (is_hsv) cvtColor(dst, dst, COLOR_HSV2BGR);
+
+    cvtColor(dst, final, COLOR_BGR2GRAY);
+    return final;
+}
+*/
+
+/*
+Mat otsu_segmentation(const Mat& gray_img, int num_grid) {
+    Mat otsu_img = gray_img.clone();
+
+    //Divide Img in multiple sections num_grid X num_grid and perform Otu separately in each one
+    gray_img.copyTo(otsu_img);
+    int width = otsu_img.cols;
+    int height = otsu_img.rows;
+    int step_SIZE_x = floor(width / num_grid);
+    int step_SIZE_y = floor(height / num_grid);
+    vector<Rect> mCells;
+    for (int y = 0; y < height; y += step_SIZE_y) {
+        for (int x = 0; x < width; x += step_SIZE_x) {
+            int GRID_SIZE_x = floor(width / num_grid);
+            int GRID_SIZE_y = floor(height / num_grid);
+            if (x + GRID_SIZE_x >= width) {
+                GRID_SIZE_x = width - x - 1;
+            }
+            if (y + GRID_SIZE_y >= height) {
+                GRID_SIZE_y = height - y - 1;
+            }
+            Rect grid_rect(x, y, GRID_SIZE_x, GRID_SIZE_y);
+            //cout << grid_rect << endl;
+            mCells.push_back(grid_rect);
+            //rectangle(otu_img, grid_rect, Scalar(0, 255, 0), 1);
+            //imshow("otu_img", otu_img);
+            threshold(otsu_img(grid_rect), otsu_img(grid_rect), 1, 255, THRESH_BINARY | THRESH_OTSU);
+            //imshow(format("grid%d%d",y, x), otu_img(grid_rect));
+            //imshow("otu with grid", otu_img);
+            //waitKey();
+        }
+    }
+    //invert otu
+    otsu_img = 255- otsu_img;
+
+    return otsu_img;
+
+}
+*/
+
 
