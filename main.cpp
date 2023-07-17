@@ -28,7 +28,6 @@ int main(int argc, char** argv) {
     //Go through all trays and imgs
     //for (int i = 0; i < NUMBER_TRAYS; ++i) {
     if (0 <= i && i <= 7) {
-        vector<vector<box>> all_boxes_at_tray;
         vector<box> boxes;
         cout << "\n" << "------- TRAY " << to_string(i + 1) << " -------" << endl;
         for (int j = 0; j < 4; ++j) {
@@ -176,7 +175,11 @@ int main(int argc, char** argv) {
                 for (const auto box: boxes) {
                     cout << box.ID << " " << box.p0x << " " << box.p0y << " " << box.width << " " << box.height << " " << box.conf << endl;
                 }
-                all_boxes_at_tray.push_back(boxes);
+
+                draw_rectangles_masks(img, boxes, i, file_name);
+                save_boxes_masks_at_tray_stage(boxes, i, file_name);
+                waitKey();
+                destroyAllWindows();
             }
             else {
                 file_name = "leftover" + to_string(j);
@@ -259,13 +262,14 @@ int main(int argc, char** argv) {
                 for (const auto box: boxes_left) {
                     cout << box.ID << " " << box.p0x << " " << box.p0y << " " << box.width << " " << box.height << " " << box.conf << endl;
                 }
-
-                all_boxes_at_tray.push_back(boxes_left);
+                draw_rectangles_masks(img, boxes_left, i, file_name);
+                save_boxes_masks_at_tray_stage(boxes_left, i, file_name);
+                waitKey();
+                destroyAllWindows();
             }
         }
-        waitKey();
+        //waitKey();
         destroyAllWindows();
-        save_all_boxes_masks_at_tray(all_boxes_at_tray, i);
         cout << "All boxes and masks from this tray saved." << endl;
     } else if (tray == 100) {
         food_localization();

@@ -34,7 +34,7 @@ int food_localization () {
             //store results contents to text file
             fw.close();
         }
-        else cout << "Problem with opening file" << endl;
+        else cout << "Problem with saving food localization file" << endl;
     }
     catch (const char* msg) {
         cerr << msg << endl;
@@ -66,19 +66,23 @@ int food_segmentation () {
                     Mat mask_result;
                     string mask_result_path = RESULTS_PATH + to_string(i + 1) + "/masks/" + file_name + "_result.png";
                     mask_result = imread(mask_result_path);
+                    if(mask_result.empty()) {
+                        fw << "Tray" << to_string(i + 1) << "." << file_name << " mIoU= " << " nan"<< "\n";
+                    } else {
+                        Mat mask_truth;
+                        string mask_truth_path = TRAY_PATH + to_string(i + 1) + "/masks/" + file_name + ".png";
+                        mask_truth = imread(mask_truth_path);
 
-                    Mat mask_truth;
-                    string mask_truth_path = TRAY_PATH + to_string(i + 1) + "/masks/" + file_name + ".png";
-                    mask_truth = imread(mask_truth_path);
+                        double mask_mean_Iou = mask_mean_Iou = masks_mIoU(mask_truth, mask_result);
 
-                    double mask_mean_Iou = masks_mIoU(mask_truth, mask_result);
-                    fw << "Tray" << to_string(i + 1) << "." << file_name << " mIoU= " << mask_mean_Iou << "\n";
+                        fw << "Tray" << to_string(i + 1) << "." << file_name << " mIoU= " << mask_mean_Iou << "\n";
+                    }
                 }
             }
             //store results contents to text file
             fw.close();
         }
-        else cout << "Problem with opening file" << endl;
+        else cout << "Problem with saving food segmentation file" << endl;
     }
     catch (const char* msg) {
         cerr << msg << endl;
@@ -119,29 +123,31 @@ int food_leftover() {
                     Mat mask_result_after;
                     string mask_result_after_path = RESULTS_PATH + to_string(i + 1) + "/masks/" + file_name + "_result.png";
                     mask_result_after = imread(mask_result_after_path);
+                    if(mask_result_after.empty()) {
+                        fw << "Tray" << to_string(i + 1) << "." << file_name << " NOT WORKING!" << "\n";
+                    } else {
+                        Mat mask_truth_after;
+                        string mask_truth_after_path = TRAY_PATH + to_string(i + 1) + "/masks/" + file_name + ".png";
+                        mask_truth_after = imread(mask_truth_after_path);
 
-                    Mat mask_truth_after;
-                    string mask_truth_after_path = TRAY_PATH + to_string(i + 1) + "/masks/" + file_name + ".png";
-                    mask_truth_after = imread(mask_truth_after_path);
-
-                    vector<vector<double>> result_leftover = leftover_ratio(mask_result_before, mask_result_after);
-                    vector<vector<double>> truth_leftover = leftover_ratio(mask_truth_before, mask_truth_after);
-                    fw << "Tray" << to_string(i + 1) << "." << file_name << "\n";
-                    fw << "Truth" << "\n";
-                    for (int k = 0; k < truth_leftover.size(); ++k) {
-                        fw << "ID " << truth_leftover[k][0] << " leftover= " << truth_leftover[k][1] << "\n";
+                        vector<vector<double>> result_leftover = leftover_ratio(mask_result_before, mask_result_after);
+                        vector<vector<double>> truth_leftover = leftover_ratio(mask_truth_before, mask_truth_after);
+                        fw << "Tray" << to_string(i + 1) << "." << file_name << "\n";
+                        fw << "Truth" << "\n";
+                        for (int k = 0; k < truth_leftover.size(); ++k) {
+                            fw << "ID " << truth_leftover[k][0] << " leftover= " << truth_leftover[k][1] << "\n";
+                        }
+                        fw << "Algorithm" << "\n";
+                        for (int k = 0; k < result_leftover.size(); ++k) {
+                            fw << "ID " << result_leftover[k][0] << " leftover= " << result_leftover[k][1] << "\n";
+                        }
                     }
-                    fw << "Algorithm" << "\n";
-                    for (int k = 0; k < result_leftover.size(); ++k) {
-                        fw << "ID " << result_leftover[k][0] << " leftover= " << result_leftover[k][1] << "\n";
-                    }
-
                 }
             }
             //store results contents to text file
             fw.close();
         }
-        else cout << "Problem with opening file" << endl;
+        else cout << "Problem with saving food leftover file" << endl;
     }
     catch (const char* msg) {
         cerr << msg << endl;

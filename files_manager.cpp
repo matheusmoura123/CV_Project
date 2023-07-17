@@ -1,5 +1,55 @@
 #include "main_header.h"
 
+Scalar color_ID (int ID) {
+    if (ID == -1) return {255, 255, 255};
+    if (ID == 0) return {0, 0, 0};
+    if (ID == 1) return {255, 0, 0};
+    if (ID == 2) return {0, 255, 0};
+    if (ID == 3) return {0, 0, 255};
+    if (ID == 4) return {255, 255, 0};
+    if (ID == 5) return {255, 0, 255};
+    if (ID == 6) return {0, 255, 255};
+    if (ID == 7) return {124, 255, 255};
+    if (ID == 8) return {255, 124, 255};
+    if (ID == 9) return {255, 255, 124};
+    if (ID == 10) return {124, 124, 255};
+    if (ID == 11) return {124, 255, 124};
+    if (ID == 12) return {255, 124, 124};
+    if (ID == 13) return {124, 124, 124};
+    return {0, 0, 0};
+}
+
+void draw_rectangles_masks (Mat img, const vector<box>& boxes, int tray_num, const string& file_name) {
+    for (int i = 0; i < boxes.size(); ++i) {
+        Point p1(boxes[i].p0x, boxes[i].p0y);
+        // Bottom Right Corner
+        Point p2(boxes[i].p0x+boxes[i].width, boxes[i].p0y+boxes[i].height);
+        Point pt(boxes[i].p0x+3, boxes[i].p0y+boxes[i].height-3);
+        int thickness = 2;
+        Scalar color = color_ID((boxes[i].ID));
+        // Drawing the Rectangle
+        rectangle(img, p1, p2, color,thickness, LINE_8);
+
+        Point text_position(80, 80);//Declaring the text position//
+        int font_size = 1;//Declaring the font size//
+        int font_weight = 2;//Declaring the font weight//
+        string text = "ID: " + to_string(boxes[i].ID);
+        putText(img, text, pt ,FONT_HERSHEY_COMPLEX, font_size ,color, font_weight);
+    }
+    //imshow("img with boxes" + file_name, img);
+
+    string img_result_path;
+    if (file_name == "food_image") img_result_path = RESULTS_PATH + to_string(tray_num + 1) + "/"  + file_name + "_result.jpg";
+    else img_result_path = RESULTS_PATH + to_string(tray_num + 1) + "/" + file_name + "_result.jpg";
+    imwrite(img_result_path, img);
+
+    Mat mask_out = mask_img_builder_color(boxes);
+    string mask_result_path;
+    if (file_name == "food_image") mask_result_path = RESULTS_PATH + to_string(tray_num + 1) + "/"  + file_name + "_color_mask_result.jpg";
+    else mask_result_path = RESULTS_PATH + to_string(tray_num + 1) + "/" + file_name + "color_mask_result.jpg";
+    imwrite(mask_result_path, mask_out);
+}
+
 int box_file_writer (const vector<box>& boxes, const string& path) {
     try {
         //cout << "Writing box contents to file..." << endl;
@@ -14,7 +64,7 @@ int box_file_writer (const vector<box>& boxes, const string& path) {
             }
             fw.close();
         }
-        else cout << "Problem with opening file" << endl;
+        else cout << "Problem saving box file" << endl;
     }
     catch (const char* msg) {
         cerr << msg << endl;
@@ -54,7 +104,7 @@ int box_file_reader (vector<box>& boxes, const string& path) {
             }
             fw.close();
         }
-        else cout << "Problem with opening file" << endl;
+        else cout << "Problem reading box file" << endl;
     }
     catch (const char* msg) {
         cerr << msg << endl;
@@ -83,6 +133,25 @@ Mat mask_img_builder (const vector<box>& boxes) {
     return img_out;
 }
 
+Mat mask_img_builder_color (const vector<box>& boxes) {
+    int img_cols = 1280;
+    int img_rows = 960;
+    Mat img_out = Mat::zeros(img_rows, img_cols, CV_8UC3);
+    for(const auto box:boxes) {
+        Mat sup_img = box.img.clone();
+        //string name = "gray" + to_string(box.p0y);
+        //imshow(name, gray_img );
+        for (int y = 0; y < box.height; ++y) {
+            for (int x = 0; x < box.width; ++x) {
+                if (sup_img.at<Vec3b>(y, x)[0] != 0 && sup_img.at<Vec3b>(y, x)[1] != 0 && sup_img.at<Vec3b>(y, x)[2] != 0) {
+                    img_out.at<Vec3b>(y+box.p0y, x+box.p0x) = {(uchar)color_ID(box.ID)[0],(uchar)color_ID(box.ID)[1],(uchar)color_ID(box.ID)[2]};
+                }
+            }
+        }
+    }
+    return img_out;
+}
+
 int mask_file_writer (const vector<box>& boxes, const string& path) {
     try {
         //cout << "Creating mask img file..." << endl;
@@ -98,22 +167,14 @@ int mask_file_writer (const vector<box>& boxes, const string& path) {
     return 0;
 }
 
-int save_all_boxes_masks_at_tray (vector<vector<box>>& all_boxes, int tray_num) {
-        for (int j = 0; j < all_boxes.size(); ++j) {
-            string file_name;
-            switch (j) {
-                case 0: file_name = "food_image"; break;
-                case 1: file_name = "leftover1"; break;
-                case 2: file_name = "leftover2"; break;
-                case 3: file_name = "leftover3"; break;
-                default: file_name = "food_image";
-            }
-            string box_result_path = RESULTS_PATH + to_string(tray_num + 1) + "/bounding_boxes/" + file_name + "_result_box.txt";
-            string mask_result_path;
-            if (j == 0) mask_result_path = RESULTS_PATH + to_string(tray_num + 1) + "/masks/food_image_mask_result.png";
-            else mask_result_path = RESULTS_PATH + to_string(tray_num + 1) + "/masks/" + file_name + "_result.png";
-            box_file_writer(all_boxes[j], box_result_path);
-            mask_file_writer(all_boxes[j], mask_result_path);
-        }
+int save_boxes_masks_at_tray_stage (const vector<box>& boxes, int tray_num, const string& file_name) {
+    string box_result_path = RESULTS_PATH + to_string(tray_num + 1) + "/bounding_boxes/" + file_name + "_result_box.txt";
+    string mask_result_path;
+
+    if (file_name == "food_image") mask_result_path = RESULTS_PATH + to_string(tray_num + 1) + "/masks/"  + file_name + "_mask_result.png";
+    else mask_result_path = RESULTS_PATH + to_string(tray_num + 1) + "/masks/" + file_name + "_result.png";
+
+    box_file_writer(boxes, box_result_path);
+    mask_file_writer(boxes, mask_result_path);
     return 0;
 }

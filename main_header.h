@@ -114,11 +114,13 @@ int surf_matching(const Mat& img1, const Mat& img2);
 void compare_plates(const vector<box> food_plate, vector<box>& leftover_plate);
 
 //files_manager.cpp
+void draw_rectangles_masks (Mat img, const vector<box>& boxes, int tray_num, const string& file_name);
 int box_file_writer (const vector<box>& boxes, const string& path);
 int box_file_reader (vector<box>& boxes, const string& path);
 Mat mask_img_builder (const vector<box>& boxes);
+Mat mask_img_builder_color (const vector<box>& boxes);
 int mask_file_writer (const vector<box>& boxes, const string& path);
-int save_all_boxes_masks_at_tray (vector<vector<box>>& all_boxes, int tray_num);
+int save_boxes_masks_at_tray_stage (const vector<box>& boxes, int tray_num, const string& file_name);
 
 //metrics.cpp
 double boxes_IoU (const box& box1, const box& box2);
