@@ -1,6 +1,6 @@
-Tray1.food_image_mask mIoU= 0.314412
-Tray1.leftover1 mIoU= 0.305666
-Tray1.leftover2 mIoU= 0.30938
+Tray1.food_image_mask mIoU= 0.483683
+Tray1.leftover1 mIoU= 0.415926
+Tray1.leftover2 mIoU= 0.381685
 Tray2.food_image_mask mIoU= 0.44267
 Tray2.leftover1 mIoU= 0.462045
 Tray2.leftover2 mIoU= 0.419212

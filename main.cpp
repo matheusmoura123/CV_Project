@@ -178,8 +178,8 @@ int main(int argc, char** argv) {
 
                 draw_rectangles_masks(img, boxes, i, file_name);
                 save_boxes_masks_at_tray_stage(boxes, i, file_name);
-                waitKey();
-                destroyAllWindows();
+                //waitKey();
+                //destroyAllWindows();
             }
             else {
                 file_name = "leftover" + to_string(j);
@@ -264,8 +264,8 @@ int main(int argc, char** argv) {
                 }
                 draw_rectangles_masks(img, boxes_left, i, file_name);
                 save_boxes_masks_at_tray_stage(boxes_left, i, file_name);
-                waitKey();
-                destroyAllWindows();
+                //waitKey();
+                //destroyAllWindows();
             }
         }
         //waitKey();

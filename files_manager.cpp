@@ -46,7 +46,7 @@ void draw_rectangles_masks (Mat img, const vector<box>& boxes, int tray_num, con
     Mat mask_out = mask_img_builder_color(boxes);
     string mask_result_path;
     if (file_name == "food_image") mask_result_path = RESULTS_PATH + to_string(tray_num + 1) + "/"  + file_name + "_color_mask_result.jpg";
-    else mask_result_path = RESULTS_PATH + to_string(tray_num + 1) + "/" + file_name + "color_mask_result.jpg";
+    else mask_result_path = RESULTS_PATH + to_string(tray_num + 1) + "/" + file_name + "_color_mask_result.jpg";
     imwrite(mask_result_path, mask_out);
 }
 

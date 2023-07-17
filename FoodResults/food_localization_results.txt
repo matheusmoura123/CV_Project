@@ -1,5 +1,5 @@
-Tray1.food_image mAp= 0.333333
-Tray1.leftover1 mAp= 0.333333
+Tray1.food_image mAp= 0.666667
+Tray1.leftover1 mAp= 0.666667
 Tray1.leftover2 mAp= 0.333333
 Tray2.food_image mAp= 0.5
 Tray2.leftover1 mAp= 0.5
